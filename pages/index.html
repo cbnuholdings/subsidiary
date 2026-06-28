@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자회사 설립 모집 · 충북대학교기술지주㈜</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; --bad:#c0392b; }
+  *{ box-sizing:border-box; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:980px; margin:0 auto; padding:0 16px 70px; }
+  .top{ display:flex; justify-content:flex-end; padding:12px 16px; }
+  .top a{ font-size:12px; color:var(--brand-d); text-decoration:none; border:1px solid #e2cdd5; border-radius:20px; padding:6px 14px; background:#fff; }
+  .hero{ background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; border-radius:18px; padding:40px 34px; box-shadow:0 10px 30px rgba(176,28,80,.25); text-align:center; }
+  .hero .org{ font-size:13px; opacity:.9; letter-spacing:1px; }
+  .hero h1{ margin:8px 0 10px; font-size:30px; line-height:1.3; }
+  .hero p{ opacity:.95; font-size:15px; line-height:1.7; margin:0 auto; max-width:640px; }
+  .hero .period{ display:inline-block; margin-top:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); border-radius:30px; padding:8px 18px; font-size:13px; }
+  .cta{ margin-top:22px; } .cta a{ display:inline-block; text-decoration:none; font-weight:700; font-size:16px; padding:13px 30px; border-radius:30px; }
+  .cta .go{ background:#fff; color:var(--brand-d); } .cta .go:hover{ background:#ffeef4; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+  @media(max-width:760px){ .grid{ grid-template-columns:1fr; } .hero h1{ font-size:24px; } }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; }
+  .card h2{ margin:0 0 12px; font-size:15px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:8px; }
+  .steps4{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
+  @media(max-width:760px){ .steps4{ grid-template-columns:1fr 1fr; } }
+  .st{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:12px 8px; text-align:center; font-size:12px; }
+  .st b{ display:block; color:var(--brand); font-size:13px; margin-bottom:3px; }
+  .cond td{ padding:4px 4px; border-bottom:1px dashed #ecdfe3; font-size:13px; } .cond td:last-child{ text-align:right; font-weight:600; }
+  table.cond{ width:100%; border-collapse:collapse; }
+  .note{ font-size:12px; color:#777; line-height:1.7; }
+  label{ display:block; font-size:12px; color:#555; margin:9px 0 4px; }
+  select{ width:100%; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; }
+  .verdict{ margin-top:12px; padding:12px 14px; border-radius:9px; font-size:13px; display:none; }
+  .v-ok{ background:#e3f5ea; color:var(--ok); } .v-warn{ background:#fdf2e0; color:var(--warn); } .v-bad{ background:#fbe7e4; color:var(--bad); }
+  .diagcta{ display:inline-block; margin-top:10px; text-decoration:none; background:var(--brand); color:#fff; padding:9px 18px; border-radius:8px; font-size:13px; }
+  footer{ text-align:center; color:#aa9; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+<div class="top"><a href="_demo_seed.html" style="margin-right:8px">🧪 데모 점검</a><a href="login.html">🔐 담당자 로그인</a></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="org">충북대학교기술지주㈜</div>
+    <h1>자회사 설립 기업 모집</h1>
+    <p>대학 보유기술의 사업화를 함께할 예비창업자·기업을 찾습니다. 충북대 출원기술 기반으로 자회사를 설립하고, 기술지주가 직접 출자·성장지원합니다.</p>
+    <div class="period">📅 상시 접수 · 모집기간은 공고에 따릅니다</div>
+    <div class="cta"><a class="go" href="1_apply.html?role=applicant">신청하기 →</a></div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2>진행 절차</h2>
+    <div class="steps4">
+      <div class="st"><b>① 신청·제도이해</b>제도 확인 후 신청</div>
+      <div class="st"><b>② 기술이전 LOI</b>충북대 기술 사업화 합의</div>
+      <div class="st"><b>③ 출자</b>기술지주 지분투자</div>
+      <div class="st"><b>④ 컨설팅·심의</b>설립계획·성장·EXIT</div>
+    </div>
+    <div class="note" style="margin-top:8px">설립 이후에는 분기 회계보고·연간 자산평가 등 사후관리와 성장지원이 이어집니다.</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>💰 출자(투자) 조건</h2>
+      <table class="cond">
+        <tr><td>기업가치(Value)</td><td>자본금 × 2배</td></tr>
+        <tr><td>기술지주 지분</td><td>기본 10% (이상 가능)</td></tr>
+        <tr><td>교원 창업</td><td>보통주</td></tr>
+        <tr><td>학생·일반·외부</td><td>우선주(CPS)</td></tr>
+        <tr><td>회수(EXIT)</td><td>동반매도·우선매수·공동매도 + 바이백</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px">CPS = 청산우선권 1배·전환 1:1·무상환·우선배당 연 1%</div>
+    </div>
+
+    <div class="card">
+      <h2>🎁 설립 이후 혜택</h2>
+      <div class="note">
+        <b>① 기업성장지원</b> — 후속투자 연계, 정부과제 매칭, 멘토링·IR 고도화 등(연도별 운영)<br><br>
+        <b>② 제도적 혜택</b> — 연구개발특구 <b>연구소기업</b> 등록 시 법인세 등 감면(요건·자본금 규모에 따라 상이, 정보제공용)
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>🧭 1분 적격성 자가진단</h2>
+    <div class="grid" style="margin-top:0">
+      <div>
+        <label>교원(전임) 창업입니까?</label>
+        <select id="q_prof"><option value="">선택</option><option value="y">예(교원)</option><option value="n">아니오</option></select>
+        <label>충북대학교 보유·출원 기술 사업화입니까?</label>
+        <select id="q_tech"><option value="">선택</option><option value="y">예</option><option value="maybe">미정/검토중</option><option value="n">아니오</option></select>
+      </div>
+      <div>
+        <label>사업화 의지·준비 정도</label>
+        <select id="q_will"><option value="">선택</option><option value="high">강함(구체 계획)</option><option value="mid">보통</option><option value="low">약함(구상 단계)</option></select>
+        <div class="verdict" id="verdict"></div>
+        <a class="diagcta" href="1_apply.html?role=applicant">정식 신청으로 진행 →</a>
+      </div>
+    </div>
+    <div class="note" style="margin-top:10px">※ 자가진단은 참고용이며, 부적격으로 표시되어도 신청은 가능합니다. 모든 시드를 검토합니다.</div>
+  </div>
+
+  <footer>© 충북대학교기술지주㈜ · 자회사 설립 통합관리 시스템</footer>
+</div>
+
+<script>
+  // 미니 자가진단(로컬 로직, 라이브러리 불필요)
+  function diag(){
+    var prof=v('q_prof'), tech=v('q_tech'), will=v('q_will');
+    var box=document.getElementById('verdict');
+    if(!(prof&&tech&&will)){ box.style.display='none'; return; }
+    var verdict, cls, txt;
+    if(tech==='y' && will!=='low'){ verdict='적격'; cls='v-ok'; txt='충북대 기술 사업화 + 사업화 의지 충족. 신청을 권장합니다.'; }
+    else if(tech==='n'){ verdict='부적격'; cls='v-bad'; txt='자회사는 대학 보유기술 사업화가 요건입니다. 정보성 신청은 가능합니다.'; }
+    else { verdict='검토필요'; cls='v-warn'; txt='기술 연계·의지 보완이 필요합니다. 담당자 상담을 권장합니다.'; }
+    box.className='verdict '+cls; box.style.display='block';
+    box.innerHTML='<b>'+verdict+'</b> — '+txt;
+  }
+  function v(id){ return document.getElementById(id).value; }
+  ['q_prof','q_tech','q_will'].forEach(function(id){ document.getElementById(id).addEventListener('change', diag); });
+</script>
+</body>
+</html>

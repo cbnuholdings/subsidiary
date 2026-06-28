@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>③ 출자(텀시트) · 자회사 설립 통합관리</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:980px; margin:0 auto; padding:18px 16px 70px; }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 14px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  .card h3{ font-size:13px; color:var(--brand-d); margin:16px 0 6px; }
+  label{ display:block; font-size:12px; color:#555; margin:9px 0 4px; }
+  input,select{ width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; }
+  .row{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; } @media(max-width:680px){ .row{ grid-template-columns:1fr; } }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .chk{ display:flex; align-items:center; gap:8px; font-size:13px; padding:9px 11px; border:1px solid #e6dadf; border-radius:9px; margin-top:8px; background:#fcf8f9; }
+  .chk input{ width:auto; }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:11px 18px; font-size:14px; cursor:pointer; margin-top:14px; }
+  button:hover{ background:var(--brand-d); } button.ghost{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; }
+  .term{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:16px 18px; margin-top:12px; font-size:13px; }
+  .term table{ width:100%; border-collapse:collapse; } .term td{ padding:4px 4px; border-bottom:1px dashed #ecdfe3; } .term td:last-child{ text-align:right; font-weight:600; }
+  .pill{ display:inline-block; font-size:11px; padding:3px 9px; border-radius:20px; background:#f3e3e9; color:var(--brand-d); margin:2px 4px 2px 0; }
+  .muted{ color:#999; font-size:12px; }
+  .empty{ text-align:center; color:#aa9; padding:40px; }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<div class="wrap">
+  <div class="card" id="picker">
+    <h2>③ 출자 — 텀시트 작성</h2>
+    <div class="muted">상단 ‘대상 기업’에서 기업을 선택하면 신청 정보가 불러와집니다. (또는 아래에서 선택)</div>
+    <label>대상 기업 선택</label>
+    <select id="coSel"></select>
+  </div>
+
+  <div class="card" id="editor" style="display:none">
+    <h2 id="coTitle"></h2>
+    <h3>밸류에이션 입력 (자본금 × 2배 · 지분 기본 10%)</h3>
+    <div class="row">
+      <div><label>창업유형(주식종류 결정)</label>
+        <select id="ftype">
+          <option value="professor">교원 → 보통주</option>
+          <option value="student">학생 → 우선주(CPS)</option>
+          <option value="general">일반 → 우선주(CPS)</option>
+          <option value="external">외부기업 → 우선주(CPS)</option>
+        </select></div>
+      <div><label>자본금(원)</label><input id="cap" type="number"></div>
+      <div><label>액면가(원)</label><input id="par" type="number"></div>
+    </div>
+    <label>지분율(%) · 기본 10%</label><input id="pct" type="number" value="10" step="0.1" style="max-width:160px">
+
+    <h3>EXIT·계약 장치 (투자 단계 개별 가감)</h3>
+    <label class="chk"><input type="checkbox" id="x_drag" checked> 동반매도청구권(Drag-along)</label>
+    <label class="chk"><input type="checkbox" id="x_rofr" checked> 우선매수권(ROFR)</label>
+    <label class="chk"><input type="checkbox" id="x_tag" checked> 공동매도권(Tag-along)</label>
+    <label class="chk"><input type="checkbox" id="x_buy" checked> 바이백(풋옵션)</label>
+    <div class="row2" id="buybox">
+      <div><label>최소 행사연도 / 최대(연장 3회)</label>
+        <div class="row2"><input id="b_min" type="number" value="7"><input id="b_max" type="number" value="10"></div></div>
+      <div><label>매수 주체</label>
+        <select id="b_buyer"><option value="founder">창업자(이해관계인)</option><option value="company">회사</option></select></div>
+    </div>
+
+    <button onclick="genTerm()">텀시트 생성·저장</button>
+    <button class="ghost" onclick="location.href='4_ic.html'+roleQ()">④ 투자심의로 →</button>
+    <div id="termOut"></div>
+  </div>
+</div>
+
+<script src="../common/invest.js"></script>
+<script src="../common/app.js"></script>
+<script src="../common/brand.js"></script>
+<script>
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(r=>r.json()).then(c=>SUB.setConfig(c)).catch(()=>{}); }
+  function roleQ(){ var r=SUB.getRole(); return (r&&r!=='admin')?('?role='+r):''; }
+  try{ BRAND.renderHeader('invest'); }catch(e){}
+
+  function won(n){ return Math.round(n).toLocaleString('ko-KR')+'원'; }
+  function fillPicker(){
+    var sel=document.getElementById('coSel');
+    var cos=SUB.DB.companies;
+    sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(c=>'<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>').join('');
+    if(!cos.length) document.getElementById('picker').insertAdjacentHTML('beforeend','<div class="empty">아직 신청 기업이 없습니다. 신청 페이지에서 접수 후 이용하세요.</div>');
+    var cur=SUB.getCID(); if(cur) sel.value=cur;
+  }
+  function loadCo(cid){
+    if(!cid){ document.getElementById('editor').style.display='none'; return; }
+    SUB.setCID(cid);
+    var co=null; SUB.DB.companies.forEach(c=>{ if(c.cid===cid) co=c; });
+    var ap=SUB.DB.applicants[cid];
+    document.getElementById('editor').style.display='';
+    document.getElementById('coTitle').textContent=(co?co.name:cid)+' — 텀시트';
+    var inv=(ap&&ap.invest)||{};
+    document.getElementById('ftype').value=(co&&co.type)||inv.founderType||'external';
+    document.getElementById('cap').value=inv.capital||30000000;
+    document.getElementById('par').value=inv.par||1000;
+    document.getElementById('pct').value=((inv.equityPct||0.10)*100);
+    // 기존 텀시트 복원
+    var t=SUB.DB.invest[cid];
+    if(t&&t.exit){ document.getElementById('x_drag').checked=t.exit.dragAlong; document.getElementById('x_rofr').checked=t.exit.rofr;
+      document.getElementById('x_tag').checked=t.exit.tagAlong; document.getElementById('x_buy').checked=t.exit.buyback.enabled;
+      document.getElementById('b_min').value=t.exit.buyback.minYears; document.getElementById('b_max').value=t.exit.buyback.maxYears;
+      document.getElementById('b_buyer').value=t.exit.buyback.buyer; }
+    toggleBuy(); renderTermPreview();
+  }
+  function toggleBuy(){ document.getElementById('buybox').style.opacity=document.getElementById('x_buy').checked?'1':'.4'; }
+  function currentExit(){
+    return { dragAlong:document.getElementById('x_drag').checked, rofr:document.getElementById('x_rofr').checked,
+      tagAlong:document.getElementById('x_tag').checked,
+      buyback:{ enabled:document.getElementById('x_buy').checked, minYears:+document.getElementById('b_min').value,
+        extensions:3, maxYears:+document.getElementById('b_max').value, buyer:document.getElementById('b_buyer').value } };
+  }
+  function compute(){
+    return INVEST.compute({ capital:+document.getElementById('cap').value, par:+document.getElementById('par').value,
+      equityPct:(+document.getElementById('pct').value)/100, founderType:document.getElementById('ftype').value });
+  }
+  function renderTermPreview(){
+    var r=compute(), x=currentExit();
+    var devices=[]; if(x.dragAlong)devices.push('동반매도청구권'); if(x.rofr)devices.push('우선매수권'); if(x.tagAlong)devices.push('공동매도권');
+    if(x.buyback.enabled)devices.push('바이백('+x.buyback.minYears+'~'+x.buyback.maxYears+'년, '+(x.buyback.buyer==='founder'?'창업자':'회사')+' 매수)');
+    document.getElementById('termOut').innerHTML='<div class="term"><b>텀시트 미리보기</b><table>'+
+      '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+      '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+      '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+      '<tr><td>신주/투자금</td><td>'+r.newShares.toLocaleString()+'주 · '+won(r.investment)+'</td></tr>'+
+      '<tr><td>투자후 가치/지분</td><td>'+won(r.postMoney)+' · '+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+      (r.cps?'<tr><td>우선주 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+
+      '</table><div style="margin-top:8px">'+devices.map(d=>'<span class="pill">'+d+'</span>').join('')+'</div></div>';
+  }
+  function genTerm(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var r=compute(), x=currentExit();
+    var rec={ cid:cid, savedAt:new Date().toISOString(),
+      capital:r.input.capital, par:r.input.par, equityPct:r.input.equityPct,
+      stockType:r.stockType, issuePrice:r.issuePrice, newShares:r.newShares, investment:r.investment,
+      preMoneyValue:r.preMoneyValue, postMoney:r.postMoney, actualPct:r.actualPct,
+      cps:r.cps, exit:x };
+    SUB.commit('invest', cid, rec);   // 로컬 즉시 + 서버 동기화
+    SUB.upsertCompany({ cid:cid, stage:'출자' });
+    renderTermPreview();
+    alert('텀시트가 저장되었습니다.');
+  }
+  ['ftype','cap','par','pct','x_drag','x_rofr','x_tag','x_buy','b_min','b_max','b_buyer'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(){ if(id==='x_buy')toggleBuy(); renderTermPreview(); });
+  });
+  document.getElementById('coSel').addEventListener('change', function(){ loadCo(this.value); });
+
+  fillPicker();
+  if(SUB.getCID()) loadCo(SUB.getCID());
+</script>
+</body>
+</html>

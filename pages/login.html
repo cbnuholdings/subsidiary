@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자회사 설립 통합관리 시스템 · 충북대학교기술지주㈜</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:880px; margin:0 auto; padding:28px 18px 60px; }
+  .hero{ background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; border-radius:16px; padding:26px 28px; box-shadow:0 8px 24px rgba(176,28,80,.25); }
+  .hero h1{ margin:0 0 6px; font-size:22px; }
+  .hero .sub{ opacity:.92; font-size:13px; line-height:1.6; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+  @media(max-width:720px){ .grid{ grid-template-columns:1fr; } }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:18px 20px; }
+  .card h2{ margin:0 0 12px; font-size:15px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:8px; }
+  label{ display:block; font-size:12px; color:#666; margin:10px 0 4px; }
+  input,select{ width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-size:14px; cursor:pointer; margin-top:14px; }
+  button:hover{ background:var(--brand-d); }
+  .roles{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .roles a{ font-size:12px; text-decoration:none; color:var(--brand-d); border:1px solid #e2cdd5; border-radius:20px; padding:5px 11px; background:#fbf5f7; }
+  .hint{ font-size:11px; color:#999; margin-top:10px; line-height:1.6; }
+  .out{ margin-top:12px; font-size:13px; background:#fbf5f7; border:1px solid #f0e0e6; border-radius:8px; padding:12px; }
+  .out table{ width:100%; border-collapse:collapse; }
+  .out td{ padding:3px 4px; border-bottom:1px dashed #ecdfe3; }
+  .out td:last-child{ text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .msg{ font-size:12px; color:#c0392b; margin-top:6px; min-height:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>자회사 설립 통합관리 시스템</h1>
+    <div class="sub">충북대학교기술지주㈜ · 발굴 → 신청·제도이해 → 기술이전 LOI → 출자 → 컨설팅·투자심의 → 설립·관리<br>
+      <span id="modeBadge">⚪ 로컬 저장 모드</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>🔐 로그인</h2>
+      <label>아이디</label><input id="id" placeholder="예: admin / staff / tlo / ic1">
+      <label>비밀번호</label><input id="pw" type="password" placeholder="비밀번호">
+      <button id="btnLogin">로그인</button>
+      <div class="msg" id="msg"></div>
+      <div class="hint">데모 계정 — 종합관리자 <b>admin / admin1234</b>, 담당자 <b>staff / staff1234</b>,
+        산학협력단 <b>tlo / tlo1234</b>, 심의위원 <b>ic1~ic7 / ic#1234</b></div>
+      <div class="roles" id="quick"></div>
+    </div>
+
+    <div class="card">
+      <h2>💰 출자 투자조건 계산기 (사전 안내)</h2>
+      <label>창업유형</label>
+      <select id="ftype">
+        <option value="professor">교원 창업 → 보통주</option>
+        <option value="student">학생 창업 → 우선주(CPS)</option>
+        <option value="general">일반 개인 창업 → 우선주(CPS)</option>
+        <option value="external" selected>외부 기업 → 우선주(CPS)</option>
+      </select>
+      <label>자본금(원)</label><input id="cap" type="number" value="30000000">
+      <label>액면가(원)</label><input id="par" type="number" value="1000">
+      <label>지분율(%) · 기본 10%</label><input id="pct" type="number" value="10" step="0.1">
+      <div class="out" id="calc"></div>
+      <div class="hint">Value = 자본금 × 2 · 지주 지분 기본 10% · 교원=보통주 / 그 외=우선주(CPS, 청산1배·전환1:1·무상환)</div>
+    </div>
+  </div>
+</div>
+
+<script src="../common/invest.js"></script>
+<script src="../common/app.js"></script>
+<script>
+  // config 로드(로컬↔서버, fetch 미지원 환경 방어)
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(function(r){return r.json();}).then(function(c){
+    SUB.setConfig(c);
+    document.getElementById('modeBadge').textContent = SUB.serverOn() ? '🟢 서버 연동 모드' : '⚪ 로컬 저장 모드';
+  }).catch(function(){}); }
+
+  // 빠른 역할 진입(데모) — 라이브(서버)모드에선 숨김(인증 우회 방지)
+  var quick = document.getElementById('quick');
+  if(SUB.serverOn()){
+    if(quick){ quick.style.display='none'; var q=document.getElementById('quickWrap')||quick.parentNode; }
+  } else {
+    [['admin','6_console.html'],['staff','board.html'],['tlo','2_loi.html'],['ic','4_ic.html'],['applicant','1_apply.html']]
+      .forEach(function(r){
+        var a=document.createElement('a'); a.textContent=SUB.ROLES[r[0]].label;
+        a.href=r[1]+'?role='+r[0]; quick.appendChild(a);
+      });
+  }
+
+  var HOME = { admin:'6_console.html', staff:'board.html', tlo:'2_loi.html', ic:'4_ic.html', applicant:'1_apply.html' };
+  document.getElementById('btnLogin').onclick = function(){
+    var msg = document.getElementById('msg'); msg.textContent='확인 중…';
+    // loginAsync: 서버모드=GAS 검증, 로컬=동기 검증(Promise 래핑)
+    SUB.loginAsync(document.getElementById('id').value.trim(), document.getElementById('pw').value).then(function(res){
+      if(!res.ok){ msg.textContent = res.msg; return; }
+      // 세션 영속화됨 → 이동 후에도 역할 유지(?role= 의존 제거, 로컬모드 편의용으로만 부착)
+      var home = HOME[res.role] || '6_console.html';
+      location.href = SUB.serverOn() ? home : (home + '?role=' + res.role);
+    });
+  };
+
+  // 투자조건 계산기
+  function won(n){ return (Math.round(n)).toLocaleString('ko-KR') + '원'; }
+  function recalc(){
+    var r = INVEST.compute({
+      capital: +document.getElementById('cap').value,
+      par: +document.getElementById('par').value,
+      equityPct: (+document.getElementById('pct').value)/100,
+      founderType: document.getElementById('ftype').value
+    });
+    document.getElementById('calc').innerHTML =
+      '<table>'+
+      '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+      '<tr><td>기존 주식수</td><td>'+r.existingShares.toLocaleString()+'주</td></tr>'+
+      '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+      '<tr><td>신주 발행수</td><td>'+r.newShares.toLocaleString()+'주</td></tr>'+
+      '<tr><td>투자금</td><td>'+won(r.investment)+'</td></tr>'+
+      '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+      '<tr><td>투자후 가치</td><td>'+won(r.postMoney)+'</td></tr>'+
+      '<tr><td>실제 지분율</td><td>'+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+      (r.cps?'<tr><td>CPS 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+
+      '</table>';
+  }
+  ['ftype','cap','par','pct'].forEach(function(id){ document.getElementById(id).addEventListener('input', recalc); });
+  recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>④ 컨설팅·투자심의 · 자회사 설립 통합관리</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; --bad:#c0392b; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:1020px; margin:0 auto; padding:18px 16px 70px; }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 12px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  .card h3{ font-size:13px; color:var(--brand-d); margin:14px 0 6px; }
+  label{ display:block; font-size:12px; color:#555; margin:8px 0 4px; }
+  input,select,textarea{ width:100%; box-sizing:border-box; padding:8px 9px; border:1px solid #ccc; border-radius:7px; font-size:13px; font-family:inherit; }
+  textarea{ min-height:70px; }
+  .tbl-wrap{ overflow-x:auto; margin-top:6px; }
+  table.grid{ width:100%; min-width:560px; table-layout:fixed; border-collapse:collapse; font-size:12.5px; }
+  table.grid th,table.grid td{ border:1px solid #ecdfe3; padding:6px 7px; text-align:center; vertical-align:middle; }
+  table.grid th{ background:#fbf1f4; color:var(--brand-d); font-weight:700; line-height:1.3; }
+  /* 셀 내부 입력칸: 텍스트·숫자·셀렉트는 칸을 채우고, 체크박스는 본래 크기로 가운데 */
+  table.grid td input[type=text], table.grid td input.m_name, table.grid td input[type=number], table.grid td select{ width:100%; box-sizing:border-box; padding:5px 6px; }
+  table.grid td input[type=checkbox]{ width:auto; margin:0; transform:scale(1.2); }
+  .note{ font-size:12px; color:#777; line-height:1.7; } .muted{ color:#999; font-size:12px; }
+  .draft{ background:#fbf7ee; border:1px dashed #e3cf9e; border-radius:9px; padding:10px 12px; font-size:12px; color:#7a5908; }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:11px 18px; font-size:14px; cursor:pointer; margin-top:14px; }
+  button:hover{ background:var(--brand-d); } button.ghost{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; }
+  .result{ margin-top:14px; padding:16px 18px; border-radius:10px; font-size:14px; }
+  .r-ok{ background:#e3f5ea; border:1px solid #b6e2c6; } .r-cond{ background:#fdf2e0; border:1px solid #f0d9a8; }
+  .r-bad{ background:#fbe7e4; border:1px solid #f0c2bb; } .r-non{ background:#eee; border:1px solid #ddd; }
+  .verdict{ font-size:20px; font-weight:800; } .tally{ font-size:12.5px; color:#555; margin-top:6px; }
+  .empty{ text-align:center; color:#aa9; padding:40px; }
+  .row3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<div class="wrap">
+  <div class="card" id="picker">
+    <h2>④ 컨설팅 · 투자심의</h2>
+    <label>대상 기업 선택</label>
+    <select id="coSel"></select>
+  </div>
+
+  <div id="body" style="display:none">
+    <!-- 컨설팅 초안 -->
+    <div class="card">
+      <h2 id="coTitle"></h2>
+      <div class="draft">🤖 자동초안 — 신청·LOI·출자 데이터로 설립계획·성장전략·EXIT 3시나리오 초안을 생성합니다. 컨설턴트가 보완하고, 외부 전문기업·멘토 자료는 첨부로 보강합니다. (서버 연동 시 멀티에이전트 초안으로 대체 가능)
+        <button class="ghost" style="margin-top:8px;padding:6px 12px;font-size:12px" onclick="genDraft()">🤖 자동초안 생성</button></div>
+      <h3>설립계획·성장전략 요약</h3>
+      <textarea id="c_plan" placeholder="사업화 계획·시장·팀·마일스톤·KPI 요약"></textarea>
+      <h3>EXIT 3시나리오 (회수배수 MOIC 자동)</h3>
+      <table class="grid" id="scn">
+        <tr><th>시나리오</th><th>예상 회수금액(원)</th><th>예상 시점(년)</th><th>MOIC</th></tr>
+        <tr><td>IPO</td><td><input type="number" class="sc_amt" data-k="ipo"></td><td><input type="number" class="sc_yr" data-k="ipo" value="7"></td><td class="sc_moic">-</td></tr>
+        <tr><td>M&amp;A</td><td><input type="number" class="sc_amt" data-k="ma"></td><td><input type="number" class="sc_yr" data-k="ma" value="5"></td><td class="sc_moic">-</td></tr>
+        <tr><td>바이백</td><td><input type="number" class="sc_amt" data-k="buy"></td><td><input type="number" class="sc_yr" data-k="buy" value="10"></td><td class="sc_moic">-</td></tr>
+      </table>
+      <div class="muted" id="investNote"></div>
+    </div>
+
+    <!-- IC 심의 -->
+    <div class="card">
+      <h2>투자심의위원회 의결</h2>
+      <div class="row3">
+        <div><label>재적 정족수 기준(%)</label><input id="quorum" type="number" value="50"></div>
+        <div><label>가결 기준(%) · 과반=50</label><input id="passpct" type="number" value="50"></div>
+        <div><label class="muted" style="margin-top:26px">제척 위원은 재적·출석에서 자동 제외</label></div>
+      </div>
+      <div class="tbl-wrap">
+      <table class="grid" id="members">
+        <colgroup>
+          <col style="width:9%"><col style="width:31%"><col style="width:10%"><col style="width:13%"><col style="width:15%"><col style="width:22%">
+        </colgroup>
+        <tr><th>슬롯</th><th>위원명</th><th>출석</th><th>제척<br>(이해상충)</th><th>점수<br>(0~100)</th><th>의결</th></tr>
+      </table>
+      </div>
+      <button onclick="tally()">의결 집계·저장</button>
+      <button class="ghost" onclick="makeReviewPDF()">📑 심의자료 PDF</button>
+      <button class="ghost" onclick="makeDecisionPDF()">📄 의결서 PDF</button>
+      <div id="result"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pdfStage" style="position:absolute;left:-10000px;top:0;"></div>
+<script src="../common/invest.js"></script>
+<script src="../common/app.js"></script>
+<script src="../common/brand.js"></script>
+<script src="../common/vendor/jspdf.umd.min.js"></script>
+<script src="../common/vendor/html2canvas.min.js"></script>
+<script src="../common/pdf.js"></script>
+<script>
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(r=>r.json()).then(c=>SUB.setConfig(c)).catch(()=>{}); }
+  try{ BRAND.renderHeader('ic'); }catch(e){}
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function pdfCtx(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return null; }
+    var co=SUB.DB.companies.find(function(c){return c.cid===cid;})||{cid:cid};
+    return { company:co, ceo:(SUB.DB.applicants[cid]||{}).ceo, applicant:SUB.DB.applicants[cid]||{},
+      invest:SUB.DB.invest[cid]||{}, ic:SUB.DB.ic[cid]||{}, loi:SUB.DB.loi[cid]||{}, dateStr:today() };
+  }
+  function renderPDF(kind, fname){
+    var ctx=pdfCtx(); if(!ctx) return;
+    if(kind==='decision' && !(ctx.ic && ctx.ic.tally)){ alert('먼저 의결을 집계·저장하세요.'); return; }
+    var stage=document.getElementById('pdfStage');
+    stage.innerHTML=SUBPDF.buildReportHTML(kind, ctx);
+    SUBPDF.renderToPDF(stage, fname).then(function(){ stage.innerHTML=''; });
+  }
+  function makeReviewPDF(){ var co=SUB.DB.companies.find(function(c){return c.cid===SUB.getCID();})||{}; renderPDF('review',(co.name||'심의자료')+'_심의자료.pdf'); }
+  function makeDecisionPDF(){ var co=SUB.DB.companies.find(function(c){return c.cid===SUB.getCID();})||{}; renderPDF('decision',(co.name||'의결서')+'_의결서.pdf'); }
+  function won(n){ return Math.round(n).toLocaleString('ko-KR')+'원'; }
+
+  function fillPicker(){
+    var sel=document.getElementById('coSel'), cos=SUB.DB.companies;
+    sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(c=>'<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>').join('');
+    if(!cos.length) document.getElementById('picker').insertAdjacentHTML('beforeend','<div class="empty">신청·출자 단계 기업이 없습니다.</div>');
+    var cur=SUB.getCID(); if(cur) sel.value=cur;
+  }
+  function buildMembers(){
+    var tb=document.getElementById('members');
+    var mem=(SUB.DB.icConfig&&SUB.DB.icConfig.members)||{};
+    for(var i=1;i<=7;i++){ var id='ic'+i;
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+id+'</td>'+
+        '<td><input class="m_name" data-id="'+id+'" value="'+SUB.esc(mem[id]||'')+'" placeholder="위원 성명"></td>'+
+        '<td><input type="checkbox" class="m_present" data-id="'+id+'"></td>'+
+        '<td><input type="checkbox" class="m_recused" data-id="'+id+'"></td>'+
+        '<td><input type="number" class="m_score" data-id="'+id+'" min="0" max="100"></td>'+
+        '<td><select class="m_vote" data-id="'+id+'"><option value="for">찬성</option><option value="conditional">조건부</option><option value="against">반대</option><option value="abstain">기권</option></select></td>';
+      tb.appendChild(tr);
+    }
+  }
+  function loadCo(cid){
+    if(!cid){ document.getElementById('body').style.display='none'; return; }
+    SUB.setCID(cid);
+    var co=null; SUB.DB.companies.forEach(c=>{ if(c.cid===cid) co=c; });
+    document.getElementById('body').style.display='';
+    document.getElementById('coTitle').textContent=(co?co.name:cid)+' — 컨설팅·심의';
+    var inv=SUB.DB.invest[cid];
+    document.getElementById('investNote').textContent = inv ? ('출자 투자금 = '+won(inv.investment)+' (MOIC 기준)') : '※ 출자(텀시트)가 먼저 저장되면 MOIC가 계산됩니다.';
+    // 기존 컨설팅/심의 복원
+    var prev=SUB.DB.ic[cid];
+    if(prev){ document.getElementById('c_plan').value=prev.plan||'';
+      if(prev.scenarios){ document.querySelectorAll('.sc_amt').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s){ el.value=s.amount; } });
+        document.querySelectorAll('.sc_yr').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s){ el.value=s.year; } }); } }
+    recalcMoic();
+  }
+  function genDraft(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var co=SUB.DB.companies.find(function(c){return c.cid===cid;})||{};
+    var ctx={ company:co, applicant:SUB.DB.applicants[cid]||{}, loi:SUB.DB.loi[cid]||{}, invest:SUB.DB.invest[cid]||{} };
+    var dft=SUB.buildConsultDraft(ctx);
+    document.getElementById('c_plan').value=dft.plan;
+    Object.keys(dft.scenarios).forEach(function(k){
+      var amt=document.querySelector('.sc_amt[data-k="'+k+'"]'); var yr=document.querySelector('.sc_yr[data-k="'+k+'"]');
+      if(amt) amt.value=dft.scenarios[k].amount; if(yr) yr.value=dft.scenarios[k].year;
+    });
+    recalcMoic();
+  }
+  function recalcMoic(){
+    var inv=SUB.DB.invest[SUB.getCID()];
+    document.querySelectorAll('#scn tr').forEach(function(tr){
+      var amt=tr.querySelector('.sc_amt'); if(!amt) return;
+      var cell=tr.querySelector('.sc_moic');
+      if(inv&&inv.investment>0&&+amt.value>0){ cell.textContent=(INVEST.moic(inv.investment,+amt.value)).toFixed(2)+'배'; }
+      else cell.textContent='-';
+    });
+  }
+  function collectMembers(){
+    var rows=[];
+    for(var i=1;i<=7;i++){ var id='ic'+i;
+      var name=document.querySelector('.m_name[data-id="'+id+'"]').value.trim();
+      rows.push({ id:id, name:name, assigned:!!name,
+        present:document.querySelector('.m_present[data-id="'+id+'"]').checked,
+        recused:document.querySelector('.m_recused[data-id="'+id+'"]').checked,
+        score:+document.querySelector('.m_score[data-id="'+id+'"]').value||0,
+        vote:document.querySelector('.m_vote[data-id="'+id+'"]').value });
+    }
+    return rows;
+  }
+  function tally(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var members=collectMembers();
+    var cfg={ quorumPct:(+document.getElementById('quorum').value)/100, passPct:(+document.getElementById('passpct').value)/100 };
+    var t=SUB.tallyIC(members, cfg);
+    // 위원명부 저장(슬롯 매핑) — 싱글턴 icConfig 서버 동기화
+    SUB.DB.icConfig.quorumPct=cfg.quorumPct; SUB.DB.icConfig.passPct=cfg.passPct;
+    members.forEach(function(m){ if(m.name) SUB.DB.icConfig.members[m.id]=m.name; });
+    SUB.commitSingle('icConfig', SUB.DB.icConfig);
+    // 시나리오
+    var scen={};
+    document.querySelectorAll('.sc_amt').forEach(function(el){ var k=el.dataset.k; scen[k]={amount:+el.value||0,
+      year:+document.querySelector('.sc_yr[data-k="'+k+'"]').value||0,
+      moic:(SUB.DB.invest[cid]&&+el.value>0)?INVEST.moic(SUB.DB.invest[cid].investment,+el.value):0 }; });
+    var rec={ cid:cid, decidedAt:new Date().toISOString(), plan:document.getElementById('c_plan').value,
+      scenarios:scen, config:cfg, members:members, tally:t };
+    SUB.commit('ic', cid, rec);   // 로컬 즉시 + 서버 동기화
+    SUB.upsertCompany({ cid:cid, stage: t.passed?'심의가결':'심의' });
+    showResult(t);
+  }
+  function showResult(t){
+    var cls = !t.quorumMet?'r-non':(t.result==='가결'?'r-ok':(t.result==='조건부가결'?'r-cond':'r-bad'));
+    document.getElementById('result').innerHTML='<div class="result '+cls+'">'+
+      '<div class="verdict">'+t.result+'</div>'+
+      '<div class="tally">재적 '+t.registered+'명(제척 '+t.recused+') · 출석 '+t.present+'명(정족수 '+t.quorumNeed+') · '+
+      '찬성 '+t.forC+' · 조건부 '+t.conditionalC+' · 반대 '+t.againstC+' · 기권 '+t.abstainC+
+      ' · 가결선 '+t.threshold+' · 평균점수 '+t.avgScore.toFixed(1)+'점</div></div>';
+  }
+  document.getElementById('coSel').addEventListener('change', function(){ loadCo(this.value); });
+  document.querySelectorAll('.sc_amt').forEach(el=>el.addEventListener('input', recalcMoic));
+
+  fillPicker(); buildMembers();
+  if(SUB.getCID()) loadCo(SUB.getCID());
+</script>
+</body>
+</html>

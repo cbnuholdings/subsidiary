@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>② 기술이전 LOI · 자회사 설립 통합관리</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:960px; margin:0 auto; padding:18px 16px 70px; }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 12px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  .card h3{ font-size:13px; color:var(--brand-d); margin:16px 0 6px; }
+  label{ display:block; font-size:12px; color:#555; margin:9px 0 4px; }
+  input,select,textarea{ width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:13px; font-family:inherit; }
+  textarea{ min-height:64px; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; } @media(max-width:680px){ .row{ grid-template-columns:1fr; } }
+  .stub{ background:#fbf7ee; border:1px dashed #e3cf9e; border-radius:9px; padding:10px 12px; font-size:12px; color:#7a5908; margin-top:8px; }
+  .consent{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:14px 16px; margin-top:8px; }
+  .chk{ display:flex; align-items:center; gap:8px; font-size:13px; margin-top:8px; } .chk input{ width:auto; }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:11px 18px; font-size:14px; cursor:pointer; margin-top:14px; }
+  button:hover{ background:var(--brand-d); } button.ghost{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; } button:disabled{ background:#cbb9bf; cursor:not-allowed; }
+  .status-pill{ display:inline-block; font-size:12px; font-weight:700; padding:3px 11px; border-radius:20px; }
+  .s-talk{ background:#eef2f7; color:#3a5e8c; } .s-agree{ background:#fdf2e0; color:var(--warn); } .s-signed{ background:#e3f5ea; color:var(--ok); }
+  .muted{ color:#999; font-size:12px; } .empty{ text-align:center; color:#aa9; padding:40px; }
+  .note{ font-size:12px; color:#777; line-height:1.7; }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<div class="wrap">
+  <div class="card" id="picker">
+    <h2>② 기술이전 LOI (합의·실사)</h2>
+    <div class="note">충북대 출원기술의 사업화 합의 단계입니다. 권리자는 <b>산학협력단</b>이며, <b>실제 기술이전 계약은 자회사 설립과 병행</b>하여 체결합니다(딜레이 방지).</div>
+    <label>대상 기업 선택</label><select id="coSel"></select>
+  </div>
+
+  <div class="card" id="editor" style="display:none">
+    <h2 id="coTitle"></h2>
+
+    <h3>사업화 대상 기술 · 연구자 매칭</h3>
+    <div class="stub">🔗 <b>P2 연계 예정</b> — 충북대 기술 Notion DB(사업화 유망기술 풀)에서 선택, KIPRIS로 특허상태·발명자 자동 매칭. 현재는 수기 입력입니다.
+      <button class="ghost" style="margin-top:8px;padding:5px 10px;font-size:12px" disabled>충북대 기술 DB에서 선택(예정)</button></div>
+    <div class="row">
+      <div><label>대상 기술명 *</label><input id="techName"></div>
+      <div><label>특허/출원번호</label><input id="patentNo" placeholder="예: 10-2025-0123456"></div>
+    </div>
+    <div class="row">
+      <div><label>연구자(발명자)</label><input id="researcher"></div>
+      <div><label>기술분야</label><input id="field"></div>
+    </div>
+    <label>사업화 범위(라이선스/양도·적용분야)</label><textarea id="scope"></textarea>
+
+    <h3>산학협력단 기술이전 의향 동의 <span class="muted">(경량 동의 — 향후 본계약 수월화)</span></h3>
+    <div class="consent">
+      <div class="row">
+        <div><label>기술이전팀 담당(공유 계정 tlo)</label><input id="tloTeam" placeholder="충북대 산학협력단 기술이전팀"></div>
+        <div><label>동의 일시</label><input id="tloAt" readonly placeholder="동의 체크 시 자동 기록"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="tloConsent"><span>산학협력단은 위 기술의 <b>해당 기업으로의 기술이전 추진에 동의</b>합니다.</span></label>
+      <label>비고(범위·조건 등)</label><textarea id="tloMemo"></textarea>
+    </div>
+
+    <h3>LOI 진행 상태</h3>
+    <div class="row">
+      <div><label>상태</label>
+        <select id="status">
+          <option value="협의중">협의중</option>
+          <option value="합의">합의(LOI)</option>
+          <option value="계약체결">계약체결(설립 병행)</option>
+        </select></div>
+      <div><label>현재 상태</label><div id="statusView" style="margin-top:6px"></div></div>
+    </div>
+
+    <button onclick="saveLOI()">LOI 저장</button>
+    <button class="ghost" onclick="location.href='3_invest.html'+roleQ()">③ 출자로 →</button>
+    <span id="msg" class="muted"></span>
+  </div>
+</div>
+
+<script src="../common/invest.js"></script>
+<script src="../common/app.js"></script>
+<script src="../common/brand.js"></script>
+<script>
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(r=>r.json()).then(c=>SUB.setConfig(c)).catch(()=>{}); }
+  try{ BRAND.renderHeader('loi'); }catch(e){}
+  function roleQ(){ var r=SUB.getRole(); return (r&&r!=='admin')?('?role='+r):''; }
+
+  function fillPicker(){
+    var sel=document.getElementById('coSel'), cos=SUB.DB.companies;
+    sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(c=>'<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>').join('');
+    if(!cos.length) document.getElementById('picker').insertAdjacentHTML('beforeend','<div class="empty">신청 기업이 없습니다. 신청 접수 후 이용하세요.</div>');
+    var cur=SUB.getCID(); if(cur) sel.value=cur;
+  }
+  function statusPill(s){ var cls=s==='계약체결'?'s-signed':(s==='합의'?'s-agree':'s-talk');
+    return '<span class="status-pill '+cls+'">'+SUB.esc(s)+'</span>'; }
+  function loadCo(cid){
+    if(!cid){ document.getElementById('editor').style.display='none'; return; }
+    SUB.setCID(cid);
+    var co=null; SUB.DB.companies.forEach(c=>{ if(c.cid===cid) co=c; });
+    var ap=SUB.DB.applicants[cid];
+    document.getElementById('editor').style.display='';
+    document.getElementById('coTitle').textContent=(co?co.name:cid)+' — 기술이전 LOI';
+    var l=SUB.DB.loi[cid]||{};
+    document.getElementById('techName').value=l.techName||(ap?ap.techName:'')||'';
+    document.getElementById('patentNo').value=l.patentNo||'';
+    document.getElementById('researcher').value=l.researcher||'';
+    document.getElementById('field').value=l.field||(ap?ap.field:'')||'';
+    document.getElementById('scope').value=l.scope||'';
+    document.getElementById('tloTeam').value=l.tloTeam||'충북대학교 산학협력단 기술이전팀';
+    document.getElementById('tloMemo').value=l.tloMemo||'';
+    document.getElementById('tloConsent').checked=!!l.tloConsent;
+    document.getElementById('tloAt').value=l.tloAt||'';
+    document.getElementById('status').value=l.status||'협의중';
+    renderStatus();
+  }
+  function renderStatus(){ document.getElementById('statusView').innerHTML=statusPill(document.getElementById('status').value); }
+  document.getElementById('status') && document.getElementById('status');
+
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id==='tloConsent'){
+      document.getElementById('tloAt').value = e.target.checked ? new Date().toISOString() : '';
+    }
+    if(e.target && e.target.id==='status') renderStatus();
+    if(e.target && e.target.id==='coSel') loadCo(e.target.value);
+  });
+
+  function saveLOI(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var tech=document.getElementById('techName').value.trim();
+    if(!tech){ alert('대상 기술명을 입력하세요'); return; }
+    var status=document.getElementById('status').value;
+    var rec={ cid:cid, updatedAt:new Date().toISOString(),
+      techName:tech, patentNo:document.getElementById('patentNo').value.trim(),
+      researcher:document.getElementById('researcher').value.trim(), field:document.getElementById('field').value.trim(),
+      scope:document.getElementById('scope').value.trim(), status:status,
+      tloTeam:document.getElementById('tloTeam').value.trim(),
+      tloConsent:document.getElementById('tloConsent').checked,
+      tloAt:document.getElementById('tloAt').value, tloMemo:document.getElementById('tloMemo').value.trim() };
+    SUB.commit('loi', cid, rec);   // 로컬 즉시 + 서버 동기화
+    // 단계 갱신(신청→LOI, 그 이상 단계면 유지)
+    var co=SUB.DB.companies.find(c=>c.cid===cid)||{};
+    if(['신청','LOI',''].indexOf(co.stage||'신청')>=0) SUB.upsertCompany({cid:cid,stage:'LOI'});
+    document.getElementById('msg').textContent='LOI 저장됨 ✔ '+(document.getElementById('tloConsent').checked?'· 산학협력단 동의 기록':'· 동의 대기');
+  }
+
+  fillPicker();
+  if(SUB.getCID()) loadCo(SUB.getCID());
+</script>
+</body>
+</html>

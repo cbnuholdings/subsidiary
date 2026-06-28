@@ -1,0 +1,5 @@
+{
+  "apiUrl": "https://script.google.com/macros/s/AKfycbydgJPiJRFKxT3vCWxx0Bp42s64EvqAy7f9iiP76ZQC-l6T9xQhG-hGkAbzHDjOlJVS1w/exec",
+  "org": "충북대학교기술지주㈜",
+  "note": "라이브 서버모드 — GAS 웹앱 연동(구글시트 1차 + 노션 미러). 로컬 개발은 common/config.json(apiUrl 빈값) 사용."
+}

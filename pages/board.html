@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🧭 발굴 보드 · 자회사 설립 통합관리</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; --bad:#c0392b; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:1040px; margin:0 auto; padding:18px 16px 70px; }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 12px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  label{ display:block; font-size:12px; color:#555; margin:8px 0 4px; }
+  input,select,textarea{ width:100%; box-sizing:border-box; padding:8px 9px; border:1px solid #ccc; border-radius:7px; font-size:13px; font-family:inherit; }
+  .row{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; } @media(max-width:760px){ .row{ grid-template-columns:1fr 1fr; } }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:10px 16px; font-size:13px; cursor:pointer; margin-top:12px; }
+  button:hover{ background:var(--brand-d); } button.mini{ padding:4px 9px; font-size:11.5px; background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; margin:0; }
+  table.grid{ width:100%; border-collapse:collapse; font-size:12.5px; margin-top:10px; }
+  table.grid th,table.grid td{ border:1px solid #ecdfe3; padding:6px 8px; text-align:left; vertical-align:top; }
+  table.grid th{ background:#fbf1f4; color:var(--brand-d); text-align:center; white-space:nowrap; }
+  table.grid td input,table.grid td select{ padding:5px 6px; font-size:12px; }
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; white-space:nowrap; }
+  .b-conv{ background:#e3f5ea; color:var(--ok); } .b-lead{ background:#eef0f5; color:#5566; } .b-hold{ background:#fdf2e0; color:var(--warn); }
+  .muted{ color:#999; font-size:12px; } .empty{ text-align:center; color:#aa9; padding:34px; }
+  .kpi3{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:4px; }
+  .kpi{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:12px; text-align:center; }
+  .kpi b{ display:block; font-size:18px; color:var(--brand); } .kpi span{ font-size:11px; color:#888; }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<div class="wrap">
+  <div class="card">
+    <h2>🧭 발굴 잠재기업 등록</h2>
+    <div class="muted">미신청 잠재기업을 발굴 단계로 등록·관리합니다. 신청 접수 시 같은 기업(cid)으로 자동 연결되어 STEP1로 승격됩니다. (다년 시드 보존)</div>
+    <div class="row">
+      <div><label>회사명/팀명</label><input id="f_name"></div>
+      <div><label>대표/담당자</label><input id="f_ceo"></div>
+      <div><label>연락처</label><input id="f_tel"></div>
+      <div><label>이메일</label><input id="f_email"></div>
+    </div>
+    <div class="row">
+      <div><label>기반기술</label><input id="f_tech"></div>
+      <div><label>분야</label><input id="f_field"></div>
+      <div><label>발굴경로</label><input id="f_source" placeholder="추천/행사/IR/직접접촉"></div>
+      <div><label>사업자번호(있으면)</label><input id="f_bizno" placeholder="cid 자동연결용"></div>
+    </div>
+    <label>메모</label><textarea id="f_memo" rows="2"></textarea>
+    <button onclick="addLead()">발굴 등록</button>
+    <span class="muted" id="msg"></span>
+  </div>
+
+  <div class="card">
+    <h2>발굴 현황</h2>
+    <div class="kpi3" id="kpis"></div>
+    <table class="grid" id="tbl"></table>
+    <div class="muted" style="margin-top:8px">※ 상태: 발굴 → 접촉 → 신청유도 → 신청전환 → 보류. <b>신청전환</b>은 같은 cid의 신청건이 접수되면 자동 표시됩니다.</div>
+  </div>
+</div>
+
+<script src="../common/app.js"></script>
+<script src="../common/brand.js"></script>
+<script>
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(r=>r.json()).then(c=>SUB.setConfig(c)).catch(()=>{}); }
+  try{ BRAND.renderHeader('board'); }catch(e){}
+  var STATUSES=['발굴','접촉','신청유도','신청전환','보류'];
+  function esc(s){ return SUB.esc(s); }
+  function leadCID(biz,ceo){ return SUB.makeCID({ bizno:biz, ceoName:ceo }); }
+  // 같은 cid의 신청건 존재 여부(자동 전환 표시)
+  function applied(cid){ return cid && (!!SUB.DB.applicants[cid] || SUB.DB.companies.some(function(c){return c.cid===cid;})); }
+
+  function addLead(){
+    var name=document.getElementById('f_name').value.trim();
+    if(!name){ document.getElementById('msg').textContent='회사명을 입력하세요'; return; }
+    var ceo=document.getElementById('f_ceo').value.trim();
+    var biz=document.getElementById('f_bizno').value.trim();
+    var leadId='L'+Date.now().toString(36);
+    var rec={ leadId:leadId, cid:(biz||ceo)?leadCID(biz,ceo):'', name:name, ceo:ceo,
+      tel:document.getElementById('f_tel').value.trim(), email:document.getElementById('f_email').value.trim(),
+      techName:document.getElementById('f_tech').value.trim(), field:document.getElementById('f_field').value.trim(),
+      source:document.getElementById('f_source').value.trim(), bizno:biz,
+      memo:document.getElementById('f_memo').value.trim(), status:'발굴', createdAt:new Date().toISOString() };
+    SUB.commit('leads', leadId, rec);
+    ['f_name','f_ceo','f_tel','f_email','f_tech','f_field','f_source','f_bizno','f_memo'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('msg').textContent='등록됨 ✔';
+    render();
+  }
+  function setStatus(leadId,v){ var l=(SUB.DB.leads||[]).find(function(x){return x.leadId===leadId;}); if(l){ l.status=v; SUB.commit('leads',leadId,l); render(); } }
+  function delLead(leadId){ if(!confirm('이 발굴 건을 삭제할까요?'))return; SUB.commitDel('leads',leadId); render(); }
+  function copyApply(){
+    var url=location.href.replace(/board\.html.*$/,'1_apply.html');
+    try{ navigator.clipboard.writeText(url); document.getElementById('msg').textContent='신청 링크 복사됨: '+url; }
+    catch(e){ document.getElementById('msg').textContent='신청 링크: '+url; }
+  }
+
+  function render(){
+    var leads=(SUB.DB.leads||[]).slice().sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); });
+    // KPI
+    var conv=leads.filter(function(l){ return applied(l.cid)||l.status==='신청전환'; }).length;
+    document.getElementById('kpis').innerHTML=
+      '<div class="kpi"><b>'+leads.length+'</b><span>총 발굴</span></div>'+
+      '<div class="kpi"><b>'+leads.filter(function(l){return l.status==='접촉'||l.status==='신청유도';}).length+'</b><span>진행 중</span></div>'+
+      '<div class="kpi"><b>'+conv+'</b><span>신청 전환</span></div>'+
+      '<div class="kpi"><b>'+leads.filter(function(l){return l.status==='보류';}).length+'</b><span>보류(시드)</span></div>';
+    var tb=document.getElementById('tbl');
+    if(!leads.length){ tb.innerHTML='<tr><td class="empty">등록된 발굴 기업이 없습니다. 위에서 등록하세요. <button class="mini" onclick="copyApply()">공개 신청 링크 복사</button></td></tr>'; return; }
+    tb.innerHTML='<tr><th>회사명</th><th>대표</th><th>연락처</th><th>기반기술</th><th>경로</th><th>상태</th><th>전환</th><th></th></tr>'+
+      leads.map(function(l){
+        var conv=applied(l.cid);
+        var badge=conv?'<span class="badge b-conv">신청전환</span>':(l.status==='보류'?'<span class="badge b-hold">보류</span>':'<span class="badge b-lead">'+esc(l.status)+'</span>');
+        var sel='<select onchange="setStatus(\''+l.leadId+'\',this.value)">'+STATUSES.map(function(s){return '<option'+(s===l.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select>';
+        return '<tr><td><b>'+esc(l.name)+'</b>'+(l.memo?'<div class="muted">'+esc(l.memo)+'</div>':'')+'</td><td>'+esc(l.ceo||'-')+'</td><td>'+esc(l.tel||'-')+
+          '</td><td>'+esc(l.techName||'-')+(l.field?'<div class="muted">'+esc(l.field)+'</div>':'')+'</td><td>'+esc(l.source||'-')+'</td><td>'+sel+'</td><td>'+badge+
+          '</td><td><button class="mini" onclick="delLead(\''+l.leadId+'\')">삭제</button></td></tr>';
+      }).join('');
+  }
+  window.refresh=render;   // 폴링·동기화 시 자동 갱신
+  render();
+</script>
+</body>
+</html>

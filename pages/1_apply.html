@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>① 신청·제도이해 · 자회사 설립 통합관리</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; --bad:#c0392b; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  .wrap{ max-width:920px; margin:0 auto; padding:22px 16px 70px; }
+  .hero{ background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; border-radius:16px; padding:22px 26px; box-shadow:0 8px 24px rgba(176,28,80,.25); }
+  .hero h1{ margin:0 0 6px; font-size:21px; } .hero .sub{ opacity:.92; font-size:13px; line-height:1.6; }
+  .steps{ display:flex; gap:6px; margin:18px 0 10px; flex-wrap:wrap; }
+  .steps .s{ flex:1; min-width:120px; text-align:center; font-size:12px; padding:8px 6px; border-radius:9px; background:#efe6e9; color:#9a8a90; border:1px solid #e4d6db; }
+  .steps .s.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
+  .steps .s.done{ background:#fbeef3; color:var(--brand-d); }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 14px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  .card h3{ font-size:13px; color:var(--brand-d); margin:16px 0 6px; }
+  label{ display:block; font-size:12px; color:#555; margin:10px 0 4px; }
+  input,select,textarea{ width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; font-family:inherit; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; } @media(max-width:680px){ .row{ grid-template-columns:1fr; } }
+  .chk{ display:flex; align-items:flex-start; gap:9px; font-size:13px; padding:9px 11px; border:1px solid #e6dadf; border-radius:9px; margin-top:8px; background:#fcf8f9; cursor:pointer; }
+  .chk input{ width:auto; margin-top:2px; }
+  .note{ font-size:12px; color:#777; line-height:1.7; }
+  .benefit{ display:flex; gap:8px; margin-top:10px; } .benefit button{ flex:1; }
+  .tab{ background:#f3e8ec; color:var(--brand-d); border:1px solid #e4d0d8; border-radius:8px; padding:8px; font-size:13px; cursor:pointer; }
+  .tab.on{ background:var(--brand); color:#fff; border-color:var(--brand); }
+  .panel{ font-size:12.5px; color:#444; line-height:1.8; background:#fbf5f7; border:1px solid #f0e0e6; border-radius:9px; padding:14px 16px; margin-top:8px; }
+  .warnbox{ background:#fff7ec; border:1px solid #f0d9a8; color:#7a5908; border-radius:9px; padding:11px 13px; font-size:12px; line-height:1.7; margin-top:8px; }
+  .out{ margin-top:12px; font-size:13px; background:#fbf5f7; border:1px solid #f0e0e6; border-radius:9px; padding:12px 14px; }
+  .out table{ width:100%; border-collapse:collapse; } .out td{ padding:3px 4px; border-bottom:1px dashed #ecdfe3; } .out td:last-child{ text-align:right; font-weight:600; }
+  .nav{ display:flex; justify-content:space-between; margin-top:18px; }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:11px 20px; font-size:14px; cursor:pointer; }
+  button:hover{ background:var(--brand-d); } button.ghost{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; }
+  button:disabled{ background:#cbb9bf; cursor:not-allowed; }
+  .verdict{ font-weight:700; padding:3px 10px; border-radius:20px; font-size:12px; }
+  .v-ok{ background:#e3f5ea; color:var(--ok); } .v-warn{ background:#fdf2e0; color:var(--warn); } .v-bad{ background:#fbe7e4; color:var(--bad); }
+  .hidden{ display:none !important; }
+  .done-card{ text-align:center; padding:34px; }
+  .receipt{ font-size:26px; font-weight:800; color:var(--brand); letter-spacing:1px; margin:10px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>① 자회사 설립 신청 · 제도 이해</h1>
+    <div class="sub">충북대학교기술지주㈜ · 제도를 정확히 이해하신 뒤 신청하실 수 있습니다. 모든 응답은 증빙으로 기록됩니다.</div>
+  </div>
+
+  <div class="steps">
+    <div class="s on"  data-step="0">제도·혜택 이해</div>
+    <div class="s"     data-step="1">개인정보 동의</div>
+    <div class="s"     data-step="2">확인·자가진단</div>
+    <div class="s"     data-step="3">신청서 작성</div>
+    <div class="s"     data-step="4">제출 완료</div>
+  </div>
+
+  <!-- STEP 0 : 제도·혜택 이해 -->
+  <div class="card step" data-step="0">
+    <h2>자회사 설립 제도 안내</h2>
+    <div class="note">
+      충북대학교기술지주㈜는 대학 보유기술의 사업화를 위해 자회사를 설립·출자합니다. 절차는
+      <b>① 신청·제도이해 → ② 기술이전 LOI → ③ 출자 → ④ 컨설팅·투자심의 → 설립·관리</b> 순으로 진행됩니다.
+    </div>
+
+    <h3>출자(투자) 조건 — 신청 전 반드시 확인</h3>
+    <div class="panel">
+      • <b>기업가치(Value)</b> = 현재 <b>자본금 × 2배</b> (전 유형 동일)<br>
+      • <b>지주 지분</b> = 기본 <b>10%</b> (자회사 설립요건, 희망 시 그 이상 가능)<br>
+      • <b>주식 종류</b> — 교원 창업 = <b>보통주</b> / 학생·일반·외부기업 = <b>우선주(CPS)</b><br>
+      &nbsp;&nbsp;&nbsp;CPS 조건 = 청산우선권 1배 · 전환비율 1:1 · <b>무상환</b> · 우선배당 연 1%<br>
+      • <b>회수(EXIT) 장치</b> — 동반매도청구권 · 우선매수권 · 공동매도권 표준 적용, +바이백(최소 7년, 최대 10년)
+    </div>
+
+    <h3>설립 이후 혜택</h3>
+    <div class="benefit">
+      <button type="button" class="tab on" id="tabGrowth" onclick="benefit('growth')">① 기업성장지원</button>
+      <button type="button" class="tab" id="tabResearch" onclick="benefit('research')">② 제도적 혜택(연구소기업)</button>
+    </div>
+    <div class="panel" id="benefitGrowth"></div>
+    <div class="panel hidden" id="benefitResearch">
+      <b>연구소기업 제도</b> (연구개발특구진흥재단 운영) — 특구 내 공공연구기관 기술을 직접 사업화하는 기업으로 등록 시 세제 혜택을 받습니다.<br><br>
+      • <b>등록요건</b> : 공공연구기관 등이 <b>자본금의 일정비율 이상 출자</b> — 자본금 <u>10억 미만 20%</u> / <u>10~50억 10%</u> / <u>50억 이상 5%</u><br>
+      • <b>주요 혜택</b> : 법인세·소득세 <u>3년 100% + 2년 50% 감면</u>, 재산세·취득세 감면 등
+      <div class="warnbox">
+        ⚠️ <b>유의</b> : 지주 출자가 <b>10%</b> 이므로, <b>자본금 10억 미만</b> 자회사는 연구소기업 등록에 <b>20% 출자가 필요</b>해
+        10%만으로는 요건에 미달할 수 있습니다. 자본금 규모·추가출자 여부에 따라 충족 여부가 달라집니다.
+        본 안내는 <b>정보 제공용</b>이며 연구소기업 진행은 필수가 아닙니다. (구체 수치는 재단 공식 고시 기준)
+      </div>
+    </div>
+    <div class="nav"><span></span><button type="button" onclick="go(1)">동의 단계로 →</button></div>
+  </div>
+
+  <!-- STEP 1 : 개인정보 3종 동의 -->
+  <div class="card step hidden" data-step="1">
+    <h2>개인정보 수집·이용 동의</h2>
+    <div class="note">아래 3개 항목에 모두 동의하셔야 신청을 진행할 수 있습니다. 동의 일시가 증빙으로 기록됩니다.</div>
+    <label class="chk"><input type="checkbox" id="c1"><span><b>(필수) 개인정보 수집·이용</b> — 신청자 성명·연락처·이메일·소속·사업자정보를 신청 심사·연락 목적으로 수집·이용합니다.</span></label>
+    <label class="chk"><input type="checkbox" id="c2"><span><b>(필수) 제3자 제공 — 충북대학교 산학협력단</b> — 기술이전 협의를 위해 신청정보·대상기술을 산학협력단에 제공합니다.</span></label>
+    <label class="chk"><input type="checkbox" id="c3"><span><b>(필수) 민감정보 처리</b> — 예비창업자 식별을 위한 생년월일은 <b>해시 처리</b>되어 저장되며 원문은 보관하지 않습니다.</span></label>
+    <div class="nav"><button type="button" class="ghost" onclick="go(0)">← 이전</button><button type="button" id="btnConsent" disabled onclick="go(2)">동의하고 계속 →</button></div>
+  </div>
+
+  <!-- STEP 2 : 핵심 확인체크 + 적격성 자가진단 -->
+  <div class="card step hidden" data-step="2">
+    <h2>핵심사항 확인 · 적격성 자가진단</h2>
+    <h3>출자조건 이해 확인(항목별)</h3>
+    <label class="chk"><input type="checkbox" class="ck"><span>지주가 <b>지분 10%</b>를 인수함을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ck"><span>기업가치는 <b>자본금의 2배</b>로 산정됨을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ck"><span>창업유형에 따라 <b>보통주/우선주(CPS)</b>가 결정됨을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ck"><span>EXIT 장치(동반매도·우선매수·공동매도·바이백)가 적용됨을 이해했습니다.</span></label>
+
+    <h3>적격성 자가진단</h3>
+    <div class="row">
+      <div><label>교원(전임) 창업입니까?</label>
+        <select id="q_prof"><option value="">선택</option><option value="y">예(교원)</option><option value="n">아니오</option></select></div>
+      <div><label>충북대학교 보유·출원 기술 사업화입니까?</label>
+        <select id="q_tech"><option value="">선택</option><option value="y">예</option><option value="maybe">미정/검토중</option><option value="n">아니오</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>사업화 의지·준비 정도</label>
+        <select id="q_will"><option value="">선택</option><option value="high">강함(구체 계획)</option><option value="mid">보통</option><option value="low">약함(구상 단계)</option></select></div>
+      <div><label>진단 결과</label><div id="diag" class="out" style="margin-top:4px">선택 시 표시됩니다.</div></div>
+    </div>
+    <div class="nav"><button type="button" class="ghost" onclick="go(1)">← 이전</button><button type="button" id="btnDiag" disabled onclick="go(3)">신청서 작성 →</button></div>
+  </div>
+
+  <!-- STEP 3 : 신청서 -->
+  <div class="card step hidden" data-step="3">
+    <h2>신청서 작성</h2>
+    <div class="row">
+      <div><label>신청자(대표자) 성명 *</label><input id="f_ceo"></div>
+      <div><label>창업유형 *</label>
+        <select id="f_ftype">
+          <option value="professor">교원 창업 → 보통주</option>
+          <option value="student">학생 창업 → 우선주(CPS)</option>
+          <option value="general">일반 개인 창업 → 우선주(CPS)</option>
+          <option value="external" selected>외부 기업 → 우선주(CPS)</option>
+        </select></div>
+    </div>
+    <div class="row">
+      <div><label>소속/회사명</label><input id="f_org"></div>
+      <div><label>연락처 *</label><input id="f_tel" placeholder="010-0000-0000"></div>
+    </div>
+    <div class="row">
+      <div><label>이메일 *</label><input id="f_email" type="email"></div>
+      <div><label>사업자등록번호(기창업 시)</label><input id="f_bizno" placeholder="없으면 비워두세요(예비창업)"></div>
+    </div>
+    <div class="row">
+      <div><label>생년월일(예비창업자 식별용·해시저장)</label><input id="f_birth" type="date"></div>
+      <div><label>기술분야</label><input id="f_field" placeholder="예: 바이오·소재·ICT"></div>
+    </div>
+    <label>사업화 대상 기술명 *</label><input id="f_tech">
+    <h3>예상 출자조건(자동 계산)</h3>
+    <div class="row">
+      <div><label>자본금(원)</label><input id="f_cap" type="number" value="30000000"></div>
+      <div><label>액면가(원)</label><input id="f_par" type="number" value="1000"></div>
+    </div>
+    <label>희망 지분율(%) · 기본 10%(이상 가능)</label><input id="f_pct" type="number" value="10" step="0.1">
+    <div class="out" id="f_calc"></div>
+
+    <h3>⚡ Express 패스트트랙 (선택) — 즉시 설립 검토</h3>
+    <div class="note">충북대 산학협력단과 <b>기술이전계약</b>이 체결되었고 <b>지분 투자방식에 동의</b>하셨으며 아래 필수 서류가 있으면, LOI·출자 협의를 생략하고 <b>바로 투자심의</b>로 진행할 수 있습니다(담당자 서류 확인 후 승인).</div>
+    <label class="chk"><input type="checkbox" id="ex_toggle"><span>Express로 신청하겠습니다 (아래 동의·서류 필요)</span></label>
+    <div id="exBox" class="hidden">
+      <label class="chk"><input type="checkbox" id="ex_tt"><span>충북대학교 산학협력단과 <b>기술이전계약 체결 완료</b></span></label>
+      <label class="chk"><input type="checkbox" id="ex_inv"><span><b>지분 투자방식(2배 밸류·지분·주식종류)에 동의</b> 완료</span></label>
+      <label>필수 별첨 — 사업자등록증 *</label><input type="file" id="ex_f1">
+      <label>필수 별첨 — 기업 소개자료 *</label><input type="file" id="ex_f2">
+      <label>필수 별첨 — 이전기술 사업화 계획서 *</label><input type="file" id="ex_f3">
+      <label>기술이전계약서 (권장 첨부)</label><input type="file" id="ex_f4">
+    </div>
+
+    <div class="nav"><button type="button" class="ghost" onclick="go(2)">← 이전</button><button type="button" onclick="submitApp()">신청 제출</button></div>
+  </div>
+
+  <!-- STEP 4 : 완료 -->
+  <div class="card step hidden done-card" data-step="4">
+    <h2 style="border:0">신청이 접수되었습니다</h2>
+    <div class="note">접수번호를 보관해 주세요. 진행 상황은 담당자가 검토 후 안내드립니다.</div>
+    <div class="receipt" id="receipt"></div>
+    <div id="doneSummary" class="out" style="text-align:left"></div>
+  </div>
+</div>
+
+<script src="../common/invest.js"></script>
+<script src="../common/app.js"></script>
+<script>
+  // config (fetch 미지원 환경 방어)
+  if(typeof fetch!=='undefined'){ fetch('../common/config.json').then(function(r){return r.json();}).then(function(c){ SUB.setConfig(c); }).catch(function(){}); }
+
+  var state = { step:0, eligibility:'', diag:{} };
+
+  // ----- 혜택 탭 -----
+  function benefit(which){
+    document.getElementById('tabGrowth').classList.toggle('on', which==='growth');
+    document.getElementById('tabResearch').classList.toggle('on', which==='research');
+    document.getElementById('benefitGrowth').classList.toggle('hidden', which!=='growth');
+    document.getElementById('benefitResearch').classList.toggle('hidden', which!=='research');
+  }
+  (function initGrowth(){
+    var g = (SUB.DB.benefits && SUB.DB.benefits.growth) ? SUB.DB.benefits.growth :
+      '자회사 성장지원 프로그램은 매년 지주회사 운영방향에 따라 구성됩니다. (예: 후속투자 연계, 정부과제 매칭, 멘토링·IR 고도화, 공간·바우처 등) — 구체 내용은 관리자가 연도별로 갱신합니다.';
+    document.getElementById('benefitGrowth').textContent = g;
+  })();
+
+  // ----- 스텝 이동 -----
+  function go(n){
+    state.step = n;
+    document.querySelectorAll('.step').forEach(function(el){ el.classList.toggle('hidden', +el.dataset.step!==n); });
+    document.querySelectorAll('.steps .s').forEach(function(el){
+      var s=+el.dataset.step; el.classList.toggle('on', s===n); el.classList.toggle('done', s<n);
+    });
+    window.scrollTo(0,0);
+    if(n===3) recalc();
+  }
+
+  // ----- 동의 게이트 -----
+  ['c1','c2','c3'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', function(){
+      var all = document.getElementById('c1').checked && document.getElementById('c2').checked && document.getElementById('c3').checked;
+      document.getElementById('btnConsent').disabled = !all;
+    });
+  });
+
+  // ----- 확인체크 + 자가진단 게이트 -----
+  function checkGate(){
+    var allCk = Array.prototype.every.call(document.querySelectorAll('.ck'), function(c){ return c.checked; });
+    var prof=val('q_prof'), tech=val('q_tech'), will=val('q_will');
+    var diagFilled = prof && tech && will;
+    // 적격성 판정(부적격도 신청 허용=시드 확보, 단 결과 안내)
+    var v='', cls='', txt='';
+    if(diagFilled){
+      if(tech==='y' && will!=='low'){ v='적격'; cls='v-ok'; txt='충북대 기술 사업화 + 사업화 의지 충족.'; }
+      else if(tech==='n'){ v='부적격'; cls='v-bad'; txt='자회사는 대학 보유기술 사업화가 요건입니다. 정보성 신청은 가능하나 검토에서 제외될 수 있습니다.'; }
+      else { v='검토필요'; cls='v-warn'; txt='기술 연계/의지 보완이 필요합니다. 신청은 가능하며 담당자 상담을 권장합니다.'; }
+      state.eligibility=v; state.diag={prof:prof,tech:tech,will:will};
+      document.getElementById('diag').innerHTML='<span class="verdict '+cls+'">'+v+'</span><div class="note" style="margin-top:6px">'+txt+'</div>';
+    }
+    document.getElementById('btnDiag').disabled = !(allCk && diagFilled);
+  }
+  document.querySelectorAll('.ck').forEach(function(c){ c.addEventListener('change', checkGate); });
+  ['q_prof','q_tech','q_will'].forEach(function(id){ document.getElementById(id).addEventListener('change', function(){
+    // 교원 자가응답 → 창업유형 기본값 힌트
+    if(id==='q_prof'){ var f=document.getElementById('f_ftype'); if(val('q_prof')==='y') f.value='professor'; }
+    checkGate();
+  }); });
+
+  // ----- 계산기 -----
+  function val(id){ return document.getElementById(id).value; }
+  function won(n){ return Math.round(n).toLocaleString('ko-KR')+'원'; }
+  function recalc(){
+    var r=INVEST.compute({ capital:+val('f_cap'), par:+val('f_par'), equityPct:(+val('f_pct'))/100, founderType:val('f_ftype') });
+    document.getElementById('f_calc').innerHTML='<table>'+
+      '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+      '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+      '<tr><td>신주 발행수</td><td>'+r.newShares.toLocaleString()+'주</td></tr>'+
+      '<tr><td>투자금</td><td>'+won(r.investment)+'</td></tr>'+
+      '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+      '<tr><td>투자후 가치</td><td>'+won(r.postMoney)+'</td></tr>'+
+      '<tr><td>실제 지분율</td><td>'+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+      (r.cps?'<tr><td>CPS 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+'</table>';
+  }
+  ['f_ftype','f_cap','f_par','f_pct'].forEach(function(id){ document.getElementById(id).addEventListener('input', recalc); });
+
+  // ----- 파일 → base64 -----
+  function readFile(input){
+    return new Promise(function(res){
+      var f=input.files[0]; if(!f){ res(null); return; }
+      var fr=new FileReader();
+      fr.onload=function(){ var s=String(fr.result); var b64=s.indexOf(',')>=0?s.split(',')[1]:s; res({name:f.name, mime:f.type||'application/octet-stream', b64:b64}); };
+      fr.onerror=function(){ res(null); };
+      fr.readAsDataURL(f);
+    });
+  }
+  // ----- Express 토글 -----
+  document.getElementById('ex_toggle').addEventListener('change', function(){
+    document.getElementById('exBox').classList.toggle('hidden', !this.checked);
+  });
+
+  // ----- 제출 -----
+  function submitApp(){
+    var ceo=val('f_ceo').trim(), email=val('f_email').trim(), tel=val('f_tel').trim(), tech=val('f_tech').trim();
+    if(!ceo||!email||!tel||!tech){ alert('필수 항목(성명·연락처·이메일·대상기술)을 입력해 주세요.'); return; }
+    if(document.getElementById('ex_toggle').checked){
+      var tt=document.getElementById('ex_tt').checked, inv=document.getElementById('ex_inv').checked;
+      var f1=document.getElementById('ex_f1').files[0], f2=document.getElementById('ex_f2').files[0], f3=document.getElementById('ex_f3').files[0];
+      if(!(tt&&inv&&f1&&f2&&f3)){ alert('Express 신청에는 2개 동의 + 필수서류 3종(사업자등록증·기업소개·사업화계획서)이 필요합니다.'); return; }
+      var labels=['사업자등록증','기업소개자료','사업화계획서','기술이전계약서'];
+      Promise.all(['ex_f1','ex_f2','ex_f3','ex_f4'].map(function(id){ return readFile(document.getElementById(id)); }))
+        .then(function(files){
+          var labeled=files.map(function(f,i){ return f?Object.assign({label:labels[i]},f):null; }).filter(Boolean);
+          finalize({ express:true, expressFlags:{ techTransferSigned:true, investAgreed:true }, files:labeled });
+        });
+    } else { finalize({ express:false, files:[] }); }
+  }
+  function finalize(extra){
+    var ceo=val('f_ceo').trim(), email=val('f_email').trim(), tel=val('f_tel').trim(), tech=val('f_tech').trim();
+    var bizno=val('f_bizno').trim(), birth=val('f_birth');
+    var cid = SUB.makeCID({ bizno:bizno, ceoName:ceo, birth:birth });
+    var year = new Date().getFullYear();
+    var seq = (Object.keys(SUB.DB.applicants).length)+1;
+    var appId = SUB.makeAppId(cid, year, seq);
+    var calc = INVEST.compute({ capital:+val('f_cap'), par:+val('f_par'), equityPct:(+val('f_pct'))/100, founderType:val('f_ftype') });
+
+    SUB.upsertCompany({ cid:cid, name:val('f_org').trim()||ceo+' 신청건', ceo:ceo, type:val('f_ftype'), bizno:bizno, year:year, stage:'신청', express:!!extra.express });
+
+    var prev = SUB.DB.applicants[cid] || { history:[] };
+    var rec = {
+      cid:cid, appId:appId, year:year, submittedAt:new Date().toISOString(),
+      ceo:ceo, org:val('f_org').trim(), tel:tel, email:email,
+      founderType:val('f_ftype'), techName:tech, field:val('f_field').trim(),
+      hasBizno:!!bizno,
+      invest:{ capital:+val('f_cap'), par:+val('f_par'), equityPct:(+val('f_pct'))/100,
+               stockType:calc.stockType, investment:calc.investment, newShares:calc.newShares, postMoney:calc.postMoney },
+      // ── 증빙 기록 ──
+      consent:{ collect:true, thirdParty:true, sensitive:true, at:new Date().toISOString() },
+      checks:Array.prototype.map.call(document.querySelectorAll('.ck'), function(c){ return c.checked; }),
+      selfDiag:state.diag, eligibility:state.eligibility,
+      express:!!extra.express, expressFlags:extra.expressFlags||null, files:extra.files||[],
+      history: prev.history || []
+    };
+    rec.history.push({ year:year, appId:appId, at:rec.submittedAt, eligibility:state.eligibility, express:!!extra.express });
+    SUB.DB.applicants[cid]=rec; SUB.save();
+    // 서버 연동(apiUrl 설정 시): Sheet+Notion 발굴보드+Gmail+Drive(파일). 로컬은 이미 저장(낙관적).
+    try{ SUB.submitApplication(rec); }catch(e){}
+
+    document.getElementById('receipt').textContent=appId;
+    document.getElementById('doneSummary').innerHTML=
+      '<table><tr><td>기업ID(cid)</td><td>'+SUB.esc(cid)+'</td></tr>'+
+      '<tr><td>대표자</td><td>'+SUB.esc(ceo)+'</td></tr>'+
+      '<tr><td>창업유형</td><td>'+calc.founderLabel+' · '+calc.stockLabel+'</td></tr>'+
+      '<tr><td>대상기술</td><td>'+SUB.esc(tech)+'</td></tr>'+
+      '<tr><td>적격성 자가진단</td><td>'+(state.eligibility||'-')+'</td></tr>'+
+      (rec.express?'<tr><td>Express</td><td>⚡ 후보(서류 '+rec.files.length+'종 첨부) — 담당자 확인 후 진행</td></tr>':'')+
+      '<tr><td>예상 투자금</td><td>'+won(calc.investment)+'</td></tr></table>';
+    go(4);
+  }
+  benefit('growth'); recalc();
+</script>
+</body>
+</html>
