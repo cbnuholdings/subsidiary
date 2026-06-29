@@ -301,8 +301,7 @@
     var bizno=val('f_bizno').trim(), birth=val('f_birth');
     var cid = SUB.makeCID({ bizno:bizno, ceoName:ceo, birth:birth });
     var year = new Date().getFullYear();
-    var seq = (Object.keys(SUB.DB.applicants).length)+1;
-    var appId = SUB.makeAppId(cid, year, seq);
+    var appId = SUB.assignAppIdLocal(cid, ceo);   // 로컬 채번(서버모드는 GAS가 권위 채번 후 반환)
     var calc = INVEST.compute({ capital:+val('f_cap'), par:+val('f_par'), equityPct:(+val('f_pct'))/100, founderType:val('f_ftype') });
 
     SUB.upsertCompany({ cid:cid, name:val('f_org').trim()||ceo+' 신청건', ceo:ceo, type:val('f_ftype'), bizno:bizno, year:year, stage:'신청', express:!!extra.express });
@@ -323,20 +322,31 @@
       history: prev.history || []
     };
     rec.history.push({ year:year, appId:appId, at:rec.submittedAt, eligibility:state.eligibility, express:!!extra.express });
+    rec.locked = true;   // 제출 후 잠금(관리자 unlock 시에만 수정)
     SUB.DB.applicants[cid]=rec; SUB.save();
-    // 서버 연동(apiUrl 설정 시): Sheet+Notion 발굴보드+Gmail+Drive(파일). 로컬은 이미 저장(낙관적).
-    try{ SUB.submitApplication(rec); }catch(e){}
 
-    document.getElementById('receipt').textContent=appId;
-    document.getElementById('doneSummary').innerHTML=
-      '<table><tr><td>기업ID(cid)</td><td>'+SUB.esc(cid)+'</td></tr>'+
-      '<tr><td>대표자</td><td>'+SUB.esc(ceo)+'</td></tr>'+
-      '<tr><td>창업유형</td><td>'+calc.founderLabel+' · '+calc.stockLabel+'</td></tr>'+
-      '<tr><td>대상기술</td><td>'+SUB.esc(tech)+'</td></tr>'+
-      '<tr><td>적격성 자가진단</td><td>'+(state.eligibility||'-')+'</td></tr>'+
-      (rec.express?'<tr><td>Express</td><td>⚡ 후보(서류 '+rec.files.length+'종 첨부) — 담당자 확인 후 진행</td></tr>':'')+
-      '<tr><td>예상 투자금</td><td>'+won(calc.investment)+'</td></tr></table>';
-    go(4);
+    function showReceipt(finalId){
+      var tail = SUB.digits(tel).slice(-4);
+      document.getElementById('receipt').textContent=finalId;
+      document.getElementById('doneSummary').innerHTML=
+        '<table><tr><td>접수번호</td><td><b>'+SUB.esc(finalId)+'</b></td></tr>'+
+        '<tr><td>대표자</td><td>'+SUB.esc(ceo)+'</td></tr>'+
+        '<tr><td>창업유형</td><td>'+calc.founderLabel+' · '+calc.stockLabel+'</td></tr>'+
+        '<tr><td>대상기술</td><td>'+SUB.esc(tech)+'</td></tr>'+
+        '<tr><td>적격성 자가진단</td><td>'+(state.eligibility||'-')+'</td></tr>'+
+        (rec.express?'<tr><td>Express</td><td>⚡ 후보(서류 '+rec.files.length+'종 첨부) — 담당자 확인 후 진행</td></tr>':'')+
+        '<tr><td>예상 투자금</td><td>'+won(calc.investment)+'</td></tr></table>'+
+        '<div style="margin-top:10px;padding:10px 12px;background:#fbf5f7;border:1px solid #f0e0e6;border-radius:9px;font-size:12.5px">'+
+        '📌 진행 상황은 <b>접수번호</b> + <b>연락처 뒷 4자리('+SUB.esc(tail)+')</b>로 조회할 수 있습니다. 접수번호를 보관하세요.</div>';
+      go(4);
+    }
+    // 서버모드: GAS가 접수번호 권위 채번 → 응답값으로 갱신. 로컬: 즉시.
+    if(SUB.serverOn()){
+      SUB.submitApplication(rec).then(function(res){
+        if(res && res.ok && res.appId){ rec.appId=res.appId; SUB.DB.applicants[cid]=rec; SUB.save(); }
+        showReceipt(rec.appId);
+      }).catch(function(){ showReceipt(appId); });
+    } else { showReceipt(appId); }
   }
   benefit('growth'); recalc();
 </script>

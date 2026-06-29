@@ -75,7 +75,13 @@
 
   <!-- 변수·심의위원 -->
   <div class="card sec hidden" data-s="vars">
-    <h2>IC 의결 변수 · 심의위원 7슬롯</h2>
+    <h2>모집 차수</h2>
+    <div class="row3">
+      <div><label>현재 모집 차수</label><input id="v_round" type="number" min="1"></div>
+      <div><label class="muted" style="margin-top:26px">접수번호 = 유형+차수_대표자_순번 (예: P1_홍길동_001). 차수 변경 시 순번 001부터.</label></div>
+      <div><button class="act" onclick="saveRound()" style="margin-top:18px">차수 저장</button> <span id="roundMsg" class="muted"></span></div>
+    </div>
+    <h2 style="margin-top:18px">IC 의결 변수 · 심의위원 7슬롯</h2>
     <div class="row3">
       <div><label>재적 정족수 기준(%)</label><input id="v_quorum" type="number"></div>
       <div><label>가결 기준(%) · 과반=50</label><input id="v_pass" type="number"></div>
@@ -122,6 +128,10 @@
     <table class="grid" id="acctTbl"><tr><th>아이디</th><th>역할</th><th>표시명</th><th>상태</th><th>새 비밀번호</th><th></th></tr></table>
     <button class="act" onclick="saveAccts()">비밀번호 변경 저장</button>
     <span id="acctMsg" class="muted"></span>
+
+    <h3 style="font-size:13px;color:var(--brand-d);margin:18px 0 6px">🎯 외부 심의위원·컨설턴트 자회사 배당</h3>
+    <div class="muted">외부(심의위원·컨설턴트)는 배당된 자회사만 열람·심의할 수 있습니다. Ctrl/Shift로 복수 선택, 선택 해제 시 배당 취소.</div>
+    <div id="assignBox"></div>
   </div>
 </div>
 
@@ -174,9 +184,19 @@
     html+='<label>단계 수동 변경</label><select id="stageSel" style="max-width:200px" onchange="setStage(\''+cid+'\',this.value)">'+
       STAGES.concat(['보류']).map(s=>'<option'+((co.stage||'신청')===s?' selected':'')+'>'+s+'</option>').join('')+'</select>';
     html+=actionsPanel(co, ap, cid);
+    // 신청 수정 unlock + 버전 이력
+    if(ap){
+      var locked = ap.locked!==false;
+      html+='<div style="margin-top:10px;padding:10px 12px;background:#fbf7ee;border:1px solid #e3cf9e;border-radius:9px;font-size:12.5px">'+
+        '📝 신청 수정: <b>'+(locked?'잠금':'수정 허용됨(신청자 1회 수정 가능)')+'</b> '+
+        (locked?'<button class="mini" onclick="doUnlock(\''+cid+'\')">수정 허용(unlock)</button>':'<span class="muted">신청자가 조회 화면에서 수정 후 자동 재잠금됩니다.</span>')+
+        ((ap.history&&ap.history.length)?'<div class="muted" style="margin-top:6px">수정 이력 '+ap.history.length+'건'+(ap.editedAt?(' · 최근 '+ap.editedAt.slice(0,10)):'')+'</div>':'')+
+        '</div>';
+    }
     html+='<div class="tl">'+(ev.length?ev.map(e=>'<div class="ev"><div class="t">'+(e[1]?e[1].slice(0,10):'')+' · '+e[0]+'</div><div class="d">'+e[2]+'</div></div>').join(''):'<div class="muted">기록 없음</div>')+'</div>';
     document.getElementById('coView').innerHTML=html;
   }
+  function doUnlock(cid){ var r=SUB.unlockApplicant(cid); if(r.ok){ alert('수정 허용됨. 신청자가 조회 화면에서 1회 수정할 수 있습니다.'); renderCo(cid); } else alert('불가: '+(r.error||'')); }
   function setStage(cid,s){ SUB.upsertCompany({cid:cid,stage:s}); SUB.save(); renderCo(cid); }
   function actionsPanel(co, ap, cid){
     var h='<div style="margin-top:12px;padding:12px 14px;border:1px solid #ecdfe3;border-radius:9px;background:#fbf5f7">';
@@ -214,7 +234,14 @@
   function toggleCarry(cid,v){ SUB.upsertCompany({cid:cid,carryover:v}); SUB.save(); }
 
   // 변수·심의위원
+  function saveRound(){
+    var r=Math.max(1, parseInt(document.getElementById('v_round').value,10)||1);
+    SUB.DB.roundCfg=SUB.DB.roundCfg||{round:1}; SUB.DB.roundCfg.round=r;
+    SUB.commitSingle('roundCfg', SUB.DB.roundCfg);
+    document.getElementById('roundMsg').textContent='차수 '+r+' 저장됨 ✔';
+  }
   function renderVars(){
+    document.getElementById('v_round').value=(SUB.DB.roundCfg&&SUB.DB.roundCfg.round)||1;
     document.getElementById('v_quorum').value=Math.round((SUB.DB.icConfig.quorumPct||0.5)*100);
     document.getElementById('v_pass').value=Math.round((SUB.DB.icConfig.passPct||0.5)*100);
     var mem=SUB.DB.icConfig.members||{};
@@ -247,7 +274,29 @@
     if(a.expireAt) return '<span style="color:var(--warn)">~'+a.expireAt+'</span>';
     return '<span class="ok">활성</span>';
   }
+  function renderAssign(){
+    var box=document.getElementById('assignBox'); if(!box) return;
+    var ext=Object.keys(SUB.DB.accounts).filter(function(id){ var r=SUB.DB.accounts[id].role; return r==='ic'||r==='consultant'; });
+    var cos=SUB.DB.companies;
+    if(!ext.length){ box.innerHTML='<div class="muted" style="margin-top:6px">발급된 외부 계정이 없습니다.</div>'; return; }
+    if(!cos.length){ box.innerHTML='<div class="muted" style="margin-top:6px">배당할 자회사(기업)가 없습니다.</div>'; return; }
+    box.innerHTML=ext.map(function(id){ var a=SUB.DB.accounts[id]; var sc=(a.scope&&a.scope.cids)||[];
+      var opts=cos.map(function(c){ return '<option value="'+c.cid+'"'+(sc.indexOf(c.cid)>=0?' selected':'')+'>'+esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+      return '<div style="margin-top:10px;display:flex;gap:8px;align-items:flex-start">'+
+        '<div style="min-width:150px"><b>'+id+'</b> <span class="muted">'+(SUB.ROLES[a.role]?SUB.ROLES[a.role].label:a.role)+'</span><br><span class="muted">'+esc(a.name||'')+'</span></div>'+
+        '<select multiple size="4" class="assignSel" data-id="'+id+'" style="flex:1;min-height:80px">'+opts+'</select>'+
+        '<button class="mini" onclick="saveAssign(\''+id+'\')">배당 저장</button></div>';
+    }).join('');
+  }
+  function saveAssign(id){
+    var sel=document.querySelector('.assignSel[data-id="'+id+'"]'); if(!sel) return;
+    var cids=Array.prototype.filter.call(sel.options,function(o){return o.selected;}).map(function(o){return o.value;});
+    var a=SUB.DB.accounts[id]; a.scope=a.scope||{}; a.scope.cids=cids;
+    SUB.commit('accounts', id, a);
+    document.getElementById('acctMsg').textContent=id+' 배당 '+cids.length+'건 저장됨 ✔';
+  }
   function renderAcct(){
+    renderAssign();
     var acc=SUB.DB.accounts, tb=document.getElementById('acctTbl');
     tb.innerHTML='<tr><th>아이디</th><th>역할</th><th>표시명</th><th>상태</th><th>새 비밀번호</th><th></th></tr>';
     Object.keys(acc).forEach(function(id){ var a=acc[id];

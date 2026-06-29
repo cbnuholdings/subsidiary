@@ -45,9 +45,9 @@
 
   <div id="body" style="display:none">
     <!-- 컨설팅 초안 -->
-    <div class="card">
+    <div class="card" id="consultCard">
       <h2 id="coTitle"></h2>
-      <div class="draft">🤖 자동초안 — 신청·LOI·출자 데이터로 설립계획·성장전략·EXIT 3시나리오 초안을 생성합니다. 컨설턴트가 보완하고, 외부 전문기업·멘토 자료는 첨부로 보강합니다. (서버 연동 시 멀티에이전트 초안으로 대체 가능)
+      <div class="draft" id="draftBox">🤖 자동초안 — 신청·LOI·출자 데이터로 설립계획·성장전략·EXIT 3시나리오 초안을 생성합니다. 컨설턴트가 보완하고, 외부 전문기업·멘토 자료는 첨부로 보강합니다. (서버 연동 시 멀티에이전트 초안으로 대체 가능)
         <button class="ghost" style="margin-top:8px;padding:6px 12px;font-size:12px" onclick="genDraft()">🤖 자동초안 생성</button></div>
       <h3>설립계획·성장전략 요약</h3>
       <textarea id="c_plan" placeholder="사업화 계획·시장·팀·마일스톤·KPI 요약"></textarea>
@@ -59,10 +59,12 @@
         <tr><td>바이백</td><td><input type="number" class="sc_amt" data-k="buy"></td><td><input type="number" class="sc_yr" data-k="buy" value="10"></td><td class="sc_moic">-</td></tr>
       </table>
       <div class="muted" id="investNote"></div>
+      <button id="btnConsult" style="display:none" onclick="saveConsult()">자문(설립계획·시나리오) 저장</button>
+      <span class="muted" id="consultMsg"></span>
     </div>
 
     <!-- IC 심의 -->
-    <div class="card">
+    <div class="card" id="icCard">
       <h2>투자심의위원회 의결</h2>
       <div class="row3">
         <div><label>재적 정족수 기준(%)</label><input id="quorum" type="number" value="50"></div>
@@ -77,9 +79,10 @@
         <tr><th>슬롯</th><th>위원명</th><th>출석</th><th>제척<br>(이해상충)</th><th>점수<br>(0~100)</th><th>의결</th></tr>
       </table>
       </div>
-      <button onclick="tally()">의결 집계·저장</button>
-      <button class="ghost" onclick="makeReviewPDF()">📑 심의자료 PDF</button>
-      <button class="ghost" onclick="makeDecisionPDF()">📄 의결서 PDF</button>
+      <button id="btnTally" onclick="tally()">의결 집계·저장</button>
+      <button id="btnMyVote" style="display:none" onclick="saveMyVote()">내 의결 저장</button>
+      <button class="ghost" id="btnReviewPdf" onclick="makeReviewPDF()">📑 심의자료 PDF</button>
+      <button class="ghost" id="btnDecisionPdf" onclick="makeDecisionPDF()">📄 의결서 PDF</button>
       <div id="result"></div>
     </div>
   </div>
@@ -146,7 +149,19 @@
     if(prev){ document.getElementById('c_plan').value=prev.plan||'';
       if(prev.scenarios){ document.querySelectorAll('.sc_amt').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s){ el.value=s.amount; } });
         document.querySelectorAll('.sc_yr').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s){ el.value=s.year; } }); } }
+    // 정족수·가결 기준 복원
+    if(SUB.DB.icConfig){ document.getElementById('quorum').value=Math.round((SUB.DB.icConfig.quorumPct||0.5)*100); document.getElementById('passpct').value=Math.round((SUB.DB.icConfig.passPct||0.5)*100); }
+    // 위원 행을 ic_votes(위원별 권위 저장)에서 복원
+    var slots=(SUB.DB.icConfig&&SUB.DB.icConfig.members)||{};
+    for(var i=1;i<=7;i++){ var id='ic'+i; var v=(SUB.DB.ic_votes||{})[cid+'__'+id]||{};
+      var nm=document.querySelector('.m_name[data-id="'+id+'"]'); if(nm) nm.value=slots[id]||'';
+      var pr=document.querySelector('.m_present[data-id="'+id+'"]'); if(pr) pr.checked=!!v.present;
+      var rc=document.querySelector('.m_recused[data-id="'+id+'"]'); if(rc) rc.checked=!!v.recused;
+      var sc=document.querySelector('.m_score[data-id="'+id+'"]'); if(sc) sc.value=v.score||'';
+      var vt=document.querySelector('.m_vote[data-id="'+id+'"]'); if(vt&&v.vote) vt.value=v.vote;
+    }
     recalcMoic();
+    applyRoleView();
   }
   function genDraft(){
     var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
@@ -197,9 +212,52 @@
       moic:(SUB.DB.invest[cid]&&+el.value>0)?INVEST.moic(SUB.DB.invest[cid].investment,+el.value):0 }; });
     var rec={ cid:cid, decidedAt:new Date().toISOString(), plan:document.getElementById('c_plan').value,
       scenarios:scen, config:cfg, members:members, tally:t };
-    SUB.commit('ic', cid, rec);   // 로컬 즉시 + 서버 동기화
+    SUB.commit('ic', cid, rec);   // ic[cid] 메타+스냅샷+집계
+    // 위원별 ic_votes 동기화(동시투표 모델의 권위 저장소)
+    members.forEach(function(m){ SUB.commit('ic_votes', cid+'__'+m.id, { cid:cid, voter:m.id, name:m.name,
+      present:m.present, recused:m.recused, vote:m.vote, score:m.score }); });
     SUB.upsertCompany({ cid:cid, stage: t.passed?'심의가결':'심의' });
     showResult(t);
+  }
+  // 심의위원 본인 의결만 저장(ic_votes[cid__본인]) — ic[cid] 메타·집계는 미변경(클로버 방지)
+  function saveMyVote(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var id=SUB.session().id; if(!id){ alert('로그인 정보가 없습니다'); return; }
+    var sel=function(c){ return document.querySelector('.'+c+'[data-id="'+id+'"]'); };
+    if(!sel('m_vote')){ alert('배당된 본인 슬롯이 없습니다. 관리자에게 배당을 요청하세요.'); return; }
+    SUB.commit('ic_votes', cid+'__'+id, { cid:cid, voter:id, name:(SUB.DB.icConfig.members||{})[id]||'',
+      present:sel('m_present').checked, recused:sel('m_recused').checked,
+      score:+sel('m_score').value||0, vote:sel('m_vote').value });
+    document.getElementById('result').innerHTML='<div class="result r-ok"><div class="verdict">내 의결 저장됨 ✔</div></div>';
+  }
+  // 컨설턴트 자문 저장(ic[cid] 메타: 설립계획·시나리오) — 투표·집계 미변경
+  function saveConsult(){
+    var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+    var scen={}; document.querySelectorAll('.sc_amt').forEach(function(el){ var k=el.dataset.k; scen[k]={amount:+el.value||0,
+      year:+document.querySelector('.sc_yr[data-k="'+k+'"]').value||0,
+      moic:(SUB.DB.invest[cid]&&+el.value>0)?INVEST.moic(SUB.DB.invest[cid].investment,+el.value):0 }; });
+    var prev=SUB.DB.ic[cid]||{};
+    var rec=Object.assign({}, prev, { cid:cid, plan:document.getElementById('c_plan').value, scenarios:scen, consultAt:new Date().toISOString() });
+    SUB.commit('ic', cid, rec);
+    document.getElementById('consultMsg').textContent='자문 저장됨 ✔';
+  }
+  // 역할별 화면 — 심의위원=본인 1행+읽기전용 자료 / 컨설턴트=자문 / 담당자·관리자=전체
+  function applyRoleView(){
+    var role=SUB.getRole();
+    var show=function(id,on){ var el=document.getElementById(id); if(el) el.style.display=on?'':'none'; };
+    if(role==='ic'){                              // 심의위원: 본인 의결만
+      show('draftBox',false); show('btnConsult',false);
+      document.getElementById('c_plan').readOnly=true;
+      document.querySelectorAll('.sc_amt,.sc_yr').forEach(function(e){ e.disabled=true; });
+      show('btnTally',false); show('btnReviewPdf',true); show('btnDecisionPdf',false); show('btnMyVote',true);
+      document.getElementById('quorum').disabled=true; document.getElementById('passpct').disabled=true;
+      var myId=SUB.session().id;
+      document.querySelectorAll('#members tr').forEach(function(tr,i){ if(i===0) return;
+        var inp=tr.querySelector('.m_vote'); if(inp && inp.dataset.id!==myId) tr.style.display='none';
+        var nm=tr.querySelector('.m_name'); if(nm) nm.readOnly=true; });
+    } else if(role==='consultant'){               // 컨설턴트: 자문만
+      show('btnConsult',true); show('icCard',false);
+    } else { show('btnConsult',false); show('btnMyVote',false); } // 담당자/관리자: 전체(기본)
   }
   function showResult(t){
     var cls = !t.quorumMet?'r-non':(t.result==='가결'?'r-ok':(t.result==='조건부가결'?'r-cond':'r-bad'));

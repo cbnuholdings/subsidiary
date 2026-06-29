@@ -17,10 +17,12 @@ var SUB = (function (global) {
     loi:        { kind: 'map' },
     invest:     { kind: 'map' },
     ic:         { kind: 'map' },
+    ic_votes:   { kind: 'map' },   // 위원별 투표 (키=cid__voterId)
     portfolio:  { kind: 'map' },
     accounts:   { kind: 'map' },
     icConfig:   { kind: 'single' },
-    benefits:   { kind: 'single' }
+    benefits:   { kind: 'single' },
+    roundCfg:   { kind: 'single' } // 모집 차수 설정 {round}
   };
 
   // ---- 결정적 해시(djb2, 비암호) : cid 식별·PW 데모 해시용 ----
@@ -47,17 +49,34 @@ var SUB = (function (global) {
     var key = String(p.ceoName || '').replace(/\s/g, '') + '|' + digits(p.birth);
     return 'P' + hash(key);
   }
-  function makeAppId(cid, year, seq) {
-    return cid + '-' + year + '-' + ('000' + (seq || 1)).slice(-3);
+  // 접수번호: {유형}{차수}_{대표자명}_{3자리}  (유형: cid[0] = P 예비창업 / C 기창업)
+  function appIdType(cid) { return String(cid).charAt(0) === 'C' ? 'C' : 'P'; }
+  function makeAppId(cid, round, name, seq) {
+    return appIdType(cid) + (round || 1) + '_' + String(name || '').replace(/\s/g, '') + '_' + ('000' + (seq || 1)).slice(-3);
+  }
+  // 로컬 채번(서버모드는 GAS가 채번). 같은 cid+차수 기존건 있으면 그 접수번호 재사용.
+  function assignAppIdLocal(cid, ceo) {
+    var round = (DB.roundCfg && DB.roundCfg.round) || 1;
+    var prefix = appIdType(cid) + round + '_';
+    var keys = Object.keys(DB.applicants || {});
+    for (var i = 0; i < keys.length; i++) {
+      var r = DB.applicants[keys[i]];
+      if (r && r.cid === cid && String(r.appId || '').indexOf(prefix) === 0) return r.appId;
+    }
+    if (!DB.roundCfg) DB.roundCfg = { round: 1 };
+    if (!DB.roundCfg.counters) DB.roundCfg.counters = {};
+    var seq = (DB.roundCfg.counters[round] || 0) + 1; DB.roundCfg.counters[round] = seq;
+    return makeAppId(cid, round, ceo, seq);
   }
 
   // ---- 5역할 (tabs는 brand.js PAGES.tab과 매칭) ----
   var ROLES = {
-    admin:     { label: '종합관리자', tabs: ['apply','loi','invest','ic','board','port','admin'] },
-    staff:     { label: '지주 담당자/컨설턴트', tabs: ['apply','loi','invest','ic','board','port'] },
-    ic:        { label: '심의위원', tabs: ['ic'] },
-    tlo:       { label: '산학협력단', tabs: ['loi'] },
-    applicant: { label: '신청기업', tabs: ['apply'] }
+    admin:      { label: '종합관리자', tabs: ['apply','loi','invest','ic','board','port','admin'] },
+    staff:      { label: '지주 담당자', tabs: ['apply','loi','invest','ic','board','port'] },
+    consultant: { label: '컨설턴트(외부)', tabs: ['ic'] },   // 자문(설립계획 초안) — 배당 cid
+    ic:         { label: '심의위원(외부)', tabs: ['ic'] },    // 의결표 — 배당 cid
+    tlo:        { label: '산학협력단', tabs: ['loi'] },
+    applicant:  { label: '신청기업', tabs: ['apply'] }
   };
 
   // ---- 기본 계정(부여형 아이디/PW, 데모) : 산학협력단 1 + 심의위원 7슬롯 + 담당자 + 관리자 ----
@@ -76,10 +95,11 @@ var SUB = (function (global) {
       v: 6,
       companies: [],                 // 기업 마스터 [{cid,name,ceo,type,bizno,year}]
       leads: [],                     // 발굴 잠재기업 [{leadId,cid?,name,ceo,tel,techName,source,memo,status}]
-      applicants: {}, loi: {}, invest: {}, ic: {}, portfolio: {}, // cid 키
+      applicants: {}, loi: {}, invest: {}, ic: {}, ic_votes: {}, portfolio: {}, // cid 키 (ic_votes 키=cid__voterId)
       accounts: seedAccounts(),
       icConfig: { quorumPct: 0.5, passPct: 0.5, members: {} }, // 정족수·가결·위원슬롯 매핑(변수)
-      benefits: { growth: '', research: '' } // 혜택 콘텐츠(관리자 편집)
+      benefits: { growth: '', research: '' }, // 혜택 콘텐츠(관리자 편집)
+      roundCfg: { round: 1 } // 모집 차수
     };
   }
   // 서버에서 받은 DB를 정규화(누락 컬렉션 보강)
@@ -89,7 +109,7 @@ var SUB = (function (global) {
       var def = COLLS[c];
       if (def.kind === 'array') { if (!Array.isArray(d[c])) d[c] = []; }
       else if (def.kind === 'map') { if (!d[c] || typeof d[c] !== 'object') d[c] = {}; }
-      else { if (!d[c] || typeof d[c] !== 'object') d[c] = (c === 'icConfig' ? { quorumPct: 0.5, passPct: 0.5, members: {} } : { growth: '', research: '' }); }
+      else { if (!d[c] || typeof d[c] !== 'object') d[c] = (c === 'icConfig' ? { quorumPct: 0.5, passPct: 0.5, members: {} } : c === 'roundCfg' ? { round: 1 } : { growth: '', research: '' }); }
     });
     if (!d.accounts || !Object.keys(d.accounts).length) d.accounts = seedAccounts();
     d.v = 6; return d;
@@ -128,7 +148,7 @@ var SUB = (function (global) {
       return m ? decodeURIComponent(m[1]) : '';
     } catch (e) { return ''; }
   }
-  var _session = { cid: '', role: '', id: '', name: '', scope: null };
+  var _session = { cid: '', role: '', id: '', name: '', scope: null, token: '' };
   // ---- 세션 영속화(페이지 이동 간 인증 유지). sessionStorage 우선(탭 종료 시 만료). ----
   var SS_KEY = 'SUB_SESSION_v6';
   function _store() { try { return global.sessionStorage || global.localStorage || null; } catch (e) { return null; } }
@@ -167,10 +187,33 @@ var SUB = (function (global) {
     if (!serverOn()) return Promise.resolve(login(id, pw));
     return post('login', { id: id, pw: hash(pw) }).then(function (res) {
       if (res && res.ok) {
-        _session.role = res.role; _session.id = id; _session.name = res.name || ''; _session.scope = res.scope || null; saveSession();
+        _session.role = res.role; _session.id = id; _session.name = res.name || ''; _session.scope = res.scope || null;
+        _session.token = res.token || ''; saveSession();
+        if (res.token) { serverLoad(); }   // 토큰 확보 후 스코프 데이터 로드
         return { ok: true, role: res.role, name: res.name, id: id, scope: res.scope || null };
       }
       return { ok: false, msg: (res && res.msg) || '아이디 또는 비밀번호가 올바르지 않습니다.' };
+    });
+  }
+  // 신청자 로그인(접수번호 + 연락처 뒷4자리) — 서버검증, 본인 cid만
+  function applicantLogin(appId, last4) {
+    if (!serverOn()) {
+      // 로컬모드: applicants에서 appId+뒷4 검증
+      var found = null, keys = Object.keys(DB.applicants || {});
+      for (var i = 0; i < keys.length; i++) { var r = DB.applicants[keys[i]]; if (r && r.appId === appId) { found = r; break; } }
+      if (!found) return Promise.resolve({ ok: false, msg: '접수번호를 찾을 수 없습니다.' });
+      if (digits(found.tel).slice(-4) !== String(last4)) return Promise.resolve({ ok: false, msg: '연락처 뒷자리가 일치하지 않습니다.' });
+      _session.role = 'applicant'; _session.id = appId; _session.cid = found.cid; _session.scope = { cids: [found.cid] }; saveSession();
+      return Promise.resolve({ ok: true, role: 'applicant', cid: found.cid });
+    }
+    return post('applogin', { appId: appId, last4: last4 }).then(function (res) {
+      if (res && res.ok) {
+        _session.role = 'applicant'; _session.id = appId; _session.cid = res.cid || ''; _session.scope = res.scope || null;
+        _session.token = res.token || ''; saveSession();
+        if (res.token) { serverLoad(); }
+        return { ok: true, role: 'applicant', cid: res.cid };
+      }
+      return { ok: false, msg: (res && res.msg) || '로그인 실패' };
     });
   }
 
@@ -246,6 +289,15 @@ var SUB = (function (global) {
     };
   }
 
+  // ic_votes(위원별 레코드) → tallyIC용 members 배열 (icConfig.members 슬롯 기준). PDF·집계 공용.
+  function icVotesToMembers(cid) {
+    var slots = (DB.icConfig && DB.icConfig.members) || {};
+    return Object.keys(slots).map(function (id) {
+      var v = (DB.ic_votes || {})[cid + '__' + id] || {};
+      return { id: id, name: slots[id], assigned: true, present: !!v.present, recused: !!v.recused,
+               vote: v.vote || '', score: Number(v.score) || 0, comment: v.comment || '' };
+    });
+  }
   function serverOn() { return !!CFG.apiUrl; }
   // apiUrl이 새로 설정되면 서버 로드 + 폴링 시작(페이지의 명시적 config 로드 경로 대응)
   function setConfig(c) {
@@ -326,6 +378,29 @@ var SUB = (function (global) {
   }
   function nowISO() { return new Date().toISOString(); }
 
+  /* ---- 신청 수정 unlock + 버전 스냅샷 (관리자 허용 → 1회 수정 후 자동 재잠금) ---- */
+  // 관리자: 해당 신청 수정 허용(잠금 해제)
+  function unlockApplicant(cid) {
+    var ap = DB.applicants[cid]; if (!ap) return { ok: false, error: 'no-applicant' };
+    ap.locked = false; ap.unlockedAt = nowISO();
+    commit('applicants', cid, ap);   // 관리자/담당자는 applicants 쓰기 허용
+    return { ok: true };
+  }
+  // 신청자: unlock된 경우에만 수정 → 직전본 history[] 스냅샷 후 적용 + 자동 재잠금
+  function reapplyEdit(cid, edits) {
+    var ap = DB.applicants[cid];
+    if (!ap) return Promise.resolve({ ok: false, error: 'no-applicant' });
+    if (ap.locked !== false) return Promise.resolve({ ok: false, error: 'locked' });
+    ap.history = ap.history || [];
+    var snap = JSON.parse(JSON.stringify(ap)); delete snap.history;
+    ap.history.push({ at: nowISO(), snapshot: snap });
+    ['org', 'tel', 'email', 'techName', 'field'].forEach(function (k) { if (edits && edits[k] != null) ap[k] = edits[k]; });
+    ap.locked = true; ap.editedAt = nowISO();
+    localSet('applicants', cid, ap); save(); refresh();
+    if (serverOn()) return post('reapply', { cid: cid, edits: edits, token: _session.token }).then(applyServerDB);
+    return Promise.resolve({ ok: true });
+  }
+
   /* ---- Express 패스트트랙 승인(담당자 확인 후) ----
      기술이전계약+투자동의+필수서류 완비 신청을 담당자가 확인 후 승인하면:
      LOI(계약체결·산학협력단 동의)·출자 텀시트를 신청 스냅샷으로 자동 prefill →
@@ -383,7 +458,8 @@ var SUB = (function (global) {
   // 전체 내부DB 로드(인증 내부 사용자용). 토큰 동봉(Phase B 인가 스코프).
   function serverLoad() {
     if (!serverOn() || typeof global.fetch !== 'function') return Promise.resolve({ ok: true, local: true });
-    var url = CFG.apiUrl + '?action=load' + (_session.id ? ('&uid=' + encodeURIComponent(_session.id)) : '');
+    if (!_session.token) return Promise.resolve({ ok: false, error: 'no-token' }); // 미로그인 시 서버 데이터 요청 안 함
+    var url = CFG.apiUrl + '?action=load&token=' + encodeURIComponent(_session.token);
     return global.fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); })
       .then(function (j) { if (j && j.db) { assignDB(j.db); refresh(); } else if (j && j.companies) { assignDB(j); refresh(); } return j; })
       .catch(function (e) { return { ok: false, error: String(e) }; });
@@ -391,8 +467,8 @@ var SUB = (function (global) {
   // 신청 접수(공개) — 서버는 최소응답(전체DB 미반환, 신청자 PII 보호)
   function submitApplication(rec) { return post('apply', rec); }
   // 레코드별 서버 반영
-  function serverSet(coll, key, record) { return post('set', { coll: coll, key: key, record: record }).then(applyServerDB); }
-  function serverDel(coll, key) { return post('del', { coll: coll, key: key }).then(applyServerDB); }
+  function serverSet(coll, key, record) { return post('set', { coll: coll, key: key, record: record, token: _session.token }).then(applyServerDB); }
+  function serverDel(coll, key) { return post('del', { coll: coll, key: key, token: _session.token }).then(applyServerDB); }
   // 하위호환: serverUpsert(coll, key, rec)
   function serverUpsert(coll, key, rec) { return serverSet(coll, key, rec); }
 
@@ -457,17 +533,18 @@ var SUB = (function (global) {
   return {
     CFG: CFG, setConfig: setConfig, DB: DB, save: save, resetDB: resetDB, assignDB: assignDB, normalize: normalize,
     hash: hash, esc: esc, digits: digits,
-    makeCID: makeCID, makeAppId: makeAppId,
+    makeCID: makeCID, makeAppId: makeAppId, appIdType: appIdType, assignAppIdLocal: assignAppIdLocal,
     ROLES: ROLES, getCID: getCID, setCID: setCID, getRole: getRole, setRole: setRole,
-    login: login, loginAsync: loginAsync, logout: logout, session: session,
+    login: login, loginAsync: loginAsync, applicantLogin: applicantLogin, logout: logout, session: session,
     directory: directory, company: company, selectDirectoryCompany: selectDirectoryCompany,
     upsertCompany: upsertCompany, saveCompany: saveCompany,
     exportJSON: exportJSON, importJSON: importJSON, serverOn: serverOn,
-    tallyIC: tallyIC, post: post, submitApplication: submitApplication,
+    tallyIC: tallyIC, icVotesToMembers: icVotesToMembers, post: post, submitApplication: submitApplication,
     serverLoad: serverLoad, serverSet: serverSet, serverDel: serverDel, serverUpsert: serverUpsert,
     commit: commit, commitDel: commitDel, commitSingle: commitSingle, startPoll: startPoll,
     MEETING_URL: MEETING_URL, requestMeeting: requestMeeting, approveExpress: approveExpress,
     evalAsset: evalAsset, missingQuarters: missingQuarters, buildConsultDraft: buildConsultDraft,
+    unlockApplicant: unlockApplicant, reapplyEdit: reapplyEdit,
     LAGMP_URL: LAGMP_URL, handoffToLAGMP: handoffToLAGMP
   };
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
