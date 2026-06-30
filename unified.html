@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자회사 설립 통합관리 시스템 · 충북대학교기술지주㈜</title>
+<style>
+/* ===== common/style.css (inlined) ===== */
+/* ===== 충북대기술지주 성장관리 플랫폼 — 공통 스타일 (5개 HTML 공유) ===== */
+:root{
+  --bg:#f6f3f5; --panel:#ffffff; --panel2:#f7eef2; --line:#ecd9e1;
+  --txt:#24171d; --muted:#7c6b73; --accent:#b01c50; --accent2:#d94e7d;
+  --warn:#c97b12; --danger:#d8453c; --chip:#f7eef2;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
+header{background:linear-gradient(135deg,#ffffff,#fbe9f0);padding:12px 20px;
+  border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  box-shadow:0 1px 5px rgba(120,20,60,.07)}
+header .logo{height:46px;width:auto;display:block}
+header h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.3px;color:var(--accent)}
+header h1 a{color:inherit;text-decoration:none}
+header .sub{color:var(--muted);font-size:12px}
+.grow{flex:1}
+.company-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+select,input,textarea{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+  border-radius:6px;padding:7px 9px;font-size:13px;font-family:inherit}
+textarea{width:100%;resize:vertical;min-height:64px}
+button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 14px;
+  cursor:pointer;font-size:13px;font-weight:600}
+button.ghost{background:var(--chip);color:var(--txt);border:1px solid var(--line)}
+button.sm{padding:4px 9px;font-size:12px}
+button.danger{background:var(--danger)}
+button.ok{background:var(--accent2)}
+/* 네비게이션: 분리형은 <a> 링크로 페이지 이동 (현재 기업ID 유지) */
+nav{display:flex;gap:4px;background:var(--panel2);padding:6px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav a{background:transparent;color:var(--muted);border-radius:6px 6px 0 0;font-weight:600;
+  text-decoration:none;padding:8px 14px;font-size:13px;display:inline-block}
+nav a:hover{color:var(--accent)}
+nav a.active{background:#fff;color:var(--accent);border:1px solid var(--line);border-bottom:2px solid var(--accent)}
+main{padding:18px 20px;max-width:1180px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+.card h3{margin:14px 0 8px;font-size:13px;color:var(--muted)}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+label.fld{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.fld input,.fld select{width:100%}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.chip{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:20px;
+  padding:2px 10px;font-size:11px;color:var(--muted);margin:2px;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pill{display:inline-block;border-radius:12px;padding:2px 9px;font-size:11px;font-weight:600}
+.pill.done{background:#def5ea;color:#0e8a55}
+.pill.prog{background:#fcf0d6;color:#b5740a}
+.pill.todo{background:#fbe4e2;color:#c33327}
+.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+.kpi .v{font-size:26px;font-weight:800}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
+.bar{height:10px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.muted{color:var(--muted)}
+.right{text-align:right}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.timeline{position:relative;padding-left:22px}
+.timeline .ev{position:relative;padding:8px 0 8px 14px;border-left:2px solid var(--line)}
+.timeline .ev::before{content:'';position:absolute;left:-7px;top:12px;width:12px;height:12px;
+  border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+.empty{color:var(--muted);text-align:center;padding:30px;font-size:13px}
+.gauge{font-size:42px;font-weight:800}
+.tag{font-size:11px;padding:1px 7px;border-radius:5px;background:var(--chip);color:var(--muted)}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.versioncol{border-left:3px solid var(--accent);padding-left:10px;margin-bottom:10px}
+hr.sep{border:0;border-top:1px solid var(--line);margin:14px 0}
+.req{color:var(--danger);font-weight:700}
+.scorebox{display:flex;gap:6px;align-items:center}
+.scorebox input{width:54px;text-align:center}
+.draftbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel2);
+  border:1px dashed var(--accent);border-radius:8px;padding:8px 10px}
+.consent{border:1px solid var(--line);border-radius:10px;padding:13px 15px;background:var(--panel2)}
+.consent-check{display:flex;gap:9px;align-items:flex-start;cursor:pointer;font-size:14px;font-weight:600}
+.consent-check input{margin-top:2px;width:17px;height:17px;flex:none;accent-color:var(--accent)}
+.consent-check b{color:var(--danger)}
+.consent-sum{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+.consent-sum a{color:var(--accent);cursor:pointer;font-weight:700;white-space:nowrap}
+.pp-full{margin-top:10px;max-height:240px;overflow:auto;border:1px solid var(--line);
+  border-radius:8px;padding:12px 14px;background:#fff;font-size:11.5px;color:#444;line-height:1.65}
+.pp-full h4{margin:13px 0 4px;font-size:12px;color:var(--accent)}
+.pp-full h4:first-child{margin-top:0}
+.pp-full ul{margin:4px 0;padding-left:18px}
+.pp-full .lead{color:#666}
+.syncnote{font-size:11px;color:var(--muted);text-align:center;padding:6px}
+.stagewrap{display:grid;gap:10px;grid-template-columns:repeat(4,1fr)}
+@media(max-width:860px){.stagewrap{grid-template-columns:1fr 1fr}}
+.stage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel2)}
+.stage.active{border:2px solid var(--accent);background:#fff;box-shadow:0 1px 6px rgba(176,28,80,.10)}
+.stage.future{opacity:.5}
+.stage .st{font-size:13px;font-weight:700;margin-bottom:6px}
+.stage .sv{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:2px}
+.stage ul{margin:6px 0 0;padding-left:15px;font-size:11.5px;color:var(--txt);line-height:1.5}
+@media print{nav,.draftbar,header .company-bar{display:none}}
+
+</style>
+<style>
+  :root{ --brand:#b01c50; --brand-d:#8a163f; --ok:#1f8a4c; --warn:#c47f0a; --bad:#c0392b; }
+  *{ box-sizing:border-box; }
+  body{ font-family:'Malgun Gothic','맑은 고딕',system-ui,sans-serif; background:#f5f1f0; margin:0; color:#222; }
+  /* ===== 상단 헤더/네비 ===== */
+  #topbar{ position:sticky; top:0; z-index:50; background:#fff; border-bottom:1px solid #e7dfe1; box-shadow:0 2px 8px rgba(176,28,80,.06); }
+  .tb-row{ max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:12px; padding:10px 16px; flex-wrap:wrap; }
+  .tb-brand{ display:flex; align-items:center; gap:9px; font-weight:800; color:var(--brand-d); font-size:15px; }
+  .tb-brand .logo{ width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; }
+  #mainNav{ display:flex; gap:4px; flex-wrap:wrap; flex:1; }
+  #mainNav .ntab{ background:#f3e8ec; color:var(--brand-d); border:1px solid #ecdde3; border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; }
+  #mainNav .ntab:hover{ background:#ecd9e1; }
+  #mainNav .ntab.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
+  .tb-user{ display:flex; align-items:center; gap:8px; font-size:12px; }
+  #roleBadge{ background:#fbf5f7; border:1px solid #e2cdd5; border-radius:20px; padding:5px 12px; color:var(--brand-d); font-weight:700; }
+  #modeBadge{ font-size:11px; color:#999; }
+  .tb-user button{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; border-radius:7px; padding:5px 11px; font-size:12px; cursor:pointer; }
+  /* ===== 공통 레이아웃 ===== */
+  .wrap{ max-width:1000px; margin:0 auto; padding:18px 16px 70px; }
+  .wrap.narrow{ max-width:600px; }
+  .sec{ display:none; }
+  .card{ background:#fff; border:1px solid #e7dfe1; border-radius:14px; padding:20px 22px; margin-top:14px; }
+  .card h2{ margin:0 0 14px; font-size:16px; color:var(--brand-d); border-bottom:2px solid #f0e6e9; padding-bottom:9px; }
+  .card h3{ font-size:13px; color:var(--brand-d); margin:16px 0 6px; }
+  label{ display:block; font-size:12px; color:#555; margin:9px 0 4px; }
+  input,select,textarea{ width:100%; box-sizing:border-box; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; font-family:inherit; }
+  textarea{ min-height:64px; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; } @media(max-width:680px){ .row{ grid-template-columns:1fr; } }
+  .row3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; } @media(max-width:680px){ .row3{ grid-template-columns:1fr; } }
+  button{ background:var(--brand); color:#fff; border:0; border-radius:9px; padding:11px 20px; font-size:14px; cursor:pointer; }
+  button:hover{ background:var(--brand-d); } button.ghost{ background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; }
+  button:disabled{ background:#cbb9bf; cursor:not-allowed; }
+  button.mini{ padding:5px 10px; font-size:12px; background:#fff; color:var(--brand-d); border:1px solid #d9c2c9; }
+  .note{ font-size:12px; color:#777; line-height:1.7; } .muted{ color:#999; font-size:12px; }
+  .empty{ text-align:center; color:#aa9; padding:40px; }
+  .hidden{ display:none !important; }
+  .out{ margin-top:12px; font-size:13px; background:#fbf5f7; border:1px solid #f0e0e6; border-radius:9px; padding:12px 14px; }
+  .out table{ width:100%; border-collapse:collapse; } .out td{ padding:3px 4px; border-bottom:1px dashed #ecdfe3; } .out td:last-child{ text-align:right; font-weight:600; }
+  .verdict{ font-weight:700; padding:3px 10px; border-radius:20px; font-size:12px; }
+  .v-ok{ background:#e3f5ea; color:var(--ok); } .v-warn{ background:#fdf2e0; color:var(--warn); } .v-bad{ background:#fbe7e4; color:var(--bad); }
+  .pill{ display:inline-block; font-size:11px; padding:3px 9px; border-radius:20px; background:#f3e3e9; color:var(--brand-d); margin:2px 4px 2px 0; }
+  table.grid{ width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px; }
+  table.grid th,table.grid td{ border:1px solid #ecdfe3; padding:6px 8px; text-align:left; vertical-align:middle; }
+  table.grid th{ background:#fbf1f4; color:var(--brand-d); }
+  table.grid td input[type=checkbox]{ width:auto; margin:0; transform:scale(1.2); }
+  /* ===== 홈 ===== */
+  .hero{ background:linear-gradient(135deg,var(--brand),var(--brand-d)); color:#fff; border-radius:18px; padding:36px 30px; box-shadow:0 10px 30px rgba(176,28,80,.25); text-align:center; }
+  .hero .org{ font-size:13px; opacity:.9; letter-spacing:1px; }
+  .hero h1{ margin:8px 0 10px; font-size:28px; line-height:1.3; }
+  .hero p{ opacity:.95; font-size:15px; line-height:1.7; margin:0 auto; max-width:640px; }
+  .hero .period{ display:inline-block; margin-top:16px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); border-radius:30px; padding:8px 18px; font-size:13px; }
+  .cta{ margin-top:22px; } .cta button{ font-weight:700; font-size:15px; padding:12px 26px; border-radius:30px; background:#fff; color:var(--brand-d); margin:0 4px; }
+  .cta button:hover{ background:#ffeef4; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; } @media(max-width:760px){ .grid2{ grid-template-columns:1fr; } }
+  .steps4{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; } @media(max-width:760px){ .steps4{ grid-template-columns:1fr 1fr; } }
+  .st{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:12px 8px; text-align:center; font-size:12px; }
+  .st b{ display:block; color:var(--brand); font-size:13px; margin-bottom:3px; }
+  table.cond{ width:100%; border-collapse:collapse; }
+  .cond td{ padding:4px 4px; border-bottom:1px dashed #ecdfe3; font-size:13px; } .cond td:last-child{ text-align:right; font-weight:600; }
+  /* ===== 신청 wizard ===== */
+  .steps{ display:flex; gap:6px; margin:18px 0 10px; flex-wrap:wrap; }
+  .steps .s{ flex:1; min-width:110px; text-align:center; font-size:12px; padding:8px 6px; border-radius:9px; background:#efe6e9; color:#9a8a90; border:1px solid #e4d6db; }
+  .steps .s.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
+  .steps .s.done{ background:#fbeef3; color:var(--brand-d); }
+  .chk{ display:flex; align-items:flex-start; gap:9px; font-size:13px; padding:9px 11px; border:1px solid #e6dadf; border-radius:9px; margin-top:8px; background:#fcf8f9; cursor:pointer; }
+  .chk input{ width:auto; margin-top:2px; }
+  .benefit{ display:flex; gap:8px; margin-top:10px; } .benefit button{ flex:1; }
+  .tab{ background:#f3e8ec; color:var(--brand-d); border:1px solid #e4d0d8; border-radius:8px; padding:8px; font-size:13px; cursor:pointer; }
+  .tab.on{ background:var(--brand); color:#fff; border-color:var(--brand); }
+  .panel{ font-size:12.5px; color:#444; line-height:1.8; background:#fbf5f7; border:1px solid #f0e0e6; border-radius:9px; padding:14px 16px; margin-top:8px; }
+  .warnbox{ background:#fff7ec; border:1px solid #f0d9a8; color:#7a5908; border-radius:9px; padding:11px 13px; font-size:12px; line-height:1.7; margin-top:8px; }
+  .stub{ background:#fbf7ee; border:1px dashed #e3cf9e; border-radius:9px; padding:10px 12px; font-size:12px; color:#7a5908; margin-top:8px; }
+  .nav-btns{ display:flex; justify-content:space-between; margin-top:18px; }
+  .done-card{ text-align:center; padding:34px; }
+  .receipt{ font-size:26px; font-weight:800; color:var(--brand); letter-spacing:1px; margin:10px 0; }
+  /* ===== KPI ===== */
+  .kpi3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .kpis{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; } @media(max-width:820px){ .kpis{ grid-template-columns:repeat(3,1fr); } }
+  .kpi{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:14px 8px; text-align:center; }
+  .kpi b{ display:block; font-size:20px; color:var(--brand); } .kpi span{ font-size:11px; color:#888; }
+  /* ===== 텀시트/심의 ===== */
+  .term{ background:#fbf5f7; border:1px solid #f0e0e6; border-radius:10px; padding:16px 18px; margin-top:12px; font-size:13px; }
+  .term table{ width:100%; border-collapse:collapse; } .term td{ padding:4px 4px; border-bottom:1px dashed #ecdfe3; } .term td:last-child{ text-align:right; font-weight:600; }
+  .result{ margin-top:14px; padding:16px 18px; border-radius:10px; font-size:14px; }
+  .r-ok{ background:#e3f5ea; border:1px solid #b6e2c6; } .r-cond{ background:#fdf2e0; border:1px solid #f0d9a8; }
+  .r-bad{ background:#fbe7e4; border:1px solid #f0c2bb; } .r-non{ background:#eee; border:1px solid #ddd; }
+  .big-verdict{ font-size:20px; font-weight:800; } .tally{ font-size:12.5px; color:#555; margin-top:6px; }
+  .status-pill{ display:inline-block; font-size:12px; font-weight:700; padding:3px 11px; border-radius:20px; }
+  .s-talk{ background:#eef2f7; color:#3a5e8c; } .s-agree{ background:#fdf2e0; color:var(--warn); } .s-signed{ background:#e3f5ea; color:var(--ok); }
+  .badge{ display:inline-block; font-size:12px; font-weight:700; padding:3px 11px; border-radius:20px; }
+  .b-ok{ background:#e3f5ea; color:var(--ok); } .b-bad{ background:#fbe7e4; color:var(--bad); }
+  .miss{ display:inline-block; font-size:11px; padding:3px 9px; border-radius:20px; background:#fdf2e0; color:var(--warn); margin:2px; }
+  /* 콘솔 서브탭 */
+  .subtabs{ display:flex; gap:6px; margin:4px 0 4px; flex-wrap:wrap; }
+  .subtabs button{ background:#efe6e9; color:#9a7f88; border:1px solid #e4d6db; border-radius:9px; padding:9px 14px; font-size:13px; cursor:pointer; }
+  .subtabs button.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
+  .tl{ border-left:3px solid #e7cdd6; margin:8px 0 0 6px; padding-left:14px; }
+  .tl .ev{ position:relative; padding:8px 0; font-size:13px; }
+  .tl .ev:before{ content:''; position:absolute; left:-21px; top:12px; width:9px; height:9px; border-radius:50%; background:var(--brand); }
+  .ev .t{ font-size:11px; color:#aa9; } .ev .d{ color:#444; font-size:12px; }
+  footer{ text-align:center; color:#aa9; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+<header id="topbar">
+  <div class="tb-row">
+    <div class="tb-brand"><span class="logo">CBH</span><span>자회사 설립 통합관리</span></div>
+    <nav id="mainNav">
+      <button class="ntab" data-sec="home" onclick="showSec('home')">🏠 홈</button>
+      <button class="ntab" data-sec="login" onclick="showSec('login')">🔐 로그인</button>
+      <button class="ntab" data-sec="apply" onclick="showSec('apply')">① 신청</button>
+      <button class="ntab" data-sec="loi" onclick="showSec('loi')">② LOI</button>
+      <button class="ntab" data-sec="invest" onclick="showSec('invest')">③ 출자</button>
+      <button class="ntab" data-sec="ic" onclick="showSec('ic')">④ 심의</button>
+      <button class="ntab" data-sec="port" onclick="showSec('port')">⑤ 포트폴리오</button>
+      <button class="ntab" data-sec="console" onclick="showSec('console')">⑥ 콘솔</button>
+      <button class="ntab" data-sec="status" onclick="showSec('status')">📄 조회</button>
+    </nav>
+    <div class="tb-user">
+      <span id="modeBadge">⚪ 로컬</span>
+      <span id="roleBadge">미로그인</span>
+      <button id="btnLogout" onclick="doLogout()" style="display:none">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 홈 ============ -->
+<section id="sec-home" class="sec">
+<div class="wrap">
+  <div class="hero">
+    <div class="org">충북대학교기술지주㈜</div>
+    <h1>자회사 설립 기업 모집</h1>
+    <p>대학 보유기술의 사업화를 함께할 예비창업자·기업을 찾습니다. 충북대 출원기술 기반으로 자회사를 설립하고, 기술지주가 직접 출자·성장지원합니다.</p>
+    <div class="period">📅 상시 접수 · 모집기간은 공고에 따릅니다</div>
+    <div class="cta"><button onclick="showSec('apply')">신청하기 →</button><button onclick="showSec('status')">신청 조회</button></div>
+  </div>
+
+  <div class="card">
+    <h2>진행 절차</h2>
+    <div class="steps4">
+      <div class="st"><b>① 신청·제도이해</b>제도 확인 후 신청</div>
+      <div class="st"><b>② 기술이전 LOI</b>충북대 기술 사업화 합의</div>
+      <div class="st"><b>③ 출자</b>기술지주 지분투자</div>
+      <div class="st"><b>④ 컨설팅·심의</b>설립계획·성장·EXIT</div>
+    </div>
+    <div class="note" style="margin-top:8px">설립 이후에는 분기 회계보고·연간 자산평가 등 사후관리와 성장지원이 이어집니다.</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-top:0">
+      <h2>💰 출자(투자) 조건</h2>
+      <table class="cond">
+        <tr><td>기업가치(Value)</td><td>자본금 × 2배</td></tr>
+        <tr><td>기술지주 지분</td><td>기본 10% (이상 가능)</td></tr>
+        <tr><td>교원 창업</td><td>보통주</td></tr>
+        <tr><td>학생·일반·외부</td><td>우선주(CPS)</td></tr>
+        <tr><td>회수(EXIT)</td><td>동반매도·우선매수·공동매도 + 바이백</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px">CPS = 청산우선권 1배·전환 1:1·무상환·우선배당 연 1%</div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <h2>🎁 설립 이후 혜택</h2>
+      <div class="note">
+        <b>① 기업성장지원</b> — 후속투자 연계, 정부과제 매칭, 멘토링·IR 고도화 등(연도별 운영)<br><br>
+        <b>② 제도적 혜택</b> — 연구개발특구 <b>연구소기업</b> 등록 시 법인세 등 감면(요건·자본금 규모에 따라 상이, 정보제공용)
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧭 1분 적격성 자가진단</h2>
+    <div class="grid2" style="margin-top:0">
+      <div>
+        <label>교원(전임) 창업입니까?</label>
+        <select id="h_prof"><option value="">선택</option><option value="y">예(교원)</option><option value="n">아니오</option></select>
+        <label>충북대학교 보유·출원 기술 사업화입니까?</label>
+        <select id="h_tech"><option value="">선택</option><option value="y">예</option><option value="maybe">미정/검토중</option><option value="n">아니오</option></select>
+      </div>
+      <div>
+        <label>사업화 의지·준비 정도</label>
+        <select id="h_will"><option value="">선택</option><option value="high">강함(구체 계획)</option><option value="mid">보통</option><option value="low">약함(구상 단계)</option></select>
+        <div class="out" id="h_verdict" style="display:none"></div>
+        <button class="ghost" style="margin-top:10px" onclick="showSec('apply')">정식 신청으로 진행 →</button>
+      </div>
+    </div>
+    <div class="note" style="margin-top:10px">※ 자가진단은 참고용이며, 부적격으로 표시되어도 신청은 가능합니다. 모든 시드를 검토합니다.</div>
+  </div>
+  <footer>© 충북대학교기술지주㈜ · 자회사 설립 통합관리 시스템</footer>
+</div>
+</section>
+
+<!-- ============ 로그인 ============ -->
+<section id="sec-login" class="sec">
+<div class="wrap">
+  <div class="grid2">
+    <div class="card" style="margin-top:0">
+      <h2>🔐 담당자·심의위원 로그인</h2>
+      <label>아이디</label><input id="lg_id" placeholder="예: admin / staff / tlo / ic1">
+      <label>비밀번호</label><input id="lg_pw" type="password" placeholder="비밀번호">
+      <button id="lg_btn" style="margin-top:14px" onclick="doLogin()">로그인</button>
+      <div class="note" id="lg_msg" style="color:var(--bad);min-height:16px;margin-top:8px"></div>
+      <div class="note">데모 계정 — 종합관리자 <b>admin / admin1234</b>, 담당자 <b>staff / staff1234</b>, 산학협력단 <b>tlo / tlo1234</b>, 심의위원 <b>ic1~ic7 / ic#1234</b></div>
+      <div id="lg_quick" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <h2>💰 출자 투자조건 계산기 (사전 안내)</h2>
+      <label>창업유형</label>
+      <select id="lg_ftype">
+        <option value="professor">교원 창업 → 보통주</option>
+        <option value="student">학생 창업 → 우선주(CPS)</option>
+        <option value="general">일반 개인 창업 → 우선주(CPS)</option>
+        <option value="external" selected>외부 기업 → 우선주(CPS)</option>
+      </select>
+      <label>자본금(원)</label><input id="lg_cap" type="number" value="30000000">
+      <label>액면가(원)</label><input id="lg_par" type="number" value="1000">
+      <label>지분율(%) · 기본 10%</label><input id="lg_pct" type="number" value="10" step="0.1">
+      <div class="out" id="lg_calc"></div>
+      <div class="note">Value = 자본금 × 2 · 지주 지분 기본 10% · 교원=보통주 / 그 외=우선주(CPS)</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 신청 조회 ============ -->
+<section id="sec-status" class="sec">
+<div class="wrap narrow">
+  <div class="card" id="st_loginCard">
+    <h2>📄 신청 진행 상황 조회</h2>
+    <div class="note">접수번호와 신청 시 입력한 연락처 뒷 4자리로 조회합니다.</div>
+    <label>접수번호</label><input id="st_appId" placeholder="예: P1_홍길동_001">
+    <label>연락처 뒷 4자리</label><input id="st_last4" maxlength="4" inputmode="numeric" placeholder="0000">
+    <button style="margin-top:14px" onclick="status_lookup()">조회</button>
+    <div class="note" id="st_msg" style="color:var(--warn);min-height:16px;margin-top:8px"></div>
+  </div>
+  <div class="card" id="st_statusCard" style="display:none">
+    <h2>📋 <span id="st_coName"></span></h2>
+    <div class="note">접수번호 <b id="st_rId"></b></div>
+    <div class="steps" id="st_steps" style="margin-top:10px"></div>
+    <table class="grid" id="st_info" style="margin-top:6px"></table>
+    <div id="st_extra" style="margin-top:12px"></div>
+    <button class="ghost" style="margin-top:14px" onclick="status_reset()">다른 건 조회</button>
+  </div>
+</div>
+</section>
+
+<!-- ============ ① 신청·제도이해 ============ -->
+<section id="sec-apply" class="sec">
+<div class="wrap">
+  <div class="hero" style="padding:22px 26px;text-align:left;border-radius:16px">
+    <h1 style="font-size:21px;margin:0 0 6px">① 자회사 설립 신청 · 제도 이해</h1>
+    <div style="opacity:.92;font-size:13px;line-height:1.6">충북대학교기술지주㈜ · 제도를 정확히 이해하신 뒤 신청하실 수 있습니다. 모든 응답은 증빙으로 기록됩니다.</div>
+  </div>
+
+  <div class="steps">
+    <div class="s on"  data-step="0">제도·혜택 이해</div>
+    <div class="s"     data-step="1">개인정보 동의</div>
+    <div class="s"     data-step="2">확인·자가진단</div>
+    <div class="s"     data-step="3">신청서 작성</div>
+    <div class="s"     data-step="4">제출 완료</div>
+  </div>
+
+  <!-- STEP 0 -->
+  <div class="card ap-step" data-step="0">
+    <h2>자회사 설립 제도 안내</h2>
+    <div class="note">충북대학교기술지주㈜는 대학 보유기술의 사업화를 위해 자회사를 설립·출자합니다. 절차는
+      <b>① 신청·제도이해 → ② 기술이전 LOI → ③ 출자 → ④ 컨설팅·투자심의 → 설립·관리</b> 순으로 진행됩니다.</div>
+    <h3>출자(투자) 조건 — 신청 전 반드시 확인</h3>
+    <div class="panel">
+      • <b>기업가치(Value)</b> = 현재 <b>자본금 × 2배</b> (전 유형 동일)<br>
+      • <b>지주 지분</b> = 기본 <b>10%</b> (자회사 설립요건, 희망 시 그 이상 가능)<br>
+      • <b>주식 종류</b> — 교원 창업 = <b>보통주</b> / 학생·일반·외부기업 = <b>우선주(CPS)</b><br>
+      &nbsp;&nbsp;&nbsp;CPS 조건 = 청산우선권 1배 · 전환비율 1:1 · <b>무상환</b> · 우선배당 연 1%<br>
+      • <b>회수(EXIT) 장치</b> — 동반매도청구권 · 우선매수권 · 공동매도권 표준 적용, +바이백(최소 7년, 최대 10년)
+    </div>
+    <h3>설립 이후 혜택</h3>
+    <div class="benefit">
+      <button type="button" class="tab on" id="ap_tabGrowth" onclick="apply_benefit('growth')">① 기업성장지원</button>
+      <button type="button" class="tab" id="ap_tabResearch" onclick="apply_benefit('research')">② 제도적 혜택(연구소기업)</button>
+    </div>
+    <div class="panel" id="ap_benefitGrowth"></div>
+    <div class="panel hidden" id="ap_benefitResearch">
+      <b>연구소기업 제도</b> (연구개발특구진흥재단 운영) — 특구 내 공공연구기관 기술을 직접 사업화하는 기업으로 등록 시 세제 혜택을 받습니다.<br><br>
+      • <b>등록요건</b> : 공공연구기관 등이 <b>자본금의 일정비율 이상 출자</b> — 자본금 <u>10억 미만 20%</u> / <u>10~50억 10%</u> / <u>50억 이상 5%</u><br>
+      • <b>주요 혜택</b> : 법인세·소득세 <u>3년 100% + 2년 50% 감면</u>, 재산세·취득세 감면 등
+      <div class="warnbox">⚠️ <b>유의</b> : 지주 출자가 <b>10%</b> 이므로, <b>자본금 10억 미만</b> 자회사는 연구소기업 등록에 <b>20% 출자가 필요</b>해 10%만으로는 요건에 미달할 수 있습니다. 본 안내는 <b>정보 제공용</b>이며 연구소기업 진행은 필수가 아닙니다.</div>
+    </div>
+    <div class="nav-btns"><span></span><button type="button" onclick="apply_go(1)">동의 단계로 →</button></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card ap-step hidden" data-step="1">
+    <h2>개인정보 수집·이용 동의</h2>
+    <div class="note">아래 3개 항목에 모두 동의하셔야 신청을 진행할 수 있습니다. 동의 일시가 증빙으로 기록됩니다.</div>
+    <label class="chk"><input type="checkbox" id="ap_c1"><span><b>(필수) 개인정보 수집·이용</b> — 신청자 성명·연락처·이메일·소속·사업자정보를 신청 심사·연락 목적으로 수집·이용합니다.</span></label>
+    <label class="chk"><input type="checkbox" id="ap_c2"><span><b>(필수) 제3자 제공 — 충북대학교 산학협력단</b> — 기술이전 협의를 위해 신청정보·대상기술을 산학협력단에 제공합니다.</span></label>
+    <label class="chk"><input type="checkbox" id="ap_c3"><span><b>(필수) 민감정보 처리</b> — 예비창업자 식별을 위한 생년월일은 <b>해시 처리</b>되어 저장되며 원문은 보관하지 않습니다.</span></label>
+    <div class="nav-btns"><button type="button" class="ghost" onclick="apply_go(0)">← 이전</button><button type="button" id="ap_btnConsent" disabled onclick="apply_go(2)">동의하고 계속 →</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card ap-step hidden" data-step="2">
+    <h2>핵심사항 확인 · 적격성 자가진단</h2>
+    <h3>출자조건 이해 확인(항목별)</h3>
+    <label class="chk"><input type="checkbox" class="ap-ck"><span>지주가 <b>지분 10%</b>를 인수함을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ap-ck"><span>기업가치는 <b>자본금의 2배</b>로 산정됨을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ap-ck"><span>창업유형에 따라 <b>보통주/우선주(CPS)</b>가 결정됨을 이해했습니다.</span></label>
+    <label class="chk"><input type="checkbox" class="ap-ck"><span>EXIT 장치(동반매도·우선매수·공동매도·바이백)가 적용됨을 이해했습니다.</span></label>
+    <h3>적격성 자가진단</h3>
+    <div class="row">
+      <div><label>교원(전임) 창업입니까?</label>
+        <select id="ap_qprof"><option value="">선택</option><option value="y">예(교원)</option><option value="n">아니오</option></select></div>
+      <div><label>충북대학교 보유·출원 기술 사업화입니까?</label>
+        <select id="ap_qtech"><option value="">선택</option><option value="y">예</option><option value="maybe">미정/검토중</option><option value="n">아니오</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>사업화 의지·준비 정도</label>
+        <select id="ap_qwill"><option value="">선택</option><option value="high">강함(구체 계획)</option><option value="mid">보통</option><option value="low">약함(구상 단계)</option></select></div>
+      <div><label>진단 결과</label><div id="ap_diag" class="out" style="margin-top:4px">선택 시 표시됩니다.</div></div>
+    </div>
+    <div class="nav-btns"><button type="button" class="ghost" onclick="apply_go(1)">← 이전</button><button type="button" id="ap_btnDiag" disabled onclick="apply_go(3)">신청서 작성 →</button></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card ap-step hidden" data-step="3">
+    <h2>신청서 작성</h2>
+    <div class="row">
+      <div><label>신청자(대표자) 성명 *</label><input id="ap_ceo"></div>
+      <div><label>창업유형 *</label>
+        <select id="ap_ftype">
+          <option value="professor">교원 창업 → 보통주</option>
+          <option value="student">학생 창업 → 우선주(CPS)</option>
+          <option value="general">일반 개인 창업 → 우선주(CPS)</option>
+          <option value="external" selected>외부 기업 → 우선주(CPS)</option>
+        </select></div>
+    </div>
+    <div class="row">
+      <div><label>소속/회사명</label><input id="ap_org"></div>
+      <div><label>연락처 *</label><input id="ap_tel" placeholder="010-0000-0000"></div>
+    </div>
+    <div class="row">
+      <div><label>이메일 *</label><input id="ap_email" type="email"></div>
+      <div><label>사업자등록번호(기창업 시)</label><input id="ap_bizno" placeholder="없으면 비워두세요(예비창업)"></div>
+    </div>
+    <div class="row">
+      <div><label>생년월일(예비창업자 식별용·해시저장)</label><input id="ap_birth" type="date"></div>
+      <div><label>기술분야</label><input id="ap_field" placeholder="예: 바이오·소재·ICT"></div>
+    </div>
+    <label>사업화 대상 기술명 *</label><input id="ap_tech">
+    <h3>예상 출자조건(자동 계산)</h3>
+    <div class="row">
+      <div><label>자본금(원)</label><input id="ap_cap" type="number" value="30000000"></div>
+      <div><label>액면가(원)</label><input id="ap_par" type="number" value="1000"></div>
+    </div>
+    <label>희망 지분율(%) · 기본 10%(이상 가능)</label><input id="ap_pct" type="number" value="10" step="0.1">
+    <div class="out" id="ap_calc"></div>
+    <h3>⚡ Express 패스트트랙 (선택) — 즉시 설립 검토</h3>
+    <div class="note">충북대 산학협력단과 <b>기술이전계약</b>이 체결되었고 <b>지분 투자방식에 동의</b>하셨으며 아래 필수 서류가 있으면, LOI·출자 협의를 생략하고 <b>바로 투자심의</b>로 진행할 수 있습니다(담당자 서류 확인 후 승인).</div>
+    <label class="chk"><input type="checkbox" id="ap_exToggle"><span>Express로 신청하겠습니다 (아래 동의·서류 필요)</span></label>
+    <div id="ap_exBox" class="hidden">
+      <label class="chk"><input type="checkbox" id="ap_exTt"><span>충북대학교 산학협력단과 <b>기술이전계약 체결 완료</b></span></label>
+      <label class="chk"><input type="checkbox" id="ap_exInv"><span><b>지분 투자방식(2배 밸류·지분·주식종류)에 동의</b> 완료</span></label>
+      <label>필수 별첨 — 사업자등록증 *</label><input type="file" id="ap_exF1">
+      <label>필수 별첨 — 기업 소개자료 *</label><input type="file" id="ap_exF2">
+      <label>필수 별첨 — 이전기술 사업화 계획서 *</label><input type="file" id="ap_exF3">
+      <label>기술이전계약서 (권장 첨부)</label><input type="file" id="ap_exF4">
+    </div>
+    <div class="nav-btns"><button type="button" class="ghost" onclick="apply_go(2)">← 이전</button><button type="button" onclick="apply_submit()">신청 제출</button></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card ap-step hidden done-card" data-step="4">
+    <h2 style="border:0">신청이 접수되었습니다</h2>
+    <div class="note">접수번호를 보관해 주세요. 진행 상황은 담당자가 검토 후 안내드립니다.</div>
+    <div class="receipt" id="ap_receipt"></div>
+    <div id="ap_doneSummary" class="out" style="text-align:left"></div>
+    <button class="ghost" style="margin-top:14px" onclick="apply_reset()">새 신청 작성</button>
+  </div>
+</div>
+</section>
+
+<!-- ============ ② 기술이전 LOI ============ -->
+<section id="sec-loi" class="sec">
+<div class="wrap">
+  <div class="card" id="loi_picker">
+    <h2>② 기술이전 LOI (합의·실사)</h2>
+    <div class="note">충북대 출원기술의 사업화 합의 단계입니다. 권리자는 <b>산학협력단</b>이며, <b>실제 기술이전 계약은 자회사 설립과 병행</b>하여 체결합니다(딜레이 방지).</div>
+    <label>대상 기업 선택</label><select id="loi_coSel"></select>
+  </div>
+  <div class="card" id="loi_editor" style="display:none">
+    <h2 id="loi_coTitle"></h2>
+    <h3>사업화 대상 기술 · 연구자 매칭</h3>
+    <div class="stub">🔗 <b>P2 연계 예정</b> — 충북대 기술 Notion DB(사업화 유망기술 풀)에서 선택, KIPRIS로 특허상태·발명자 자동 매칭. 현재는 수기 입력입니다.</div>
+    <div class="row">
+      <div><label>대상 기술명 *</label><input id="loi_techName"></div>
+      <div><label>특허/출원번호</label><input id="loi_patentNo" placeholder="예: 10-2025-0123456"></div>
+    </div>
+    <div class="row">
+      <div><label>연구자(발명자)</label><input id="loi_researcher"></div>
+      <div><label>기술분야</label><input id="loi_field"></div>
+    </div>
+    <label>사업화 범위(라이선스/양도·적용분야)</label><textarea id="loi_scope"></textarea>
+    <h3>산학협력단 기술이전 의향 동의 <span class="muted">(경량 동의 — 향후 본계약 수월화)</span></h3>
+    <div class="panel">
+      <div class="row">
+        <div><label>기술이전팀 담당(공유 계정 tlo)</label><input id="loi_tloTeam" placeholder="충북대 산학협력단 기술이전팀"></div>
+        <div><label>동의 일시</label><input id="loi_tloAt" readonly placeholder="동의 체크 시 자동 기록"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="loi_tloConsent"><span>산학협력단은 위 기술의 <b>해당 기업으로의 기술이전 추진에 동의</b>합니다.</span></label>
+      <label>비고(범위·조건 등)</label><textarea id="loi_tloMemo"></textarea>
+    </div>
+    <h3>LOI 진행 상태</h3>
+    <div class="row">
+      <div><label>상태</label>
+        <select id="loi_status"><option value="협의중">협의중</option><option value="합의">합의(LOI)</option><option value="계약체결">계약체결(설립 병행)</option></select></div>
+      <div><label>현재 상태</label><div id="loi_statusView" style="margin-top:6px"></div></div>
+    </div>
+    <div style="margin-top:14px"><button onclick="loi_save()">LOI 저장</button>
+      <button class="ghost" onclick="showSec('invest')">③ 출자로 →</button>
+      <span id="loi_msg" class="muted"></span></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ ③ 출자 텀시트 ============ -->
+<section id="sec-invest" class="sec">
+<div class="wrap">
+  <div class="card" id="inv_picker">
+    <h2>③ 출자 — 텀시트 작성</h2>
+    <div class="muted">대상 기업을 선택하면 신청 정보가 불러와집니다.</div>
+    <label>대상 기업 선택</label><select id="inv_coSel"></select>
+  </div>
+  <div class="card" id="inv_editor" style="display:none">
+    <h2 id="inv_coTitle"></h2>
+    <h3>밸류에이션 입력 (자본금 × 2배 · 지분 기본 10%)</h3>
+    <div class="row3">
+      <div><label>창업유형(주식종류 결정)</label>
+        <select id="inv_ftype">
+          <option value="professor">교원 → 보통주</option>
+          <option value="student">학생 → 우선주(CPS)</option>
+          <option value="general">일반 → 우선주(CPS)</option>
+          <option value="external">외부기업 → 우선주(CPS)</option>
+        </select></div>
+      <div><label>자본금(원)</label><input id="inv_cap" type="number"></div>
+      <div><label>액면가(원)</label><input id="inv_par" type="number"></div>
+    </div>
+    <label>지분율(%) · 기본 10%</label><input id="inv_pct" type="number" value="10" step="0.1" style="max-width:160px">
+    <h3>EXIT·계약 장치 (투자 단계 개별 가감)</h3>
+    <label class="chk"><input type="checkbox" id="inv_drag" checked> 동반매도청구권(Drag-along)</label>
+    <label class="chk"><input type="checkbox" id="inv_rofr" checked> 우선매수권(ROFR)</label>
+    <label class="chk"><input type="checkbox" id="inv_tag" checked> 공동매도권(Tag-along)</label>
+    <label class="chk"><input type="checkbox" id="inv_buy" checked> 바이백(풋옵션)</label>
+    <div class="row" id="inv_buybox">
+      <div><label>최소 행사연도 / 최대(연장 3회)</label>
+        <div class="row"><input id="inv_bmin" type="number" value="7"><input id="inv_bmax" type="number" value="10"></div></div>
+      <div><label>매수 주체</label>
+        <select id="inv_buyer"><option value="founder">창업자(이해관계인)</option><option value="company">회사</option></select></div>
+    </div>
+    <div style="margin-top:14px"><button onclick="inv_genTerm()">텀시트 생성·저장</button>
+      <button class="ghost" onclick="showSec('ic')">④ 투자심의로 →</button></div>
+    <div id="inv_termOut"></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ ④ 컨설팅·투자심의 ============ -->
+<section id="sec-ic" class="sec">
+<div class="wrap">
+  <div class="card" id="ic_picker">
+    <h2>④ 컨설팅 · 투자심의</h2>
+    <label>대상 기업 선택</label><select id="ic_coSel"></select>
+  </div>
+  <div id="ic_body" style="display:none">
+    <div class="card" id="ic_consultCard">
+      <h2 id="ic_coTitle"></h2>
+      <div class="stub" id="ic_draftBox">🤖 자동초안 — 신청·LOI·출자 데이터로 설립계획·성장전략·EXIT 3시나리오 초안을 생성합니다. 컨설턴트가 보완하고, 외부 전문기업·멘토 자료는 첨부로 보강합니다.
+        <button class="ghost" style="margin-top:8px;padding:6px 12px;font-size:12px" onclick="ic_genDraft()">🤖 자동초안 생성</button></div>
+      <h3>설립계획·성장전략 요약</h3>
+      <textarea id="ic_plan" placeholder="사업화 계획·시장·팀·마일스톤·KPI 요약"></textarea>
+      <h3>EXIT 3시나리오 (회수배수 MOIC 자동)</h3>
+      <table class="grid" id="ic_scn">
+        <tr><th>시나리오</th><th>예상 회수금액(원)</th><th>예상 시점(년)</th><th>MOIC</th></tr>
+        <tr><td>IPO</td><td><input type="number" class="ic-amt" data-k="ipo"></td><td><input type="number" class="ic-yr" data-k="ipo" value="7"></td><td class="ic-moic">-</td></tr>
+        <tr><td>M&amp;A</td><td><input type="number" class="ic-amt" data-k="ma"></td><td><input type="number" class="ic-yr" data-k="ma" value="5"></td><td class="ic-moic">-</td></tr>
+        <tr><td>바이백</td><td><input type="number" class="ic-amt" data-k="buy"></td><td><input type="number" class="ic-yr" data-k="buy" value="10"></td><td class="ic-moic">-</td></tr>
+      </table>
+      <div class="muted" id="ic_investNote"></div>
+      <button id="ic_btnConsult" style="display:none;margin-top:12px" onclick="ic_saveConsult()">자문(설립계획·시나리오) 저장</button>
+      <span class="muted" id="ic_consultMsg"></span>
+    </div>
+    <div class="card" id="ic_icCard">
+      <h2>투자심의위원회 의결</h2>
+      <div class="row3">
+        <div><label>재적 정족수 기준(%)</label><input id="ic_quorum" type="number" value="50"></div>
+        <div><label>가결 기준(%) · 과반=50</label><input id="ic_passpct" type="number" value="50"></div>
+        <div><label class="muted" style="margin-top:26px">제척 위원은 재적·출석에서 자동 제외</label></div>
+      </div>
+      <table class="grid" id="ic_members">
+        <tr><th>슬롯</th><th>위원명</th><th>출석</th><th>제척<br>(이해상충)</th><th>점수<br>(0~100)</th><th>의결</th></tr>
+      </table>
+      <div style="margin-top:12px">
+        <button id="ic_btnTally" onclick="ic_tally()">의결 집계·저장</button>
+        <button id="ic_btnMyVote" style="display:none" onclick="ic_saveMyVote()">내 의결 저장</button>
+        <button class="ghost" id="ic_btnReviewPdf" onclick="ic_makeReviewPDF()">📑 심의자료 PDF</button>
+        <button class="ghost" id="ic_btnDecisionPdf" onclick="ic_makeDecisionPDF()">📄 의결서 PDF</button>
+      </div>
+      <div id="ic_result"></div>
+    </div>
+  </div>
+</div>
+</section>
+<div id="ic_pdfStage" style="position:absolute;left:-10000px;top:0;"></div>
+
+<!-- ============ ⑤ 포트폴리오 ============ -->
+<section id="sec-port" class="sec">
+<div class="wrap">
+  <div class="card" id="port_picker">
+    <h2>📊 자회사 포트폴리오 관리</h2>
+    <div class="muted">설립 완료 자회사의 분기 회계보고·연간 가결산 자산평가(취득원가+순자산가치 병기·손상검토)를 관리합니다.</div>
+    <label>대상 자회사 선택</label><select id="port_coSel"></select>
+    <div class="stub">🔗 P2 연계 — thevc식 투자기업 관리 Notion DB와 cid로 연결해 재무 레코드를 공유합니다.</div>
+  </div>
+  <div id="port_body" style="display:none">
+    <div class="card">
+      <h2 id="port_coTitle"></h2>
+      <div class="kpi3">
+        <div class="kpi"><b id="port_kcost">-</b><span>취득원가(출자금)</span></div>
+        <div class="kpi"><b id="port_kpct">-</b><span>지주 지분율</span></div>
+        <div class="kpi"><b id="port_kcarry">-</b><span>평가 장부가(보수)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>분기 회계보고</h2>
+      <div class="row">
+        <div><label>연도</label><input id="port_year" type="number"></div>
+        <div><label>분기</label><select id="port_q"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>매출(원)</label><input id="port_rev" type="number"></div>
+        <div><label>영업이익(원)</label><input id="port_op" type="number"></div>
+      </div>
+      <div class="row">
+        <div><label>당기순이익(원)</label><input id="port_net" type="number"></div>
+        <div><label>자산총계(원)</label><input id="port_asset" type="number"></div>
+      </div>
+      <div class="row">
+        <div><label>부채총계(원)</label><input id="port_liab" type="number"></div>
+        <div><label>자본총계(원)</label><input id="port_equity" type="number"></div>
+      </div>
+      <button style="margin-top:12px" onclick="port_addReport()">분기보고 등록</button>
+      <span class="muted" id="port_repMsg"></span>
+      <h3>제출 현황 / 미제출 요청</h3>
+      <div id="port_missBox"></div>
+      <table class="grid" id="port_repTbl"></table>
+    </div>
+    <div class="card">
+      <h2>연간 가결산 — 자산평가</h2>
+      <table class="grid" id="port_valTbl"></table>
+      <div class="muted" style="margin-top:8px">※ 순자산가치 = 최신 자본총계 × 지분율. 순자산이 취득원가 미만이면 손상으로 보아 장부가를 감액 표시합니다.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ ⑥ 관리 콘솔 ============ -->
+<section id="sec-console" class="sec">
+<div class="wrap">
+  <div class="subtabs" style="margin-top:14px">
+    <button class="on" data-t="dash" onclick="con_tab('dash')">📊 현황</button>
+    <button data-t="co" onclick="con_tab('co')">🏢 기업 단일뷰</button>
+    <button data-t="seed" onclick="con_tab('seed')">🌱 다년 시드</button>
+    <button data-t="vars" onclick="con_tab('vars')">⚙️ 변수·심의위원</button>
+    <button data-t="benefit" onclick="con_tab('benefit')">🎁 혜택 콘텐츠</button>
+    <button data-t="acct" onclick="con_tab('acct')">🔐 계정</button>
+  </div>
+
+  <div class="card con-sec" data-s="dash">
+    <h2>파이프라인 현황</h2>
+    <div class="kpis" id="con_kpis"></div>
+    <h3>최근 신청</h3>
+    <table class="grid" id="con_recent"><tr><th>접수번호</th><th>기업</th><th>유형</th><th>적격성</th><th>단계</th></tr></table>
+  </div>
+
+  <div class="card con-sec hidden" data-s="co">
+    <h2>기업 단일뷰 (cid 기준 전 이력)</h2>
+    <label>기업 선택</label><select id="con_coSel"></select>
+    <div id="con_coView"></div>
+  </div>
+
+  <div class="card con-sec hidden" data-s="seed">
+    <h2>다년 시드 — 미설립 기업 이월 관리</h2>
+    <div class="muted">자회사 설립에 이르지 못한 기업도 삭제하지 않고 차년도로 이월하여 모든 시드를 누적합니다.</div>
+    <table class="grid" id="con_seedTbl"><tr><th>기업</th><th>cid</th><th>신청연도</th><th>단계</th><th>차년도 이월</th></tr></table>
+  </div>
+
+  <div class="card con-sec hidden" data-s="vars">
+    <h2>모집 차수</h2>
+    <div class="row3">
+      <div><label>현재 모집 차수</label><input id="con_round" type="number" min="1"></div>
+      <div><label class="muted" style="margin-top:26px">접수번호 = 유형+차수_대표자_순번 (예: P1_홍길동_001). 차수 변경 시 순번 001부터.</label></div>
+      <div><button class="act" onclick="con_saveRound()" style="margin-top:18px">차수 저장</button> <span id="con_roundMsg" class="muted"></span></div>
+    </div>
+    <h2 style="margin-top:18px">IC 의결 변수 · 심의위원 7슬롯</h2>
+    <div class="row3">
+      <div><label>재적 정족수 기준(%)</label><input id="con_quorum" type="number"></div>
+      <div><label>가결 기준(%) · 과반=50</label><input id="con_pass" type="number"></div>
+      <div><label class="muted" style="margin-top:26px">제척 위원은 자동 제외</label></div>
+    </div>
+    <h3>심의위원 명부(슬롯 매핑·교체)</h3>
+    <table class="grid" id="con_memTbl"><tr><th>슬롯</th><th>위원 성명(공석=미배정)</th></tr></table>
+    <button style="margin-top:12px" onclick="con_saveVars()">변수·명부 저장</button>
+    <span id="con_varsMsg" class="muted"></span>
+  </div>
+
+  <div class="card con-sec hidden" data-s="benefit">
+    <h2>설립 이후 혜택 콘텐츠</h2>
+    <h3>① 기업성장지원 (변동형 — 연도별 갱신)</h3>
+    <textarea id="con_bgrowth" placeholder="자회사 성장지원 프로그램 내용(후속투자·정부과제·멘토링·바우처 등)"></textarea>
+    <h3>② 제도적 혜택 — 연구소기업 안내(보강 메모, 선택)</h3>
+    <textarea id="con_bresearch" placeholder="연구소기업 제도 안내 보강 문구(기본 안내는 신청 페이지에 고정 표시)"></textarea>
+    <button style="margin-top:12px" onclick="con_saveBenefit()">혜택 콘텐츠 저장</button>
+    <span id="con_benefitMsg" class="muted"></span>
+  </div>
+
+  <div class="card con-sec hidden" data-s="acct">
+    <h2>계정 관리 (부여형 아이디 · 비밀번호 발급)</h2>
+    <div class="muted">관리자가 담당자·산학협력단·외부 심의위원/컨설턴트 계정을 발급합니다. 외부위원·컨설턴트는 만료일·비활성으로 접근을 취소할 수 있습니다(비번은 해시 저장).</div>
+    <h3>계정 추가</h3>
+    <div class="row3">
+      <div><label>아이디</label><input id="con_naId" placeholder="예: staff2 / ic1"></div>
+      <div><label>역할</label>
+        <select id="con_naRole">
+          <option value="staff">지주 담당자/컨설턴트(내부)</option>
+          <option value="consultant">컨설턴트(외부)</option>
+          <option value="tlo">산학협력단</option>
+          <option value="ic">외부 심의위원</option>
+          <option value="admin">종합관리자</option>
+        </select></div>
+      <div><label>표시명</label><input id="con_naName"></div>
+    </div>
+    <div class="row">
+      <div><label>임시 비밀번호</label><input id="con_naPw"></div>
+      <div><label>만료일(선택)</label><input id="con_naExp" type="date"></div>
+    </div>
+    <button style="margin-top:12px" onclick="con_addAccount()">계정 발급</button>
+    <span id="con_addMsg" class="muted"></span>
+    <h3>계정 목록</h3>
+    <table class="grid" id="con_acctTbl"><tr><th>아이디</th><th>역할</th><th>표시명</th><th>상태</th><th>새 비밀번호</th><th></th></tr></table>
+    <button style="margin-top:12px" onclick="con_saveAccts()">비밀번호 변경 저장</button>
+    <span id="con_acctMsg" class="muted"></span>
+    <h3>🎯 외부 심의위원·컨설턴트 자회사 배당</h3>
+    <div class="muted">외부(심의위원·컨설턴트)는 배당된 자회사만 열람·심의할 수 있습니다. Ctrl/Shift로 복수 선택.</div>
+    <div id="con_assignBox"></div>
+  </div>
+</div>
+</section>
+
+<script>
+/* ===== common/invest.js (inlined) ===== */
+/* =========================================================================
+   자회사 설립 통합관리 — 투자산식 모듈 (invest.js)  [v4 검증 산식 이식]
+   - 텀시트 2배 인정 방식: 주당발행가=액면×2, 신주=기존주식×지분율/(1-지분율) 올림
+   - 교원=보통주(common) / 학생·일반·외부=우선주 CPS(청산1배·전환1:1·무상환)
+   - EXIT 표준장치 Drag-along·ROFR·Tag-along + 바이백(7년+3회연장=최대10년)
+   - 회귀 검증: ㈜비앤비(보통주) / ㈜이듬(우선주)
+   ========================================================================= */
+(function (global) {
+  'use strict';
+
+  // 창업유형 → 주식종류 (교원만 보통주, 그 외 전부 CPS)
+  function stockTypeOf(founderType) {
+    return founderType === 'professor' ? 'common' : 'cps';
+  }
+  var STOCK_LABEL = { common: '보통주', cps: '우선주(CPS)' };
+  var FOUNDER_LABEL = {
+    professor: '교원 창업', student: '학생 창업',
+    general: '일반 개인 창업', external: '외부 기업'
+  };
+
+  // CPS 표준 조건 (확정: 청산우선권 1배·전환비율 1:1·무상환·우선배당 연1%)
+  function cpsTerms() {
+    return { liqPref: 1, convRatio: 1, redeemable: false, divPref: 0.01,
+             desc: '청산우선권 1배 · 전환비율 1:1 · 무상환 · 우선배당 연 1%' };
+  }
+
+  // EXIT 표준 장치 기본값 (투자단계 개별 가감)
+  function defaultExitTerms() {
+    return {
+      dragAlong: true,   // 동반매도청구권
+      rofr: true,        // 우선매수권
+      tagAlong: true,    // 공동매도권
+      buyback: {         // 바이백(풋옵션)
+        enabled: true, minYears: 7, extensions: 3, maxYears: 10,
+        buyer: 'founder', // 'founder'(창업자/이해관계인) | 'company'(회사)
+        desc: '최소 7년 + 협의 3회 연장(최대 10년), 미회수 시 약정가로 매수'
+      }
+    };
+  }
+
+  /* 핵심 산식
+     입력: capital(자본금), par(액면가), equityPct(지분율 0~1), founderType
+     - existingShares = round(capital/par)
+     - issuePrice     = par × 2
+     - newShares      = ceil(existingShares × equityPct/(1-equityPct))
+     - investment     = newShares × issuePrice
+     - preMoneyBook   = capital            (장부 자본금)
+     - preMoneyValue  = capital × 2        (2배 밸류 = existingShares×issuePrice)
+     - postMoney      = (existing+new) × issuePrice
+     - actualPct      = new/(existing+new) (올림으로 10% 소폭 상회)            */
+  function compute(input) {
+    var capital = Number(input.capital) || 0;
+    var par = Number(input.par) || 0;
+    var equityPct = Number(input.equityPct);
+    if (!(equityPct > 0 && equityPct < 1)) equityPct = 0.10; // 기본 10%
+    var founderType = input.founderType || 'external';
+
+    var existingShares = par > 0 ? Math.round(capital / par) : 0;
+    var issuePrice = par * 2;
+    // 부동소수점 오차 보정: 정수 경계(예: 정확히 500.0)가 501로 올림되지 않도록 epsilon 차감
+    var rawNew = existingShares * (equityPct / (1 - equityPct));
+    var newShares = Math.ceil(rawNew - 1e-9);
+    var investment = newShares * issuePrice;
+    var preMoneyBook = capital;
+    var preMoneyValue = capital * 2;
+    var postMoney = (existingShares + newShares) * issuePrice;
+    var actualPct = (existingShares + newShares) > 0
+      ? newShares / (existingShares + newShares) : 0;
+    var stockType = stockTypeOf(founderType);
+
+    return {
+      input: { capital: capital, par: par, equityPct: equityPct, founderType: founderType },
+      founderLabel: FOUNDER_LABEL[founderType] || founderType,
+      stockType: stockType,
+      stockLabel: STOCK_LABEL[stockType],
+      cps: stockType === 'cps' ? cpsTerms() : null,
+      existingShares: existingShares,
+      issuePrice: issuePrice,
+      newShares: newShares,
+      investment: investment,
+      preMoneyBook: preMoneyBook,
+      preMoneyValue: preMoneyValue,
+      postMoney: postMoney,
+      actualPct: actualPct,
+      exit: defaultExitTerms()
+    };
+  }
+
+  // EXIT 시나리오용 회수배수(MOIC) 간이 계산
+  function moic(investment, exitProceeds) {
+    return investment > 0 ? exitProceeds / investment : 0;
+  }
+
+  var INVEST = {
+    compute: compute, stockTypeOf: stockTypeOf, cpsTerms: cpsTerms,
+    defaultExitTerms: defaultExitTerms, moic: moic,
+    STOCK_LABEL: STOCK_LABEL, FOUNDER_LABEL: FOUNDER_LABEL
+  };
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = INVEST;
+  global.INVEST = INVEST;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+/* ===== common/app.js (inlined) ===== */
+/* =========================================================================
+   자회사 설립 통합관리 — 공통 프레임워크 (app.js)  전역: SUB
+   - 로컬↔서버 전환(config.json apiUrl 한 줄), 2층 cid, 5역할 부여형 인증
+   - 레코드 저장(applicants/loi/invest/ic/portfolio), localStorage 우선
+   - brand.js(BRAND.renderHeader)가 요구하는 API 표면 제공
+   ========================================================================= */
+var SUB = (function (global) {
+  'use strict';
+
+  var LS_KEY = 'SUB_DB_v6';
+  var CFG = { apiUrl: '', org: '충북대학교기술지주㈜' };
+  // 서버 동기화 컬렉션 정의 — kind: 'array'(cid 식별 배열) | 'map'(cid/id 키 맵) | 'single'(싱글턴)
+  var COLLS = {
+    companies:  { kind: 'array', key: 'cid' },
+    leads:      { kind: 'array', key: 'leadId' },   // 발굴(미신청 잠재기업)
+    applicants: { kind: 'map' },
+    loi:        { kind: 'map' },
+    invest:     { kind: 'map' },
+    ic:         { kind: 'map' },
+    ic_votes:   { kind: 'map' },   // 위원별 투표 (키=cid__voterId)
+    portfolio:  { kind: 'map' },
+    accounts:   { kind: 'map' },
+    icConfig:   { kind: 'single' },
+    benefits:   { kind: 'single' },
+    roundCfg:   { kind: 'single' } // 모집 차수 설정 {round}
+  };
+
+  // ---- 결정적 해시(djb2, 비암호) : cid 식별·PW 데모 해시용 ----
+  function hash(str) {
+    var h = 5381, i = String(str).length;
+    while (i) h = (h * 33) ^ String(str).charCodeAt(--i);
+    return (h >>> 0).toString(36);
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function digits(s) { return String(s || '').replace(/\D/g, ''); }
+
+  /* ---- 2층 cid ----
+     기창업(사업자번호 보유): cid = 'C' + 사업자번호(숫자만)
+     예비창업(사업자번호 없음): cid = 'P' + hash(대표자명 + 생년월일)  // 개인정보 해시
+     appId(연도별 신청 인스턴스): cid + '-' + year + '-' + seq          */
+  function makeCID(p) {
+    p = p || {};
+    var biz = digits(p.bizno);
+    if (biz.length >= 10) return 'C' + biz;
+    var key = String(p.ceoName || '').replace(/\s/g, '') + '|' + digits(p.birth);
+    return 'P' + hash(key);
+  }
+  // 접수번호: {유형}{차수}_{대표자명}_{3자리}  (유형: cid[0] = P 예비창업 / C 기창업)
+  function appIdType(cid) { return String(cid).charAt(0) === 'C' ? 'C' : 'P'; }
+  function makeAppId(cid, round, name, seq) {
+    return appIdType(cid) + (round || 1) + '_' + String(name || '').replace(/\s/g, '') + '_' + ('000' + (seq || 1)).slice(-3);
+  }
+  // 로컬 채번(서버모드는 GAS가 채번). 같은 cid+차수 기존건 있으면 그 접수번호 재사용.
+  function assignAppIdLocal(cid, ceo) {
+    var round = (DB.roundCfg && DB.roundCfg.round) || 1;
+    var prefix = appIdType(cid) + round + '_';
+    var keys = Object.keys(DB.applicants || {});
+    for (var i = 0; i < keys.length; i++) {
+      var r = DB.applicants[keys[i]];
+      if (r && r.cid === cid && String(r.appId || '').indexOf(prefix) === 0) return r.appId;
+    }
+    if (!DB.roundCfg) DB.roundCfg = { round: 1 };
+    if (!DB.roundCfg.counters) DB.roundCfg.counters = {};
+    var seq = (DB.roundCfg.counters[round] || 0) + 1; DB.roundCfg.counters[round] = seq;
+    return makeAppId(cid, round, ceo, seq);
+  }
+
+  // ---- 5역할 (tabs는 brand.js PAGES.tab과 매칭) ----
+  var ROLES = {
+    admin:      { label: '종합관리자', tabs: ['apply','loi','invest','ic','board','port','admin'] },
+    staff:      { label: '지주 담당자', tabs: ['apply','loi','invest','ic','board','port'] },
+    consultant: { label: '컨설턴트(외부)', tabs: ['ic'] },   // 자문(설립계획 초안) — 배당 cid
+    ic:         { label: '심의위원(외부)', tabs: ['ic'] },    // 의결표 — 배당 cid
+    tlo:        { label: '산학협력단', tabs: ['loi'] },
+    applicant:  { label: '신청기업', tabs: ['apply'] }
+  };
+
+  // ---- 기본 계정(부여형 아이디/PW, 데모) : 산학협력단 1 + 심의위원 7슬롯 + 담당자 + 관리자 ----
+  function seedAccounts() {
+    var acc = {};
+    function add(id, pw, role, name) { acc[id] = { pw: hash(pw), role: role, name: name || '' }; }
+    add('admin', 'admin1234', 'admin', '종합관리자');
+    add('staff', 'staff1234', 'staff', '지주 담당자');
+    add('tlo',   'tlo1234',   'tlo',   '산학협력단 기술이전팀'); // 공유 ID 1개
+    for (var i = 1; i <= 7; i++) add('ic' + i, 'ic' + i + '1234', 'ic', ''); // 위원 7슬롯(관리자 매핑)
+    return acc;
+  }
+
+  function freshDB() {
+    return {
+      v: 6,
+      companies: [],                 // 기업 마스터 [{cid,name,ceo,type,bizno,year}]
+      leads: [],                     // 발굴 잠재기업 [{leadId,cid?,name,ceo,tel,techName,source,memo,status}]
+      applicants: {}, loi: {}, invest: {}, ic: {}, ic_votes: {}, portfolio: {}, // cid 키 (ic_votes 키=cid__voterId)
+      accounts: seedAccounts(),
+      icConfig: { quorumPct: 0.5, passPct: 0.5, members: {} }, // 정족수·가결·위원슬롯 매핑(변수)
+      benefits: { growth: '', research: '' }, // 혜택 콘텐츠(관리자 편집)
+      roundCfg: { round: 1 } // 모집 차수
+    };
+  }
+  // 서버에서 받은 DB를 정규화(누락 컬렉션 보강)
+  function normalize(d) {
+    d = d || {};
+    Object.keys(COLLS).forEach(function (c) {
+      var def = COLLS[c];
+      if (def.kind === 'array') { if (!Array.isArray(d[c])) d[c] = []; }
+      else if (def.kind === 'map') { if (!d[c] || typeof d[c] !== 'object') d[c] = {}; }
+      else { if (!d[c] || typeof d[c] !== 'object') d[c] = (c === 'icConfig' ? { quorumPct: 0.5, passPct: 0.5, members: {} } : c === 'roundCfg' ? { round: 1 } : { growth: '', research: '' }); }
+    });
+    if (!d.accounts || !Object.keys(d.accounts).length) d.accounts = seedAccounts();
+    d.v = 6; return d;
+  }
+
+  // ---- 저장소 ----
+  function lsGet(k) { try { return global.localStorage ? global.localStorage.getItem(k) : null; } catch (e) { return null; } }
+  function lsSet(k, v) { try { if (global.localStorage) global.localStorage.setItem(k, v); } catch (e) {} }
+
+  var DB = (function () {
+    var raw = lsGet(LS_KEY);
+    if (raw) { try { return JSON.parse(raw); } catch (e) {} }
+    return freshDB();
+  })();
+  function save() { lsSet(LS_KEY, JSON.stringify(DB)); }
+  // 내부 DB 내용만 in-place 교체(export된 SUB.DB 참조 유지) — 초기화해도 같은 객체
+  function resetDB() {
+    var f = freshDB();
+    Object.keys(DB).forEach(function (k) { delete DB[k]; });
+    Object.assign(DB, f);
+    save(); return DB;
+  }
+  // 서버 DB로 내부 내용만 in-place 교체(export된 SUB.DB 참조 유지) — 폴링 중 화면 끊김 없이 갱신
+  function assignDB(src) {
+    var n = normalize(src);
+    Object.keys(DB).forEach(function (k) { delete DB[k]; });
+    Object.assign(DB, n);
+    lsSet(LS_KEY, JSON.stringify(DB));   // 로컬 캐시만 갱신(브로드캐스트 없이)
+    return DB;
+  }
+
+  // ---- URL 파라미터(cid·role) ----
+  function qparam(name) {
+    try {
+      var m = (global.location && global.location.search || '').match(new RegExp('[?&]' + name + '=([^&]*)'));
+      return m ? decodeURIComponent(m[1]) : '';
+    } catch (e) { return ''; }
+  }
+  var _session = { cid: '', role: '', id: '', name: '', scope: null, token: '' };
+  // ---- 세션 영속화(페이지 이동 간 인증 유지). sessionStorage 우선(탭 종료 시 만료). ----
+  var SS_KEY = 'SUB_SESSION_v6';
+  function _store() { try { return global.sessionStorage || global.localStorage || null; } catch (e) { return null; } }
+  function saveSession() { var s = _store(); if (s) try { s.setItem(SS_KEY, JSON.stringify(_session)); } catch (e) {} }
+  function loadSession() { var s = _store(); if (!s) return null; try { return JSON.parse(s.getItem(SS_KEY)); } catch (e) { return null; } }
+  function clearSession() { var s = _store(); if (s) try { s.removeItem(SS_KEY); } catch (e) {} }
+
+  function getCID() { return _session.cid || qparam('cid'); }
+  function setCID(cid) { _session.cid = cid || ''; saveSession(); }
+  function getRole() {
+    if (_session.role) return _session.role;
+    var s = loadSession(); if (s && s.role) { _session = s; return s.role; }
+    // 라이브(서버)모드: ?role= 무시(위조 방지) → 반드시 로그인. 로컬/데모: 편의상 ?role= 또는 admin.
+    if (serverOn()) return '';
+    var r = qparam('role'); return ROLES[r] ? r : 'admin';
+  }
+  function setRole(r) { if (ROLES[r]) { _session.role = r; saveSession(); } }
+  function logout() { _session = { cid: '', role: '', id: '', name: '', scope: null }; clearSession(); }
+  function session() {
+    if (!_session.role) { var s = loadSession(); if (s) _session = s; }
+    return _session;
+  }
+
+  // ---- 인증 ----
+  // 로컬/데모: DB.accounts 동기 검증(테스트·오프라인). 라이브: loginAsync(서버검증).
+  function login(id, pw) {
+    var a = DB.accounts[id];
+    if (!a || a.pw !== hash(pw)) return { ok: false, msg: '아이디 또는 비밀번호가 올바르지 않습니다.' };
+    if (a.disabled) return { ok: false, msg: '비활성화된 계정입니다.' };
+    if (a.expireAt && nowISO() > a.expireAt) return { ok: false, msg: '만료된 계정입니다.' };
+    _session.role = a.role; _session.id = id; _session.name = a.name || ''; _session.scope = a.scope || null; saveSession();
+    return { ok: true, role: a.role, name: a.name, id: id, scope: a.scope || null };
+  }
+  // 서버검증 로그인(라이브). 서버 미설정 시 동기 login 결과를 Promise로 래핑.
+  function loginAsync(id, pw) {
+    if (!serverOn()) return Promise.resolve(login(id, pw));
+    return post('login', { id: id, pw: hash(pw) }).then(function (res) {
+      if (res && res.ok) {
+        _session.role = res.role; _session.id = id; _session.name = res.name || ''; _session.scope = res.scope || null;
+        _session.token = res.token || ''; saveSession();
+        if (res.token) { serverLoad(); }   // 토큰 확보 후 스코프 데이터 로드
+        return { ok: true, role: res.role, name: res.name, id: id, scope: res.scope || null };
+      }
+      return { ok: false, msg: (res && res.msg) || '아이디 또는 비밀번호가 올바르지 않습니다.' };
+    });
+  }
+  // 신청자 로그인(접수번호 + 연락처 뒷4자리) — 서버검증, 본인 cid만
+  function applicantLogin(appId, last4) {
+    if (!serverOn()) {
+      // 로컬모드: applicants에서 appId+뒷4 검증
+      var found = null, keys = Object.keys(DB.applicants || {});
+      for (var i = 0; i < keys.length; i++) { var r = DB.applicants[keys[i]]; if (r && r.appId === appId) { found = r; break; } }
+      if (!found) return Promise.resolve({ ok: false, msg: '접수번호를 찾을 수 없습니다.' });
+      if (digits(found.tel).slice(-4) !== String(last4)) return Promise.resolve({ ok: false, msg: '연락처 뒷자리가 일치하지 않습니다.' });
+      _session.role = 'applicant'; _session.id = appId; _session.cid = found.cid; _session.scope = { cids: [found.cid] }; saveSession();
+      return Promise.resolve({ ok: true, role: 'applicant', cid: found.cid });
+    }
+    return post('applogin', { appId: appId, last4: last4 }).then(function (res) {
+      if (res && res.ok) {
+        _session.role = 'applicant'; _session.id = appId; _session.cid = res.cid || ''; _session.scope = res.scope || null;
+        _session.token = res.token || ''; saveSession();
+        if (res.token) { serverLoad(); }
+        return { ok: true, role: 'applicant', cid: res.cid };
+      }
+      return { ok: false, msg: (res && res.msg) || '로그인 실패' };
+    });
+  }
+
+  // ---- 기업 마스터/디렉터리 ----
+  function directory() { return DB.companies.map(function (c) { return { name: c.name, ceo: c.ceo }; }); }
+  function company() {
+    var cid = getCID(); if (!cid) return null;
+    for (var i = 0; i < DB.companies.length; i++) if (DB.companies[i].cid === cid) return DB.companies[i];
+    return null;
+  }
+  function selectDirectoryCompany(name) {
+    for (var i = 0; i < DB.companies.length; i++) {
+      if (DB.companies[i].name === name) { setCID(DB.companies[i].cid); return DB.companies[i].cid; }
+    }
+    return '';
+  }
+  function upsertCompany(c) {
+    // 중복가드: cid 기준 upsert (다년 시드 = 같은 cid에 누적). 서버모드면 자동 동기화.
+    var merged = null;
+    for (var i = 0; i < DB.companies.length; i++) {
+      if (DB.companies[i].cid === c.cid) { merged = Object.assign(DB.companies[i], c); break; }
+    }
+    if (!merged) { merged = c; DB.companies.push(c); }
+    save(); refresh(); if (serverOn()) serverSet('companies', merged.cid, merged);
+    return merged;
+  }
+  function saveCompany() { /* 관리자 신규기업 버튼 자리(콘솔에서 구현) */ }
+
+  // ---- 백업/복원 ----
+  function exportJSON() {
+    try {
+      var blob = new global.Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' });
+      var a = global.document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = '자회사설립_백업.json'; a.click();
+    } catch (e) {}
+  }
+  function importJSON(file) {
+    var fr = new global.FileReader();
+    fr.onload = function () { try { DB = JSON.parse(fr.result); save(); global.location.reload(); } catch (e) { alert('복원 실패'); } };
+    fr.readAsText(file);
+  }
+
+  /* ---- IC(투자심의위원회) 의결 집계 ----
+     members: [{assigned, present, recused, vote:'for'|'conditional'|'against'|'abstain', score:0~100}]
+     config:  { quorumPct, passPct }
+     - 제척(recused)은 재적·출석에서 제외
+     - 정족수: 출석 >= ceil(재적 × quorumPct)
+     - 가결: 찬성(찬성+조건부) >= floor(출석 × passPct)+1  ("과반" 등 초과 기준)
+     - 조건부찬성 포함 가결 시 '조건부가결'                                   */
+  function tallyIC(members, config) {
+    var cfg = config || DB.icConfig || { quorumPct: 0.5, passPct: 0.5 };
+    var assigned = members.filter(function (m) { return m.assigned; });
+    var recused = assigned.filter(function (m) { return m.recused; }).length;
+    var registered = assigned.length - recused;
+    var voters = assigned.filter(function (m) { return !m.recused && m.present; });
+    var present = voters.length;
+    function cnt(v) { return voters.filter(function (m) { return m.vote === v; }).length; }
+    var forC = cnt('for'), conditionalC = cnt('conditional'), againstC = cnt('against'), abstainC = cnt('abstain');
+    var approve = forC + conditionalC;
+    var quorumNeed = Math.ceil(registered * cfg.quorumPct);
+    var quorumMet = present > 0 && present >= quorumNeed;
+    var threshold = Math.floor(present * cfg.passPct) + 1;
+    var passed = quorumMet && approve >= threshold;
+    var result = !quorumMet ? '의결 불성립(정족수 미달)'
+      : (passed ? (conditionalC > 0 ? '조건부가결' : '가결') : '부결');
+    var scores = voters.map(function (m) { return Number(m.score) || 0; });
+    var avgScore = scores.length ? scores.reduce(function (a, b) { return a + b; }, 0) / scores.length : 0;
+    return {
+      registered: registered, recused: recused, present: present,
+      forC: forC, conditionalC: conditionalC, againstC: againstC, abstainC: abstainC,
+      approve: approve, quorumNeed: quorumNeed, quorumMet: quorumMet,
+      threshold: threshold, passed: passed, result: result, avgScore: avgScore
+    };
+  }
+
+  // ic_votes(위원별 레코드) → tallyIC용 members 배열 (icConfig.members 슬롯 기준). PDF·집계 공용.
+  function icVotesToMembers(cid) {
+    var slots = (DB.icConfig && DB.icConfig.members) || {};
+    return Object.keys(slots).map(function (id) {
+      var v = (DB.ic_votes || {})[cid + '__' + id] || {};
+      return { id: id, name: slots[id], assigned: true, present: !!v.present, recused: !!v.recused,
+               vote: v.vote || '', score: Number(v.score) || 0, comment: v.comment || '' };
+    });
+  }
+  function serverOn() { return !!CFG.apiUrl; }
+  // apiUrl이 새로 설정되면 서버 로드 + 폴링 시작(페이지의 명시적 config 로드 경로 대응)
+  function setConfig(c) {
+    if (!c) return;
+    var was = CFG.apiUrl; CFG = Object.assign(CFG, c);
+    if (!was && CFG.apiUrl) { try { serverLoad(); startPoll(); } catch (e) {} }
+  }
+
+  /* ---- 포트폴리오 자산평가 (확정: 취득원가 + 순자산가치 병기 + 손상검토) ----
+     cost=취득원가(출자금), equity=자회사 자본총계, pct=지주 지분율
+     - nav(순자산가치)=equity×pct  - 손상=nav<cost - 장부(보수)=손상 시 nav로 감액      */
+  function evalAsset(cost, equity, pct) {
+    cost = Number(cost) || 0; equity = Number(equity) || 0; pct = Number(pct) || 0;
+    var nav = equity * pct;
+    var impaired = (equity > 0) && (nav < cost);
+    var carrying = impaired ? nav : cost;
+    return { cost: cost, nav: nav, impaired: impaired, carrying: carrying, gap: nav - cost, pct: pct };
+  }
+  /* ---- 컨설팅 자동초안(설립계획·성장전략·EXIT 3시나리오) ----
+     오프라인 규칙기반 초안 → 컨설턴트 보완. (서버/멀티에이전트 연결 시 대체 가능)   */
+  function buildConsultDraft(ctx) {
+    ctx = ctx || {};
+    var co = ctx.company || {}, ap = ctx.applicant || {}, loi = ctx.loi || {}, inv = ctx.invest || {};
+    var FL = { professor: '교원 창업', student: '학생 창업', general: '일반 개인 창업', external: '외부 기업' };
+    var w = function (n) { return (Math.round(Number(n) || 0)).toLocaleString('ko-KR') + '원'; };
+    var invAmt = inv.investment || 0;
+    var pct = ((inv.actualPct || inv.equityPct || 0.1) * 100).toFixed(1);
+    var stock = inv.stockType === 'common' ? '보통주' : '우선주(CPS)';
+    var plan = [
+      '【설립계획 요약】',
+      '· 기업: ' + (co.name || '') + ' (대표 ' + (ap.ceo || '') + ', ' + (FL[ap.founderType] || '') + ')',
+      '· 사업화 기술: ' + (loi.techName || ap.techName || '') + (loi.researcher ? (' / 연구자 ' + loi.researcher) : ''),
+      '· 출자: 자본금×2 밸류 · 지분 ' + pct + '% · ' + stock + ' · 투자금 ' + w(invAmt),
+      '',
+      '【성장전략(초안)】',
+      '· 1년차: 기술이전 완료·시제품/PoC·초기 매출 확보 (KPI: 매출·계약·고용)',
+      '· 2~3년차: 제품 고도화·시장확대·후속투자(Pre-A/A) 유치 (KPI: 매출성장률·재구매)',
+      '· 마일스톤: 기술이전 → 인증/인허가 → 레퍼런스 확보 → 후속라운드',
+      '※ 컨설턴트가 기업 실데이터로 보완 요망. 외부 전문기업·멘토 자료는 첨부로 보강.'
+    ].join('\n');
+    var scenarios = {
+      ipo: { amount: Math.round(invAmt * 10), year: 7 },   // 목표 MOIC 10x
+      ma:  { amount: Math.round(invAmt * 5),  year: 5 },   // 5x
+      buy: { amount: Math.round(invAmt * 2),  year: 10 }   // 바이백 2x
+    };
+    return { plan: plan, scenarios: scenarios };
+  }
+
+  // 해당 연도 미제출 분기 [1..4] - 제출분
+  function missingQuarters(reports, year) {
+    var done = {};
+    (reports || []).forEach(function (r) { if (Number(r.year) === Number(year)) done[Number(r.quarter)] = true; });
+    var miss = []; for (var q = 1; q <= 4; q++) if (!done[q]) miss.push(q);
+    return miss;
+  }
+
+  // 사전 미팅 예약 시스템(기존)
+  var MEETING_URL = 'https://cbnuholdings.github.io/meeting-booking/';
+
+  /* ---- LAGMP(성장관리 플랫폼) 인계 — 같은 cid 공유 ----
+     설립 완료 자회사를 동일 cid·기업명으로 LAGMP에 넘겨 비재무 성장지원(멘토링·IR·성장지수) 연계.
+     발굴→설립→성장 라이프사이클을 끊김 없이 연결.                                    */
+  var LAGMP_URL = 'https://cbnuholdings.github.io/growth-platform/dashboard.html';
+  function handoffToLAGMP(cid) {
+    var co = null; for (var i = 0; i < DB.companies.length; i++) if (DB.companies[i].cid === cid) co = DB.companies[i];
+    if (!co) return { ok: false, error: 'no-company' };
+    if (['설립', '관리', '심의가결'].indexOf(co.stage) < 0) return { ok: false, error: 'not-established' };
+    upsertCompany({ cid: cid, lagmpHandoff: true, lagmpAt: nowISO() });
+    save();
+    var url = LAGMP_URL + '?cid=' + encodeURIComponent(cid) + '&name=' + encodeURIComponent(co.name || '');
+    return { ok: true, url: url };
+  }
+  function requestMeeting(cid) {
+    if (!cid) return { ok: false };
+    upsertCompany({ cid: cid, meetingRequested: true, meetingAt: nowISO() });
+    save();
+    return { ok: true, url: MEETING_URL };
+  }
+  function nowISO() { return new Date().toISOString(); }
+
+  /* ---- 신청 수정 unlock + 버전 스냅샷 (관리자 허용 → 1회 수정 후 자동 재잠금) ---- */
+  // 관리자: 해당 신청 수정 허용(잠금 해제)
+  function unlockApplicant(cid) {
+    var ap = DB.applicants[cid]; if (!ap) return { ok: false, error: 'no-applicant' };
+    ap.locked = false; ap.unlockedAt = nowISO();
+    commit('applicants', cid, ap);   // 관리자/담당자는 applicants 쓰기 허용
+    return { ok: true };
+  }
+  // 신청자: unlock된 경우에만 수정 → 직전본 history[] 스냅샷 후 적용 + 자동 재잠금
+  function reapplyEdit(cid, edits) {
+    var ap = DB.applicants[cid];
+    if (!ap) return Promise.resolve({ ok: false, error: 'no-applicant' });
+    if (ap.locked !== false) return Promise.resolve({ ok: false, error: 'locked' });
+    ap.history = ap.history || [];
+    var snap = JSON.parse(JSON.stringify(ap)); delete snap.history;
+    ap.history.push({ at: nowISO(), snapshot: snap });
+    ['org', 'tel', 'email', 'techName', 'field'].forEach(function (k) { if (edits && edits[k] != null) ap[k] = edits[k]; });
+    ap.locked = true; ap.editedAt = nowISO();
+    localSet('applicants', cid, ap); save(); refresh();
+    if (serverOn()) return post('reapply', { cid: cid, edits: edits, token: _session.token }).then(applyServerDB);
+    return Promise.resolve({ ok: true });
+  }
+
+  /* ---- Express 패스트트랙 승인(담당자 확인 후) ----
+     기술이전계약+투자동의+필수서류 완비 신청을 담당자가 확인 후 승인하면:
+     LOI(계약체결·산학협력단 동의)·출자 텀시트를 신청 스냅샷으로 자동 prefill →
+     LOI·출자협의 생략하고 단계=심의(IC)로 점프. ★IC 심의는 반드시 거침.            */
+  function approveExpress(cid) {
+    var ap = DB.applicants[cid];
+    if (!ap) return { ok: false, error: 'no-applicant' };
+    if (!ap.express) return { ok: false, error: 'not-express' };
+    var now = nowISO(), iv = ap.invest || {};
+    // LOI 자동(기술이전계약 체결분)
+    DB.loi[cid] = {
+      cid: cid, updatedAt: now, techName: ap.techName || '', researcher: '', field: ap.field || '',
+      scope: '(Express) 기술이전계약 체결분 — 첨부 계약서 기준', status: '계약체결',
+      tloTeam: '충북대학교 산학협력단 기술이전팀', tloConsent: true, tloAt: now,
+      tloMemo: 'Express: 기술이전계약서 첨부·검토 완료', express: true
+    };
+    // 출자 텀시트 자동(신청 밸류 기준)
+    var exit = (global.INVEST && global.INVEST.defaultExitTerms) ? global.INVEST.defaultExitTerms()
+      : { dragAlong: true, rofr: true, tagAlong: true, buyback: { enabled: true, minYears: 7, extensions: 3, maxYears: 10, buyer: 'founder' } };
+    var r = (global.INVEST && global.INVEST.compute) ? global.INVEST.compute(
+      { capital: iv.capital, par: iv.par, equityPct: iv.equityPct, founderType: ap.founderType }) : null;
+    DB.invest[cid] = r ? {
+      cid: cid, savedAt: now, capital: r.input.capital, par: r.input.par, equityPct: r.input.equityPct,
+      stockType: r.stockType, issuePrice: r.issuePrice, newShares: r.newShares, investment: r.investment,
+      preMoneyValue: r.preMoneyValue, postMoney: r.postMoney, actualPct: r.actualPct, cps: r.cps, exit: exit, express: true
+    } : { cid: cid, savedAt: now, capital: iv.capital, par: iv.par, equityPct: iv.equityPct,
+          stockType: iv.stockType, investment: iv.investment, newShares: iv.newShares, postMoney: iv.postMoney, exit: exit, express: true };
+    upsertCompany({ cid: cid, stage: '심의', express: true, expressApprovedAt: now });
+    save(); refresh();
+    if (serverOn()) { serverSet('loi', cid, DB.loi[cid]); serverSet('invest', cid, DB.invest[cid]); }
+    return { ok: true, stage: '심의' };
+  }
+
+  /* =====================================================================
+     서버 데이터 계층 (GAS) — LAGMP 2단계 어댑터 이식 (v6 전체공개·서버화)
+     - apiUrl 빈값=로컬(localStorage 전용). URL=서버(구글시트 1차 + 노션 미러).
+     - 쓰기: 로컬 즉시 반영(낙관적) → 서버 레코드별 set/del → 서버는 최신 내부DB 반환→동기화.
+     - 읽기: serverLoad(GET ?action=load), 페이지 활성 시 25초 폴링(동시접속 반영).
+     - CORS 회피: text/plain 전송(프리플라이트 미발생).
+     - 응답 DB는 assignDB로 in-place 교체(export SUB.DB 참조 유지).               */
+  function post(action, data) {
+    if (!serverOn()) return Promise.resolve({ ok: true, local: true });
+    if (typeof global.fetch !== 'function') return Promise.resolve({ ok: false, error: 'no-fetch' });
+    return global.fetch(CFG.apiUrl, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, data: data })
+    }).then(function (r) { return r.json(); })
+      .catch(function (e) { return { ok: false, error: String(e) }; });
+  }
+  // 서버 응답에 내부DB(db)가 동봉되면 로컬에 반영
+  function applyServerDB(res) {
+    if (res && res.db && typeof res.db === 'object') { assignDB(res.db); refresh(); }
+    return res;
+  }
+  // 전체 내부DB 로드(인증 내부 사용자용). 토큰 동봉(Phase B 인가 스코프).
+  function serverLoad() {
+    if (!serverOn() || typeof global.fetch !== 'function') return Promise.resolve({ ok: true, local: true });
+    if (!_session.token) return Promise.resolve({ ok: false, error: 'no-token' }); // 미로그인 시 서버 데이터 요청 안 함
+    var url = CFG.apiUrl + '?action=load&token=' + encodeURIComponent(_session.token);
+    return global.fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.db) { assignDB(j.db); refresh(); } else if (j && j.companies) { assignDB(j); refresh(); } return j; })
+      .catch(function (e) { return { ok: false, error: String(e) }; });
+  }
+  // 신청 접수(공개) — 서버는 최소응답(전체DB 미반환, 신청자 PII 보호)
+  function submitApplication(rec) { return post('apply', rec); }
+  // 레코드별 서버 반영
+  function serverSet(coll, key, record) { return post('set', { coll: coll, key: key, record: record, token: _session.token }).then(applyServerDB); }
+  function serverDel(coll, key) { return post('del', { coll: coll, key: key, token: _session.token }).then(applyServerDB); }
+  // 하위호환: serverUpsert(coll, key, rec)
+  function serverUpsert(coll, key, rec) { return serverSet(coll, key, rec); }
+
+  /* ---- 커밋(로컬 즉시 + 서버 push) — 페이지는 이 API로 쓰면 자동 동기화 ---- */
+  function localSet(coll, key, rec) {
+    var def = COLLS[coll];
+    if (!def) return;
+    if (def.kind === 'array') {
+      var k = def.key, arr = DB[coll] || (DB[coll] = []), i;
+      for (i = 0; i < arr.length; i++) if (arr[i][k] === rec[k]) { arr[i] = Object.assign(arr[i], rec); return arr[i]; }
+      arr.push(rec); return rec;
+    } else if (def.kind === 'map') {
+      (DB[coll] || (DB[coll] = {}))[key] = rec; return rec;
+    } else { DB[coll] = rec; return rec; }
+  }
+  function localDel(coll, key) {
+    var def = COLLS[coll]; if (!def) return;
+    if (def.kind === 'array') { DB[coll] = (DB[coll] || []).filter(function (x) { return x[def.key] !== key; }); }
+    else if (def.kind === 'map') { delete (DB[coll] || {})[key]; }
+  }
+  function commit(coll, key, rec) { localSet(coll, key, rec); save(); refresh(); if (serverOn()) serverSet(coll, key, rec); return rec; }
+  function commitDel(coll, key) { localDel(coll, key); save(); refresh(); if (serverOn()) serverDel(coll, key); }
+  function commitSingle(coll, value) { DB[coll] = value; save(); refresh(); if (serverOn()) serverSet(coll, '_', value); return value; }
+
+  /* ---- 활성 시 폴링(동시접속 반영) + 페이지 간 동기화 ---- */
+  var _pollTimer = null;
+  function pollTick() {
+    try { if (global.document && global.document.hidden) return; } catch (e) {}
+    serverLoad();
+  }
+  function startPoll() {
+    if (_pollTimer || typeof global.setInterval !== 'function') return;
+    _pollTimer = global.setInterval(pollTick, 25000);
+  }
+  function refresh() { try { if (typeof global.refresh === 'function') global.refresh(); } catch (e) {} }
+  // 같은 브라우저 탭 간 동기화
+  var _bc = null;
+  try { _bc = new global.BroadcastChannel('sub_v6'); _bc.onmessage = function () { reloadLocal(); refresh(); }; } catch (e) {}
+  function reloadLocal() { var raw = lsGet(LS_KEY); if (raw) { try { assignDB(JSON.parse(raw)); } catch (e) {} } }
+  try { if (global.addEventListener) global.addEventListener('storage', function (e) { if (e.key === LS_KEY) { reloadLocal(); refresh(); } }); } catch (e) {}
+
+  // config.json 경로 — app.js 스크립트 위치 기준으로 산출(페이지가 하위폴더든 루트든 견고).
+  function configURL() {
+    try {
+      var sc = global.document && (global.document.currentScript ||
+        (function () { var ss = global.document.getElementsByTagName('script'); for (var i = ss.length - 1; i >= 0; i--) if (/app\.js(\?|$)/.test(ss[i].src)) return ss[i]; return null; })());
+      if (sc && sc.src) return sc.src.replace(/[^/]*$/, '') + 'config.json';   // .../common/app.js → .../common/config.json
+    } catch (e) {}
+    return 'common/config.json';
+  }
+  // config.json 자동 로드 → 서버모드 자동 활성화
+  function initServer() {
+    if (typeof global.fetch !== 'function') return;
+    if (CFG.apiUrl) { serverLoad(); startPoll(); return; }
+    global.fetch(configURL(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (cfg) {
+      if (cfg && cfg.apiUrl) { CFG.apiUrl = cfg.apiUrl; serverLoad(); startPoll(); refresh(); }
+      if (cfg && cfg.org) CFG.org = cfg.org;
+    }).catch(function () { /* file:// 차단/없음 → 로컬모드 유지 */ });
+  }
+  initServer();
+
+  return {
+    CFG: CFG, setConfig: setConfig, DB: DB, save: save, resetDB: resetDB, assignDB: assignDB, normalize: normalize,
+    hash: hash, esc: esc, digits: digits,
+    makeCID: makeCID, makeAppId: makeAppId, appIdType: appIdType, assignAppIdLocal: assignAppIdLocal,
+    ROLES: ROLES, getCID: getCID, setCID: setCID, getRole: getRole, setRole: setRole,
+    login: login, loginAsync: loginAsync, applicantLogin: applicantLogin, logout: logout, session: session,
+    directory: directory, company: company, selectDirectoryCompany: selectDirectoryCompany,
+    upsertCompany: upsertCompany, saveCompany: saveCompany,
+    exportJSON: exportJSON, importJSON: importJSON, serverOn: serverOn,
+    tallyIC: tallyIC, icVotesToMembers: icVotesToMembers, post: post, submitApplication: submitApplication,
+    serverLoad: serverLoad, serverSet: serverSet, serverDel: serverDel, serverUpsert: serverUpsert,
+    commit: commit, commitDel: commitDel, commitSingle: commitSingle, startPoll: startPoll,
+    MEETING_URL: MEETING_URL, requestMeeting: requestMeeting, approveExpress: approveExpress,
+    evalAsset: evalAsset, missingQuarters: missingQuarters, buildConsultDraft: buildConsultDraft,
+    unlockApplicant: unlockApplicant, reapplyEdit: reapplyEdit,
+    LAGMP_URL: LAGMP_URL, handoffToLAGMP: handoffToLAGMP
+  };
+})(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));
+
+if (typeof module !== 'undefined' && module.exports) module.exports = SUB;
+
+</script>
+<script>
+/* ===== common/pdf.js (inlined) ===== */
+/* =========================================================================
+   자회사 설립 통합관리 — 보고서/의결서 PDF (pdf.js)  전역: SUBPDF
+   - buildReportHTML(kind, ctx) : 순수 HTML 빌더(섹션=.pdf-page), node 테스트 가능
+   - renderToPDF(container, filename) : html2canvas+jsPDF 직접제어(섹션마다 새 페이지)
+     ★ html2pdf 미사용(page-break 무효 회피), 캡처폭 794 고정, 한글=캔버스 렌더(폰트 임베드 불필요)
+   ========================================================================= */
+(function (global) {
+  'use strict';
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+  function won(n){ return (Math.round(Number(n)||0)).toLocaleString('ko-KR')+'원'; }
+  var VOTE={for:'찬성',conditional:'조건부',against:'반대',abstain:'기권'};
+
+  var HEAD = '<div class="pdf-head"><div class="org">충북대학교기술지주㈜</div>';
+  var STYLE =
+    '<style>'+
+    '.pdf-page{width:794px;box-sizing:border-box;padding:48px 54px;background:#fff;color:#222;'+
+    'font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:13px;line-height:1.7;}'+
+    '.pdf-head{border-bottom:3px solid #b01c50;padding-bottom:10px;margin-bottom:18px;}'+
+    '.pdf-head .org{color:#b01c50;font-weight:800;font-size:14px;}'+
+    '.pdf-head .ttl{font-size:22px;font-weight:800;margin-top:6px;}'+
+    '.pdf-head .meta{font-size:11px;color:#888;margin-top:4px;}'+
+    '.pdf h3{color:#8a163f;font-size:14px;border-left:4px solid #b01c50;padding-left:8px;margin:18px 0 8px;}'+
+    '.pdf table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}'+
+    '.pdf th,.pdf td{border:1px solid #e2d3d8;padding:6px 8px;}'+
+    '.pdf th{background:#fbf1f4;color:#8a163f;text-align:left;}'+
+    '.verdict{font-size:24px;font-weight:800;padding:10px 0;}'+
+    '.v-ok{color:#1f8a4c;}.v-cond{color:#c47f0a;}.v-bad{color:#c0392b;}.v-non{color:#777;}'+
+    '.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:12px;background:#f3e3e9;color:#8a163f;margin:2px 4px 0 0;}'+
+    '</style>';
+
+  function decisionHTML(ctx){
+    var co=ctx.company||{}, ic=ctx.ic||{}, t=(ic.tally)||{}, loi=ctx.loi||{};
+    var cls = !t.quorumMet?'v-non':(t.result==='가결'?'v-ok':(t.result==='조건부가결'?'v-cond':'v-bad'));
+    var rows=(ic.members||[]).filter(function(m){return m.assigned;}).map(function(m){
+      return '<tr><td>'+esc(m.id)+'</td><td>'+esc(m.name||'')+'</td><td>'+(m.recused?'제척':(m.present?'출석':'불참'))+
+        '</td><td>'+(m.recused?'-':(VOTE[m.vote]||''))+'</td><td>'+(m.recused?'-':(m.score||0))+'</td></tr>'; }).join('');
+    return '<section class="pdf-page pdf">'+HEAD+
+      '<div class="ttl">투자심의위원회 의결서</div>'+
+      '<div class="meta">의결일 '+esc(ctx.dateStr||'')+' · 문서 cid '+esc(co.cid||'')+'</div></div>'+
+      '<h3>1. 심의 대상</h3><table>'+
+      '<tr><th>기업명</th><td>'+esc(co.name||'')+'</td><th>대표자</th><td>'+esc(ctx.ceo||'')+'</td></tr>'+
+      '<tr><th>대상기술</th><td colspan="3">'+esc((loi.techName)||'')+(loi.researcher?(' (연구자 '+esc(loi.researcher)+')'):'')+'</td></tr></table>'+
+      '<h3>2. 의결 결과</h3><div class="verdict '+cls+'">'+esc(t.result||'-')+'</div>'+
+      '<table><tr><th>재적</th><td>'+(t.registered||0)+'명(제척 '+(t.recused||0)+')</td><th>출석</th><td>'+(t.present||0)+'명(정족수 '+(t.quorumNeed||0)+')</td></tr>'+
+      '<tr><th>찬성/조건부</th><td>'+(t.forC||0)+' / '+(t.conditionalC||0)+'</td><th>반대/기권</th><td>'+(t.againstC||0)+' / '+(t.abstainC||0)+'</td></tr>'+
+      '<tr><th>가결 기준선</th><td>'+(t.threshold||0)+'표</td><th>평균 점수</th><td>'+(Number(t.avgScore)||0).toFixed(1)+'점</td></tr></table>'+
+      '<h3>3. 출석부 및 표결</h3><table><tr><th>슬롯</th><th>위원</th><th>출결</th><th>의결</th><th>점수</th></tr>'+(rows||'<tr><td colspan="5">기록 없음</td></tr>')+'</table>'+
+      '<p style="margin-top:24px;font-size:11px;color:#888">본 의결서는 자회사 설립 통합관리 시스템에서 자동 생성되었습니다.</p>'+
+      '</section>';
+  }
+
+  function reviewHTML(ctx){
+    var co=ctx.company||{}, ap=ctx.applicant||{}, inv=ctx.invest||{}, ic=ctx.ic||{};
+    var x=inv.exit||{}, dev=[]; if(x.dragAlong)dev.push('동반매도청구권'); if(x.rofr)dev.push('우선매수권'); if(x.tagAlong)dev.push('공동매도권');
+    if(x.buyback&&x.buyback.enabled)dev.push('바이백('+x.buyback.minYears+'~'+x.buyback.maxYears+'년)');
+    var scn=ic.scenarios||{}; var SK={ipo:'IPO',ma:'M&A',buy:'바이백'};
+    var srows=Object.keys(SK).map(function(k){ var s=scn[k]||{}; return '<tr><td>'+SK[k]+'</td><td>'+won(s.amount||0)+'</td><td>'+(s.year||'-')+'년</td><td>'+(Number(s.moic)||0).toFixed(2)+'배</td></tr>'; }).join('');
+    // page1: 개요+투자
+    var p1='<section class="pdf-page pdf">'+HEAD+'<div class="ttl">자회사 설립 투자심의 자료</div>'+
+      '<div class="meta">작성일 '+esc(ctx.dateStr||'')+' · cid '+esc(co.cid||'')+'</div></div>'+
+      '<h3>1. 기업 개요</h3><table>'+
+      '<tr><th>기업명</th><td>'+esc(co.name||'')+'</td><th>대표자</th><td>'+esc(ap.ceo||ctx.ceo||'')+'</td></tr>'+
+      '<tr><th>창업유형</th><td>'+esc((inv.stockType==='common')?'교원(보통주)':'학생·일반·외부(우선주 CPS)')+'</td><th>적격성</th><td>'+esc(ap.eligibility||'-')+'</td></tr>'+
+      '<tr><th>대상기술</th><td colspan="3">'+esc((ctx.loi&&ctx.loi.techName)||ap.techName||'')+'</td></tr></table>'+
+      '<h3>2. 자회사 설립 투자(텀시트)</h3><table>'+
+      '<tr><th>주식 종류</th><td>'+esc(inv.stockType==='cps'?'우선주(CPS)':'보통주')+'</td><th>투자전 밸류(2배)</th><td>'+won(inv.preMoneyValue)+'</td></tr>'+
+      '<tr><th>투자금</th><td>'+won(inv.investment)+'</td><th>지분율</th><td>'+(((inv.actualPct||0)*100).toFixed(2))+'%</td></tr>'+
+      (inv.cps?('<tr><th>우선주 조건</th><td colspan="3">'+esc(inv.cps.desc)+'</td></tr>'):'')+
+      '<tr><th>EXIT 장치</th><td colspan="3">'+dev.map(function(d){return '<span class="pill">'+esc(d)+'</span>';}).join('')+'</td></tr></table></section>';
+    // page2: 성장전략+EXIT 시나리오
+    var p2='<section class="pdf-page pdf">'+HEAD+'<div class="ttl">성장전략 · EXIT 시나리오</div><div class="meta">cid '+esc(co.cid||'')+'</div></div>'+
+      '<h3>3. 설립계획·성장전략</h3><div style="white-space:pre-wrap;border:1px solid #e2d3d8;padding:12px;border-radius:6px;min-height:80px">'+esc(ic.plan||'(작성 예정)')+'</div>'+
+      '<h3>4. EXIT 3시나리오 (회수배수 MOIC)</h3><table><tr><th>시나리오</th><th>예상 회수금액</th><th>시점</th><th>MOIC</th></tr>'+srows+'</table></section>';
+    return p1+p2;
+  }
+
+  function buildReportHTML(kind, ctx){
+    var body = kind==='decision' ? decisionHTML(ctx) : reviewHTML(ctx);
+    return STYLE + body;
+  }
+
+  // 브라우저 전용: 섹션마다 새 페이지 PDF
+  function renderToPDF(container, filename){
+    var g=global;
+    if(!g.html2canvas || !(g.jspdf && g.jspdf.jsPDF)){ if(g.alert)g.alert('PDF 라이브러리가 로드되지 않았습니다.'); return Promise.resolve(false); }
+    var jsPDF=g.jspdf.jsPDF;
+    var pdf=new jsPDF('p','mm','a4');
+    var pages=container.querySelectorAll('.pdf-page');
+    var A4W=210;
+    var chain=Promise.resolve();
+    Array.prototype.forEach.call(pages, function(pg, i){
+      chain=chain.then(function(){
+        return g.html2canvas(pg, {scale:2, width:794, windowWidth:794, backgroundColor:'#ffffff'}).then(function(canvas){
+          var img=canvas.toDataURL('image/png');
+          var ph=canvas.height*A4W/canvas.width;
+          if(i>0) pdf.addPage();
+          pdf.addImage(img,'PNG',0,0,A4W,Math.min(ph,297));
+        });
+      });
+    });
+    return chain.then(function(){ pdf.save(filename); return true; });
+  }
+
+  var SUBPDF={ buildReportHTML:buildReportHTML, renderToPDF:renderToPDF };
+  if(typeof module!=='undefined'&&module.exports) module.exports=SUBPDF;
+  global.SUBPDF=SUBPDF;
+})(typeof window!=='undefined'?window:this);
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* ===================================================================
+   자회사 설립 통합관리 — 단일 HTML 통합본 (공통 모듈 common/*.js 재사용)
+   섹션 접두사: home_ login_ status_ apply_ loi_ inv_ ic_ port_ con_
+   =================================================================== */
+
+// ---- config 로드 (로컬↔서버) ----
+if(typeof fetch!=='undefined'){
+  fetch('common/config.json').then(function(r){return r.json();}).then(function(c){
+    SUB.setConfig(c);
+    document.getElementById('modeBadge').textContent = SUB.serverOn() ? '🟢 서버' : '⚪ 로컬';
+    updateNav();
+  }).catch(function(){});
+}
+
+// ---- 역할별 탭 가시성 ----
+var ROLE_TABS = {
+  '':         ['home','login','apply','status'],
+  applicant:  ['home','apply','status'],
+  tlo:        ['home','loi'],
+  ic:         ['home','ic'],
+  consultant: ['home','ic'],
+  staff:      ['home','apply','loi','invest','ic','port','status'],
+  admin:      ['home','apply','loi','invest','ic','port','console','status']
+};
+var ROLE_LABEL = { '':'미로그인', admin:'종합관리자', staff:'담당자', tlo:'산학협력단', ic:'심의위원', consultant:'컨설턴트', applicant:'신청기업' };
+var HOME_SEC = { admin:'console', staff:'home', tlo:'loi', ic:'ic', consultant:'ic', applicant:'apply' };
+
+function won(n){ return (Math.round(Number(n)||0)).toLocaleString('ko-KR')+'원'; }
+function gv(id){ var el=document.getElementById(id); return el?el.value:''; }
+
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(function(s){ s.style.display='none'; });
+  var el=document.getElementById('sec-'+id); if(el) el.style.display='block';
+  document.querySelectorAll('#mainNav .ntab').forEach(function(b){ b.classList.toggle('on', b.dataset.sec===id); });
+  window.scrollTo(0,0);
+  var init={ login:login_init, apply:apply_init, loi:loi_init, invest:inv_init, ic:ic_init, port:port_init, console:con_init, status:status_init };
+  if(init[id]) try{ init[id](); }catch(e){ console.error(e); }
+}
+
+function updateNav(){
+  var role=SUB.getRole()||'';
+  var allowed=ROLE_TABS[role]||ROLE_TABS[''];
+  document.querySelectorAll('#mainNav .ntab').forEach(function(b){
+    b.style.display = allowed.indexOf(b.dataset.sec)>=0 ? '' : 'none';
+  });
+  var sess=SUB.session();
+  document.getElementById('roleBadge').textContent = (sess&&sess.name) ? sess.name : (ROLE_LABEL[role]||role||'미로그인');
+  document.getElementById('btnLogout').style.display = role ? '' : 'none';
+}
+
+// ---- 로그인 / 로그아웃 ----
+function login_init(){
+  var quick=document.getElementById('lg_quick');
+  if(SUB.serverOn()){ quick.style.display='none'; }
+  else if(!quick.dataset.built){
+    quick.dataset.built='1';
+    [['admin','종합관리자'],['staff','담당자'],['tlo','산학협력단'],['ic','심의위원'],['applicant','신청기업']].forEach(function(r){
+      var a=document.createElement('a'); a.textContent=r[1]; a.href='javascript:void(0)';
+      a.style.cssText='font-size:12px;text-decoration:none;color:var(--brand-d);border:1px solid #e2cdd5;border-radius:20px;padding:5px 11px;background:#fbf5f7;cursor:pointer';
+      a.onclick=function(){ SUB.setRole(r[0]); updateNav(); showSec(HOME_SEC[r[0]]||'home'); };
+      quick.appendChild(a);
+    });
+  }
+  login_recalc();
+}
+function doLogin(){
+  var msg=document.getElementById('lg_msg'); msg.textContent='확인 중…';
+  SUB.loginAsync(gv('lg_id').trim(), gv('lg_pw')).then(function(res){
+    if(!res.ok){ msg.textContent=res.msg||'로그인 실패'; return; }
+    msg.textContent=''; updateNav(); showSec(HOME_SEC[res.role]||'home');
+  });
+}
+function doLogout(){ SUB.logout(); updateNav(); showSec('home'); }
+
+function login_recalc(){
+  var r=INVEST.compute({ capital:+gv('lg_cap'), par:+gv('lg_par'), equityPct:(+gv('lg_pct'))/100, founderType:gv('lg_ftype') });
+  document.getElementById('lg_calc').innerHTML='<table>'+
+    '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+    '<tr><td>기존 주식수</td><td>'+r.existingShares.toLocaleString()+'주</td></tr>'+
+    '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+    '<tr><td>신주 발행수</td><td>'+r.newShares.toLocaleString()+'주</td></tr>'+
+    '<tr><td>투자금</td><td>'+won(r.investment)+'</td></tr>'+
+    '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+    '<tr><td>투자후 가치</td><td>'+won(r.postMoney)+'</td></tr>'+
+    '<tr><td>실제 지분율</td><td>'+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+    (r.cps?'<tr><td>CPS 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+'</table>';
+}
+['lg_ftype','lg_cap','lg_par','lg_pct'].forEach(function(id){ document.addEventListener('input', function(e){ if(e.target&&e.target.id===id) login_recalc(); }); });
+
+// ---- 홈 자가진단 ----
+function home_diag(){
+  var prof=gv('h_prof'), tech=gv('h_tech'), will=gv('h_will');
+  var box=document.getElementById('h_verdict');
+  if(!(prof&&tech&&will)){ box.style.display='none'; return; }
+  var v,cls,txt;
+  if(tech==='y'&&will!=='low'){ v='적격'; cls='v-ok'; txt='충북대 기술 사업화 + 사업화 의지 충족. 신청을 권장합니다.'; }
+  else if(tech==='n'){ v='부적격'; cls='v-bad'; txt='자회사는 대학 보유기술 사업화가 요건입니다. 정보성 신청은 가능합니다.'; }
+  else { v='검토필요'; cls='v-warn'; txt='기술 연계·의지 보완이 필요합니다. 담당자 상담을 권장합니다.'; }
+  box.style.display='block';
+  box.innerHTML='<span class="verdict '+cls+'">'+v+'</span> <span class="note">'+txt+'</span>';
+}
+['h_prof','h_tech','h_will'].forEach(function(id){ document.addEventListener('change', function(e){ if(e.target&&e.target.id===id) home_diag(); }); });
+
+// ---- 신청 조회 ----
+function status_init(){}
+function status_reset(){
+  document.getElementById('st_loginCard').style.display='block';
+  document.getElementById('st_statusCard').style.display='none';
+  document.getElementById('st_msg').textContent='';
+}
+function status_lookup(){
+  var appId=gv('st_appId').trim(), last4=gv('st_last4').trim(), msg=document.getElementById('st_msg');
+  if(!appId||!last4){ msg.textContent='접수번호와 연락처 뒷 4자리를 입력하세요.'; return; }
+  msg.textContent='조회 중…';
+  SUB.applicantLogin(appId, last4).then(function(res){
+    if(!res.ok){ msg.textContent=res.msg||'조회 실패'; return; }
+    if(SUB.serverOn()) setTimeout(function(){ status_render(res.cid, appId); }, 600);
+    else status_render(res.cid, appId);
+  });
+}
+function status_render(cid, appId){
+  var STAGES=['신청','LOI','출자','심의','심의가결','설립','관리'];
+  var ap=(SUB.DB.applicants||{})[cid]||{};
+  var co=null; (SUB.DB.companies||[]).forEach(function(c){ if(c.cid===cid) co=c; });
+  var stage=(co&&co.stage)||'신청', esc=SUB.esc;
+  document.getElementById('st_loginCard').style.display='none';
+  document.getElementById('st_statusCard').style.display='block';
+  document.getElementById('st_coName').textContent=ap.org||ap.ceo||'신청 건';
+  document.getElementById('st_rId').textContent=ap.appId||appId;
+  var si=STAGES.indexOf(stage);
+  document.getElementById('st_steps').innerHTML=STAGES.map(function(s,i){ return '<div class="s'+(i<=si?' on':'')+'">'+s+'</div>'; }).join('');
+  document.getElementById('st_info').innerHTML=
+    '<tr><td>현재 단계</td><td><span class="status-pill s-signed">'+esc(stage)+'</span></td></tr>'+
+    '<tr><td>대표자</td><td>'+esc(ap.ceo||'-')+'</td></tr>'+
+    '<tr><td>대상기술</td><td>'+esc(ap.techName||'-')+'</td></tr>'+
+    '<tr><td>적격성 자가진단</td><td>'+esc(ap.eligibility||'-')+'</td></tr>'+
+    (ap.express?'<tr><td>Express</td><td>⚡ 후보 — 담당자 서류확인 후 진행</td></tr>':'');
+  var ex=document.getElementById('st_extra'), html='';
+  if(co&&co.meetingRequested){ html+='<div class="panel">📅 담당자가 <b>사전 미팅</b>을 요청했습니다. <a href="'+SUB.MEETING_URL+'" target="_blank">미팅 예약하기 →</a></div>'; }
+  if(ap.locked===false){
+    html+='<div class="panel" style="background:#eef7f0;border-color:#bfe3cb">'+
+      '<b style="color:#1f8a4c">✏️ 수정 허용됨</b> <span class="note">— 아래 항목을 수정 후 제출하면 직전 내용이 이력으로 보존되고 다시 잠깁니다(1회).</span>'+
+      '<label>기업명</label><input id="st_eorg" value="'+esc(ap.org||'')+'">'+
+      '<label>연락처</label><input id="st_etel" value="'+esc(ap.tel||'')+'">'+
+      '<label>이메일</label><input id="st_eemail" value="'+esc(ap.email||'')+'">'+
+      '<label>대상기술</label><input id="st_etech" value="'+esc(ap.techName||'')+'">'+
+      '<label>분야</label><input id="st_efield" value="'+esc(ap.field||'')+'">'+
+      '<button style="margin-top:10px" onclick="status_submitEdit(\''+cid+'\')">수정 제출</button><div class="note" id="st_editMsg"></div></div>';
+  } else {
+    html+='<div class="note" style="margin-top:8px">※ 제출 내용은 잠금 상태입니다. 수정이 필요하면 담당자에게 요청하세요.</div>';
+  }
+  ex.innerHTML=html;
+}
+function status_submitEdit(cid){
+  var edits={ org:gv('st_eorg').trim(), tel:gv('st_etel').trim(), email:gv('st_eemail').trim(), techName:gv('st_etech').trim(), field:gv('st_efield').trim() };
+  document.getElementById('st_editMsg').textContent='제출 중…';
+  SUB.reapplyEdit(cid, edits).then(function(res){
+    if(res&&res.ok){ document.getElementById('st_editMsg').textContent='수정 제출 완료 ✔ (다시 잠김)'; setTimeout(function(){ status_render(cid, document.getElementById('st_rId').textContent); }, 600); }
+    else document.getElementById('st_editMsg').textContent='수정 실패: '+((res&&res.error)||'');
+  });
+}
+// ================= ① 신청 wizard =================
+var apply_state={ step:0, eligibility:'', diag:{} };
+function apply_init(){
+  apply_benefit('growth'); apply_recalc();
+}
+function apply_benefit(which){
+  document.getElementById('ap_tabGrowth').classList.toggle('on', which==='growth');
+  document.getElementById('ap_tabResearch').classList.toggle('on', which==='research');
+  document.getElementById('ap_benefitGrowth').classList.toggle('hidden', which!=='growth');
+  document.getElementById('ap_benefitResearch').classList.toggle('hidden', which!=='research');
+  var g=(SUB.DB.benefits&&SUB.DB.benefits.growth)?SUB.DB.benefits.growth:'자회사 성장지원 프로그램은 매년 지주회사 운영방향에 따라 구성됩니다. (예: 후속투자 연계, 정부과제 매칭, 멘토링·IR 고도화, 공간·바우처 등) — 구체 내용은 관리자가 연도별로 갱신합니다.';
+  document.getElementById('ap_benefitGrowth').textContent=g;
+}
+function apply_go(n){
+  apply_state.step=n;
+  document.querySelectorAll('#sec-apply .ap-step').forEach(function(el){ el.classList.toggle('hidden', +el.dataset.step!==n); });
+  document.querySelectorAll('#sec-apply .steps .s').forEach(function(el){ var s=+el.dataset.step; el.classList.toggle('on', s===n); el.classList.toggle('done', s<n); });
+  window.scrollTo(0,0);
+  if(n===3) apply_recalc();
+}
+function apply_consentGate(){
+  var all=document.getElementById('ap_c1').checked&&document.getElementById('ap_c2').checked&&document.getElementById('ap_c3').checked;
+  document.getElementById('ap_btnConsent').disabled=!all;
+}
+function apply_checkGate(){
+  var allCk=Array.prototype.every.call(document.querySelectorAll('#sec-apply .ap-ck'), function(c){ return c.checked; });
+  var prof=gv('ap_qprof'), tech=gv('ap_qtech'), will=gv('ap_qwill');
+  var diagFilled=prof&&tech&&will;
+  if(diagFilled){
+    var v,cls,txt;
+    if(tech==='y'&&will!=='low'){ v='적격'; cls='v-ok'; txt='충북대 기술 사업화 + 사업화 의지 충족.'; }
+    else if(tech==='n'){ v='부적격'; cls='v-bad'; txt='자회사는 대학 보유기술 사업화가 요건입니다. 정보성 신청은 가능하나 검토에서 제외될 수 있습니다.'; }
+    else { v='검토필요'; cls='v-warn'; txt='기술 연계/의지 보완이 필요합니다. 신청은 가능하며 담당자 상담을 권장합니다.'; }
+    apply_state.eligibility=v; apply_state.diag={prof:prof,tech:tech,will:will};
+    document.getElementById('ap_diag').innerHTML='<span class="verdict '+cls+'">'+v+'</span><div class="note" style="margin-top:6px">'+txt+'</div>';
+  }
+  document.getElementById('ap_btnDiag').disabled=!(allCk&&diagFilled);
+}
+function apply_recalc(){
+  var r=INVEST.compute({ capital:+gv('ap_cap'), par:+gv('ap_par'), equityPct:(+gv('ap_pct'))/100, founderType:gv('ap_ftype') });
+  document.getElementById('ap_calc').innerHTML='<table>'+
+    '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+    '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+    '<tr><td>신주 발행수</td><td>'+r.newShares.toLocaleString()+'주</td></tr>'+
+    '<tr><td>투자금</td><td>'+won(r.investment)+'</td></tr>'+
+    '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+    '<tr><td>투자후 가치</td><td>'+won(r.postMoney)+'</td></tr>'+
+    '<tr><td>실제 지분율</td><td>'+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+    (r.cps?'<tr><td>CPS 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+'</table>';
+}
+function apply_readFile(input){
+  return new Promise(function(res){
+    var f=input.files[0]; if(!f){ res(null); return; }
+    var fr=new FileReader();
+    fr.onload=function(){ var s=String(fr.result); var b64=s.indexOf(',')>=0?s.split(',')[1]:s; res({name:f.name, mime:f.type||'application/octet-stream', b64:b64}); };
+    fr.onerror=function(){ res(null); };
+    fr.readAsDataURL(f);
+  });
+}
+function apply_submit(){
+  var ceo=gv('ap_ceo').trim(), email=gv('ap_email').trim(), tel=gv('ap_tel').trim(), tech=gv('ap_tech').trim();
+  if(!ceo||!email||!tel||!tech){ alert('필수 항목(성명·연락처·이메일·대상기술)을 입력해 주세요.'); return; }
+  if(document.getElementById('ap_exToggle').checked){
+    var tt=document.getElementById('ap_exTt').checked, inv=document.getElementById('ap_exInv').checked;
+    var f1=document.getElementById('ap_exF1').files[0], f2=document.getElementById('ap_exF2').files[0], f3=document.getElementById('ap_exF3').files[0];
+    if(!(tt&&inv&&f1&&f2&&f3)){ alert('Express 신청에는 2개 동의 + 필수서류 3종(사업자등록증·기업소개·사업화계획서)이 필요합니다.'); return; }
+    var labels=['사업자등록증','기업소개자료','사업화계획서','기술이전계약서'];
+    Promise.all(['ap_exF1','ap_exF2','ap_exF3','ap_exF4'].map(function(id){ return apply_readFile(document.getElementById(id)); }))
+      .then(function(files){
+        var labeled=files.map(function(f,i){ return f?Object.assign({label:labels[i]},f):null; }).filter(Boolean);
+        apply_finalize({ express:true, expressFlags:{ techTransferSigned:true, investAgreed:true }, files:labeled });
+      });
+  } else { apply_finalize({ express:false, files:[] }); }
+}
+function apply_finalize(extra){
+  var ceo=gv('ap_ceo').trim(), email=gv('ap_email').trim(), tel=gv('ap_tel').trim(), tech=gv('ap_tech').trim();
+  var bizno=gv('ap_bizno').trim(), birth=gv('ap_birth');
+  var cid=SUB.makeCID({ bizno:bizno, ceoName:ceo, birth:birth });
+  var year=new Date().getFullYear();
+  var appId=SUB.assignAppIdLocal(cid, ceo);
+  var calc=INVEST.compute({ capital:+gv('ap_cap'), par:+gv('ap_par'), equityPct:(+gv('ap_pct'))/100, founderType:gv('ap_ftype') });
+  SUB.upsertCompany({ cid:cid, name:gv('ap_org').trim()||ceo+' 신청건', ceo:ceo, type:gv('ap_ftype'), bizno:bizno, year:year, stage:'신청', express:!!extra.express });
+  var prev=SUB.DB.applicants[cid]||{ history:[] };
+  var rec={
+    cid:cid, appId:appId, year:year, submittedAt:new Date().toISOString(),
+    ceo:ceo, org:gv('ap_org').trim(), tel:tel, email:email,
+    founderType:gv('ap_ftype'), techName:tech, field:gv('ap_field').trim(), hasBizno:!!bizno,
+    invest:{ capital:+gv('ap_cap'), par:+gv('ap_par'), equityPct:(+gv('ap_pct'))/100, stockType:calc.stockType, investment:calc.investment, newShares:calc.newShares, postMoney:calc.postMoney },
+    consent:{ collect:true, thirdParty:true, sensitive:true, at:new Date().toISOString() },
+    checks:Array.prototype.map.call(document.querySelectorAll('#sec-apply .ap-ck'), function(c){ return c.checked; }),
+    selfDiag:apply_state.diag, eligibility:apply_state.eligibility,
+    express:!!extra.express, expressFlags:extra.expressFlags||null, files:extra.files||[],
+    history: prev.history||[]
+  };
+  rec.history.push({ year:year, appId:appId, at:rec.submittedAt, eligibility:apply_state.eligibility, express:!!extra.express });
+  rec.locked=true;
+  SUB.DB.applicants[cid]=rec; SUB.save();
+  function showReceipt(finalId){
+    var tail=SUB.digits(tel).slice(-4);
+    document.getElementById('ap_receipt').textContent=finalId;
+    document.getElementById('ap_doneSummary').innerHTML=
+      '<table><tr><td>접수번호</td><td><b>'+SUB.esc(finalId)+'</b></td></tr>'+
+      '<tr><td>대표자</td><td>'+SUB.esc(ceo)+'</td></tr>'+
+      '<tr><td>창업유형</td><td>'+calc.founderLabel+' · '+calc.stockLabel+'</td></tr>'+
+      '<tr><td>대상기술</td><td>'+SUB.esc(tech)+'</td></tr>'+
+      '<tr><td>적격성 자가진단</td><td>'+(apply_state.eligibility||'-')+'</td></tr>'+
+      (rec.express?'<tr><td>Express</td><td>⚡ 후보(서류 '+rec.files.length+'종 첨부) — 담당자 확인 후 진행</td></tr>':'')+
+      '<tr><td>예상 투자금</td><td>'+won(calc.investment)+'</td></tr></table>'+
+      '<div class="panel" style="margin-top:10px">📌 진행 상황은 <b>접수번호</b> + <b>연락처 뒷 4자리('+SUB.esc(tail)+')</b>로 조회할 수 있습니다. 접수번호를 보관하세요.</div>';
+    apply_go(4);
+  }
+  if(SUB.serverOn()){
+    SUB.submitApplication(rec).then(function(res){
+      if(res&&res.ok&&res.appId){ rec.appId=res.appId; SUB.DB.applicants[cid]=rec; SUB.save(); }
+      showReceipt(rec.appId);
+    }).catch(function(){ showReceipt(appId); });
+  } else showReceipt(appId);
+}
+function apply_reset(){
+  ['ap_ceo','ap_org','ap_tel','ap_email','ap_bizno','ap_birth','ap_field','ap_tech'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['ap_c1','ap_c2','ap_c3','ap_exToggle','ap_exTt','ap_exInv'].forEach(function(id){ document.getElementById(id).checked=false; });
+  document.querySelectorAll('#sec-apply .ap-ck').forEach(function(c){ c.checked=false; });
+  ['ap_qprof','ap_qtech','ap_qwill'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('ap_exBox').classList.add('hidden');
+  apply_state={ step:0, eligibility:'', diag:{} };
+  document.getElementById('ap_btnConsent').disabled=true; document.getElementById('ap_btnDiag').disabled=true;
+  document.getElementById('ap_diag').textContent='선택 시 표시됩니다.';
+  apply_go(0); apply_recalc();
+}
+// apply 이벤트 바인딩 (위임)
+document.addEventListener('change', function(e){
+  if(!e.target) return;
+  var id=e.target.id;
+  if(id==='ap_c1'||id==='ap_c2'||id==='ap_c3') apply_consentGate();
+  if(e.target.classList&&e.target.classList.contains('ap-ck')) apply_checkGate();
+  if(id==='ap_qprof'||id==='ap_qtech'||id==='ap_qwill'){
+    if(id==='ap_qprof'&&gv('ap_qprof')==='y'){ document.getElementById('ap_ftype').value='professor'; }
+    apply_checkGate();
+  }
+  if(id==='ap_exToggle') document.getElementById('ap_exBox').classList.toggle('hidden', !e.target.checked);
+});
+document.addEventListener('input', function(e){
+  if(e.target&&['ap_ftype','ap_cap','ap_par','ap_pct'].indexOf(e.target.id)>=0) apply_recalc();
+});
+// ================= ② LOI =================
+function loi_fillPicker(){
+  var sel=document.getElementById('loi_coSel'), cos=SUB.DB.companies;
+  sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(function(c){ return '<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+  var cur=SUB.getCID(); if(cur) sel.value=cur;
+}
+function loi_init(){ loi_fillPicker(); var cur=SUB.getCID(); if(cur&&document.getElementById('loi_coSel').value) loi_loadCo(cur); else document.getElementById('loi_editor').style.display='none'; }
+function loi_statusPill(s){ var cls=s==='계약체결'?'s-signed':(s==='합의'?'s-agree':'s-talk'); return '<span class="status-pill '+cls+'">'+SUB.esc(s)+'</span>'; }
+function loi_loadCo(cid){
+  if(!cid){ document.getElementById('loi_editor').style.display='none'; return; }
+  SUB.setCID(cid);
+  var co=null; SUB.DB.companies.forEach(function(c){ if(c.cid===cid) co=c; });
+  var ap=SUB.DB.applicants[cid];
+  document.getElementById('loi_editor').style.display='';
+  document.getElementById('loi_coTitle').textContent=(co?co.name:cid)+' — 기술이전 LOI';
+  var l=SUB.DB.loi[cid]||{};
+  document.getElementById('loi_techName').value=l.techName||(ap?ap.techName:'')||'';
+  document.getElementById('loi_patentNo').value=l.patentNo||'';
+  document.getElementById('loi_researcher').value=l.researcher||'';
+  document.getElementById('loi_field').value=l.field||(ap?ap.field:'')||'';
+  document.getElementById('loi_scope').value=l.scope||'';
+  document.getElementById('loi_tloTeam').value=l.tloTeam||'충북대학교 산학협력단 기술이전팀';
+  document.getElementById('loi_tloMemo').value=l.tloMemo||'';
+  document.getElementById('loi_tloConsent').checked=!!l.tloConsent;
+  document.getElementById('loi_tloAt').value=l.tloAt||'';
+  document.getElementById('loi_status').value=l.status||'협의중';
+  loi_renderStatus();
+}
+function loi_renderStatus(){ document.getElementById('loi_statusView').innerHTML=loi_statusPill(gv('loi_status')); }
+function loi_save(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var tech=gv('loi_techName').trim(); if(!tech){ alert('대상 기술명을 입력하세요'); return; }
+  var rec={ cid:cid, updatedAt:new Date().toISOString(), techName:tech, patentNo:gv('loi_patentNo').trim(),
+    researcher:gv('loi_researcher').trim(), field:gv('loi_field').trim(), scope:gv('loi_scope').trim(), status:gv('loi_status'),
+    tloTeam:gv('loi_tloTeam').trim(), tloConsent:document.getElementById('loi_tloConsent').checked, tloAt:gv('loi_tloAt'), tloMemo:gv('loi_tloMemo').trim() };
+  SUB.commit('loi', cid, rec);
+  var co=SUB.DB.companies.find(function(c){ return c.cid===cid; })||{};
+  if(['신청','LOI',''].indexOf(co.stage||'신청')>=0) SUB.upsertCompany({cid:cid,stage:'LOI'});
+  document.getElementById('loi_msg').textContent='LOI 저장됨 ✔ '+(document.getElementById('loi_tloConsent').checked?'· 산학협력단 동의 기록':'· 동의 대기');
+}
+document.addEventListener('change', function(e){
+  if(!e.target) return;
+  if(e.target.id==='loi_coSel') loi_loadCo(e.target.value);
+  if(e.target.id==='loi_status') loi_renderStatus();
+  if(e.target.id==='loi_tloConsent') document.getElementById('loi_tloAt').value=e.target.checked?new Date().toISOString():'';
+});
+
+// ================= ③ 출자 텀시트 =================
+function inv_fillPicker(){
+  var sel=document.getElementById('inv_coSel'), cos=SUB.DB.companies;
+  sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(function(c){ return '<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+  var cur=SUB.getCID(); if(cur) sel.value=cur;
+}
+function inv_init(){ inv_fillPicker(); var cur=SUB.getCID(); if(cur&&document.getElementById('inv_coSel').value) inv_loadCo(cur); else document.getElementById('inv_editor').style.display='none'; }
+function inv_loadCo(cid){
+  if(!cid){ document.getElementById('inv_editor').style.display='none'; return; }
+  SUB.setCID(cid);
+  var co=null; SUB.DB.companies.forEach(function(c){ if(c.cid===cid) co=c; });
+  var ap=SUB.DB.applicants[cid];
+  document.getElementById('inv_editor').style.display='';
+  document.getElementById('inv_coTitle').textContent=(co?co.name:cid)+' — 텀시트';
+  var inv=(ap&&ap.invest)||{};
+  document.getElementById('inv_ftype').value=(co&&co.type)||inv.founderType||'external';
+  document.getElementById('inv_cap').value=inv.capital||30000000;
+  document.getElementById('inv_par').value=inv.par||1000;
+  document.getElementById('inv_pct').value=((inv.equityPct||0.10)*100);
+  var t=SUB.DB.invest[cid];
+  if(t&&t.exit){ document.getElementById('inv_drag').checked=t.exit.dragAlong; document.getElementById('inv_rofr').checked=t.exit.rofr;
+    document.getElementById('inv_tag').checked=t.exit.tagAlong; document.getElementById('inv_buy').checked=t.exit.buyback.enabled;
+    document.getElementById('inv_bmin').value=t.exit.buyback.minYears; document.getElementById('inv_bmax').value=t.exit.buyback.maxYears;
+    document.getElementById('inv_buyer').value=t.exit.buyback.buyer; }
+  inv_toggleBuy(); inv_renderPreview();
+}
+function inv_toggleBuy(){ document.getElementById('inv_buybox').style.opacity=document.getElementById('inv_buy').checked?'1':'.4'; }
+function inv_currentExit(){
+  return { dragAlong:document.getElementById('inv_drag').checked, rofr:document.getElementById('inv_rofr').checked, tagAlong:document.getElementById('inv_tag').checked,
+    buyback:{ enabled:document.getElementById('inv_buy').checked, minYears:+gv('inv_bmin'), extensions:3, maxYears:+gv('inv_bmax'), buyer:gv('inv_buyer') } };
+}
+function inv_compute(){ return INVEST.compute({ capital:+gv('inv_cap'), par:+gv('inv_par'), equityPct:(+gv('inv_pct'))/100, founderType:gv('inv_ftype') }); }
+function inv_renderPreview(){
+  var r=inv_compute(), x=inv_currentExit();
+  var devices=[]; if(x.dragAlong)devices.push('동반매도청구권'); if(x.rofr)devices.push('우선매수권'); if(x.tagAlong)devices.push('공동매도권');
+  if(x.buyback.enabled)devices.push('바이백('+x.buyback.minYears+'~'+x.buyback.maxYears+'년, '+(x.buyback.buyer==='founder'?'창업자':'회사')+' 매수)');
+  document.getElementById('inv_termOut').innerHTML='<div class="term"><b>텀시트 미리보기</b><table>'+
+    '<tr><td>주식 종류</td><td>'+r.stockLabel+'</td></tr>'+
+    '<tr><td>투자전 밸류(2배)</td><td>'+won(r.preMoneyValue)+'</td></tr>'+
+    '<tr><td>주당 발행가(액면×2)</td><td>'+won(r.issuePrice)+'</td></tr>'+
+    '<tr><td>신주/투자금</td><td>'+r.newShares.toLocaleString()+'주 · '+won(r.investment)+'</td></tr>'+
+    '<tr><td>투자후 가치/지분</td><td>'+won(r.postMoney)+' · '+(r.actualPct*100).toFixed(2)+'%</td></tr>'+
+    (r.cps?'<tr><td>우선주 조건</td><td style="font-weight:400;font-size:11px">'+r.cps.desc+'</td></tr>':'')+
+    '</table><div style="margin-top:8px">'+devices.map(function(d){ return '<span class="pill">'+d+'</span>'; }).join('')+'</div></div>';
+}
+function inv_genTerm(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var r=inv_compute(), x=inv_currentExit();
+  var rec={ cid:cid, savedAt:new Date().toISOString(), capital:r.input.capital, par:r.input.par, equityPct:r.input.equityPct,
+    stockType:r.stockType, issuePrice:r.issuePrice, newShares:r.newShares, investment:r.investment,
+    preMoneyValue:r.preMoneyValue, postMoney:r.postMoney, actualPct:r.actualPct, cps:r.cps, exit:x };
+  SUB.commit('invest', cid, rec);
+  SUB.upsertCompany({ cid:cid, stage:'출자' });
+  inv_renderPreview(); alert('텀시트가 저장되었습니다.');
+}
+document.addEventListener('change', function(e){ if(e.target&&e.target.id==='inv_coSel') inv_loadCo(e.target.value); });
+document.addEventListener('input', function(e){
+  if(!e.target) return;
+  if(['inv_ftype','inv_cap','inv_par','inv_pct','inv_drag','inv_rofr','inv_tag','inv_buy','inv_bmin','inv_bmax','inv_buyer'].indexOf(e.target.id)>=0){
+    if(e.target.id==='inv_buy') inv_toggleBuy(); inv_renderPreview();
+  }
+});
+// ================= ④ 컨설팅·투자심의 =================
+function ic_today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function ic_fillPicker(){
+  var sel=document.getElementById('ic_coSel'), cos=SUB.DB.companies;
+  sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(function(c){ return '<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+  var cur=SUB.getCID(); if(cur) sel.value=cur;
+}
+function ic_buildMembers(){
+  var tb=document.getElementById('ic_members');
+  if(tb.dataset.built) return;
+  var mem=(SUB.DB.icConfig&&SUB.DB.icConfig.members)||{};
+  for(var i=1;i<=7;i++){ var id='ic'+i;
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+id+'</td>'+
+      '<td><input class="ic-name" data-id="'+id+'" value="'+SUB.esc(mem[id]||'')+'" placeholder="위원 성명"></td>'+
+      '<td style="text-align:center"><input type="checkbox" class="ic-present" data-id="'+id+'"></td>'+
+      '<td style="text-align:center"><input type="checkbox" class="ic-recused" data-id="'+id+'"></td>'+
+      '<td><input type="number" class="ic-score" data-id="'+id+'" min="0" max="100"></td>'+
+      '<td><select class="ic-vote" data-id="'+id+'"><option value="for">찬성</option><option value="conditional">조건부</option><option value="against">반대</option><option value="abstain">기권</option></select></td>';
+    tb.appendChild(tr);
+  }
+  tb.dataset.built='1';
+}
+function ic_init(){ ic_fillPicker(); ic_buildMembers(); var cur=SUB.getCID(); if(cur&&document.getElementById('ic_coSel').value) ic_loadCo(cur); else document.getElementById('ic_body').style.display='none'; }
+function ic_loadCo(cid){
+  if(!cid){ document.getElementById('ic_body').style.display='none'; return; }
+  SUB.setCID(cid);
+  var co=null; SUB.DB.companies.forEach(function(c){ if(c.cid===cid) co=c; });
+  document.getElementById('ic_body').style.display='';
+  document.getElementById('ic_coTitle').textContent=(co?co.name:cid)+' — 컨설팅·심의';
+  var inv=SUB.DB.invest[cid];
+  document.getElementById('ic_investNote').textContent= inv?('출자 투자금 = '+won(inv.investment)+' (MOIC 기준)'):'※ 출자(텀시트)가 먼저 저장되면 MOIC가 계산됩니다.';
+  var prev=SUB.DB.ic[cid];
+  if(prev){ document.getElementById('ic_plan').value=prev.plan||'';
+    if(prev.scenarios){ document.querySelectorAll('.ic-amt').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s) el.value=s.amount; });
+      document.querySelectorAll('.ic-yr').forEach(function(el){ var s=prev.scenarios[el.dataset.k]; if(s) el.value=s.year; }); } }
+  else { document.getElementById('ic_plan').value=''; }
+  if(SUB.DB.icConfig){ document.getElementById('ic_quorum').value=Math.round((SUB.DB.icConfig.quorumPct||0.5)*100); document.getElementById('ic_passpct').value=Math.round((SUB.DB.icConfig.passPct||0.5)*100); }
+  var slots=(SUB.DB.icConfig&&SUB.DB.icConfig.members)||{};
+  for(var i=1;i<=7;i++){ var id='ic'+i; var v=(SUB.DB.ic_votes||{})[cid+'__'+id]||{};
+    var nm=document.querySelector('.ic-name[data-id="'+id+'"]'); if(nm) nm.value=slots[id]||'';
+    var pr=document.querySelector('.ic-present[data-id="'+id+'"]'); if(pr) pr.checked=!!v.present;
+    var rc=document.querySelector('.ic-recused[data-id="'+id+'"]'); if(rc) rc.checked=!!v.recused;
+    var sc=document.querySelector('.ic-score[data-id="'+id+'"]'); if(sc) sc.value=v.score||'';
+    var vt=document.querySelector('.ic-vote[data-id="'+id+'"]'); if(vt&&v.vote) vt.value=v.vote;
+  }
+  ic_recalcMoic(); ic_applyRoleView();
+  document.getElementById('ic_result').innerHTML='';
+}
+function ic_genDraft(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var co=SUB.DB.companies.find(function(c){ return c.cid===cid; })||{};
+  var ctx={ company:co, applicant:SUB.DB.applicants[cid]||{}, loi:SUB.DB.loi[cid]||{}, invest:SUB.DB.invest[cid]||{} };
+  var dft=SUB.buildConsultDraft(ctx);
+  document.getElementById('ic_plan').value=dft.plan;
+  Object.keys(dft.scenarios).forEach(function(k){
+    var amt=document.querySelector('.ic-amt[data-k="'+k+'"]'); var yr=document.querySelector('.ic-yr[data-k="'+k+'"]');
+    if(amt) amt.value=dft.scenarios[k].amount; if(yr) yr.value=dft.scenarios[k].year;
+  });
+  ic_recalcMoic();
+}
+function ic_recalcMoic(){
+  var inv=SUB.DB.invest[SUB.getCID()];
+  document.querySelectorAll('#ic_scn tr').forEach(function(tr){
+    var amt=tr.querySelector('.ic-amt'); if(!amt) return;
+    var cell=tr.querySelector('.ic-moic');
+    if(inv&&inv.investment>0&&+amt.value>0) cell.textContent=(INVEST.moic(inv.investment,+amt.value)).toFixed(2)+'배';
+    else cell.textContent='-';
+  });
+}
+function ic_collectMembers(){
+  var rows=[];
+  for(var i=1;i<=7;i++){ var id='ic'+i;
+    var name=document.querySelector('.ic-name[data-id="'+id+'"]').value.trim();
+    rows.push({ id:id, name:name, assigned:!!name,
+      present:document.querySelector('.ic-present[data-id="'+id+'"]').checked,
+      recused:document.querySelector('.ic-recused[data-id="'+id+'"]').checked,
+      score:+document.querySelector('.ic-score[data-id="'+id+'"]').value||0,
+      vote:document.querySelector('.ic-vote[data-id="'+id+'"]').value });
+  }
+  return rows;
+}
+function ic_tally(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var members=ic_collectMembers();
+  var cfg={ quorumPct:(+gv('ic_quorum'))/100, passPct:(+gv('ic_passpct'))/100 };
+  var t=SUB.tallyIC(members, cfg);
+  SUB.DB.icConfig.quorumPct=cfg.quorumPct; SUB.DB.icConfig.passPct=cfg.passPct;
+  members.forEach(function(m){ if(m.name) SUB.DB.icConfig.members[m.id]=m.name; });
+  SUB.commitSingle('icConfig', SUB.DB.icConfig);
+  var scen={};
+  document.querySelectorAll('.ic-amt').forEach(function(el){ var k=el.dataset.k; scen[k]={ amount:+el.value||0, year:+document.querySelector('.ic-yr[data-k="'+k+'"]').value||0,
+    moic:(SUB.DB.invest[cid]&&+el.value>0)?INVEST.moic(SUB.DB.invest[cid].investment,+el.value):0 }; });
+  var rec={ cid:cid, decidedAt:new Date().toISOString(), plan:gv('ic_plan'), scenarios:scen, config:cfg, members:members, tally:t };
+  SUB.commit('ic', cid, rec);
+  members.forEach(function(m){ SUB.commit('ic_votes', cid+'__'+m.id, { cid:cid, voter:m.id, name:m.name, present:m.present, recused:m.recused, vote:m.vote, score:m.score }); });
+  SUB.upsertCompany({ cid:cid, stage: t.passed?'심의가결':'심의' });
+  ic_showResult(t);
+}
+function ic_saveMyVote(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var id=SUB.session().id; if(!id){ alert('로그인 정보가 없습니다'); return; }
+  var sel=function(c){ return document.querySelector('.'+c+'[data-id="'+id+'"]'); };
+  if(!sel('ic-vote')){ alert('배당된 본인 슬롯이 없습니다. 관리자에게 배당을 요청하세요.'); return; }
+  SUB.commit('ic_votes', cid+'__'+id, { cid:cid, voter:id, name:(SUB.DB.icConfig.members||{})[id]||'',
+    present:sel('ic-present').checked, recused:sel('ic-recused').checked, score:+sel('ic-score').value||0, vote:sel('ic-vote').value });
+  document.getElementById('ic_result').innerHTML='<div class="result r-ok"><div class="big-verdict">내 의결 저장됨 ✔</div></div>';
+}
+function ic_saveConsult(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return; }
+  var scen={}; document.querySelectorAll('.ic-amt').forEach(function(el){ var k=el.dataset.k; scen[k]={ amount:+el.value||0, year:+document.querySelector('.ic-yr[data-k="'+k+'"]').value||0,
+    moic:(SUB.DB.invest[cid]&&+el.value>0)?INVEST.moic(SUB.DB.invest[cid].investment,+el.value):0 }; });
+  var prev=SUB.DB.ic[cid]||{};
+  var rec=Object.assign({}, prev, { cid:cid, plan:gv('ic_plan'), scenarios:scen, consultAt:new Date().toISOString() });
+  SUB.commit('ic', cid, rec);
+  document.getElementById('ic_consultMsg').textContent='자문 저장됨 ✔';
+}
+function ic_applyRoleView(){
+  var role=SUB.getRole();
+  var show=function(id,on){ var el=document.getElementById(id); if(el) el.style.display=on?'':'none'; };
+  // 기본 전체
+  show('ic_draftBox',true); show('ic_btnConsult',false); show('ic_icCard',true);
+  show('ic_btnTally',true); show('ic_btnDecisionPdf',true); show('ic_btnMyVote',false);
+  document.getElementById('ic_plan').readOnly=false;
+  document.querySelectorAll('.ic-amt,.ic-yr').forEach(function(e){ e.disabled=false; });
+  document.getElementById('ic_quorum').disabled=false; document.getElementById('ic_passpct').disabled=false;
+  document.querySelectorAll('#ic_members tr').forEach(function(tr){ tr.style.display=''; });
+  if(role==='ic'){
+    show('ic_draftBox',false); show('ic_btnConsult',false);
+    document.getElementById('ic_plan').readOnly=true;
+    document.querySelectorAll('.ic-amt,.ic-yr').forEach(function(e){ e.disabled=true; });
+    show('ic_btnTally',false); show('ic_btnReviewPdf',true); show('ic_btnDecisionPdf',false); show('ic_btnMyVote',true);
+    document.getElementById('ic_quorum').disabled=true; document.getElementById('ic_passpct').disabled=true;
+    var myId=SUB.session().id;
+    document.querySelectorAll('#ic_members tr').forEach(function(tr,i){ if(i===0) return;
+      var inp=tr.querySelector('.ic-vote'); if(inp&&inp.dataset.id!==myId) tr.style.display='none';
+      var nm=tr.querySelector('.ic-name'); if(nm) nm.readOnly=true; });
+  } else if(role==='consultant'){
+    show('ic_btnConsult',true); show('ic_icCard',false);
+  }
+}
+function ic_showResult(t){
+  var cls=!t.quorumMet?'r-non':(t.result==='가결'?'r-ok':(t.result==='조건부가결'?'r-cond':'r-bad'));
+  document.getElementById('ic_result').innerHTML='<div class="result '+cls+'">'+
+    '<div class="big-verdict">'+t.result+'</div>'+
+    '<div class="tally">재적 '+t.registered+'명(제척 '+t.recused+') · 출석 '+t.present+'명(정족수 '+t.quorumNeed+') · '+
+    '찬성 '+t.forC+' · 조건부 '+t.conditionalC+' · 반대 '+t.againstC+' · 기권 '+t.abstainC+
+    ' · 가결선 '+t.threshold+' · 평균점수 '+t.avgScore.toFixed(1)+'점</div></div>';
+}
+// PDF
+function ic_pdfCtx(){
+  var cid=SUB.getCID(); if(!cid){ alert('기업을 선택하세요'); return null; }
+  var co=SUB.DB.companies.find(function(c){ return c.cid===cid; })||{cid:cid};
+  return { company:co, ceo:(SUB.DB.applicants[cid]||{}).ceo, applicant:SUB.DB.applicants[cid]||{},
+    invest:SUB.DB.invest[cid]||{}, ic:SUB.DB.ic[cid]||{}, loi:SUB.DB.loi[cid]||{}, dateStr:ic_today() };
+}
+function ic_renderPDF(kind, fname){
+  var ctx=ic_pdfCtx(); if(!ctx) return;
+  if(typeof SUBPDF==='undefined'){ alert('PDF 모듈을 불러오지 못했습니다(로컬 http 실행 필요).'); return; }
+  if(kind==='decision'&&!(ctx.ic&&ctx.ic.tally)){ alert('먼저 의결을 집계·저장하세요.'); return; }
+  var stage=document.getElementById('ic_pdfStage');
+  stage.innerHTML=SUBPDF.buildReportHTML(kind, ctx);
+  SUBPDF.renderToPDF(stage, fname).then(function(){ stage.innerHTML=''; });
+}
+function ic_makeReviewPDF(){ var co=SUB.DB.companies.find(function(c){ return c.cid===SUB.getCID(); })||{}; ic_renderPDF('review',(co.name||'심의자료')+'_심의자료.pdf'); }
+function ic_makeDecisionPDF(){ var co=SUB.DB.companies.find(function(c){ return c.cid===SUB.getCID(); })||{}; ic_renderPDF('decision',(co.name||'의결서')+'_의결서.pdf'); }
+document.addEventListener('change', function(e){ if(e.target&&e.target.id==='ic_coSel') ic_loadCo(e.target.value); });
+document.addEventListener('input', function(e){ if(e.target&&e.target.classList&&e.target.classList.contains('ic-amt')) ic_recalcMoic(); });
+// ================= ⑤ 포트폴리오 =================
+function port_fillPicker(){
+  var sel=document.getElementById('port_coSel');
+  var cos=SUB.DB.companies.filter(function(c){ return ['설립','관리','심의가결'].indexOf(c.stage)>=0; });
+  sel.innerHTML='<option value="">— 선택 —</option>'+cos.map(function(c){ return '<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+  var cur=SUB.getCID(); if(cur&&cos.some(function(c){ return c.cid===cur; })) sel.value=cur;
+}
+function port_init(){ port_fillPicker(); var cur=SUB.getCID(); if(cur&&document.getElementById('port_coSel').value) port_loadCo(cur); else document.getElementById('port_body').style.display='none'; }
+function port_rec(cid){
+  if(!SUB.DB.portfolio[cid]){ var inv=SUB.DB.invest[cid]||{}; SUB.DB.portfolio[cid]={ cid:cid, cost:inv.investment||0, pct:inv.actualPct||inv.equityPct||0.10, reports:[], requests:[] }; }
+  return SUB.DB.portfolio[cid];
+}
+function port_loadCo(cid){
+  if(!cid){ document.getElementById('port_body').style.display='none'; return; }
+  SUB.setCID(cid);
+  var co=SUB.DB.companies.find(function(c){ return c.cid===cid; })||{};
+  document.getElementById('port_body').style.display='';
+  document.getElementById('port_coTitle').textContent=(co.name||cid)+' — 포트폴리오';
+  var p=port_rec(cid);
+  document.getElementById('port_kcost').textContent=won(p.cost);
+  document.getElementById('port_kpct').textContent=(p.pct*100).toFixed(2)+'%';
+  document.getElementById('port_year').value=new Date().getFullYear();
+  port_render();
+}
+function port_latestEquity(p){ var r=(p.reports||[]).slice().sort(function(a,b){ return (a.year-b.year)||(a.quarter-b.quarter); }).pop(); return r?Number(r.equity)||0:0; }
+function port_render(){
+  var cid=SUB.getCID(), p=port_rec(cid);
+  var equity=port_latestEquity(p), ev=SUB.evalAsset(p.cost, equity, p.pct);
+  document.getElementById('port_kcarry').textContent=won(ev.carrying);
+  document.getElementById('port_valTbl').innerHTML=
+    '<tr><th>구분</th><th>금액</th><th>비고</th></tr>'+
+    '<tr><td>취득원가(a)</td><td>'+won(ev.cost)+'</td><td>출자금</td></tr>'+
+    '<tr><td>순자산가치(b)</td><td>'+won(ev.nav)+'</td><td>최신 자본총계 '+won(equity)+' × '+(p.pct*100).toFixed(2)+'%</td></tr>'+
+    '<tr><td>평가 장부가</td><td>'+won(ev.carrying)+'</td><td>'+(ev.impaired?'<span class="badge b-bad">손상 — b로 감액</span>':'<span class="badge b-ok">취득원가 유지</span>')+'</td></tr>';
+  var yr=+gv('port_year')||new Date().getFullYear();
+  var miss=SUB.missingQuarters(p.reports, yr);
+  document.getElementById('port_missBox').innerHTML= yr+'년 미제출: '+
+    (miss.length? miss.map(function(q){ return '<span class="miss">'+q+'분기</span>'; }).join('')+' <button class="mini" onclick="port_requestQuarter('+yr+')">📧 미제출 자료 요청</button>'
+      : '<span class="badge b-ok">전 분기 제출 완료</span>');
+  var rows=(p.reports||[]).slice().sort(function(a,b){ return (b.year-a.year)||(b.quarter-a.quarter); }).map(function(r){
+    return '<tr><td>'+r.year+' '+r.quarter+'Q</td><td>'+won(r.revenue)+'</td><td>'+won(r.opProfit)+'</td><td>'+won(r.netProfit)+'</td><td>'+won(r.equity)+'</td><td>'+(r.submittedAt?r.submittedAt.slice(0,10):'')+'</td></tr>'; }).join('');
+  document.getElementById('port_repTbl').innerHTML='<tr><th>기간</th><th>매출</th><th>영업이익</th><th>당기순이익</th><th>자본총계</th><th>제출일</th></tr>'+(rows||'<tr><td colspan="6" class="muted">제출된 보고 없음</td></tr>');
+}
+function port_addReport(){
+  var cid=SUB.getCID(), p=port_rec(cid);
+  var rec={ year:+gv('port_year'), quarter:+gv('port_q'), revenue:+gv('port_rev')||0, opProfit:+gv('port_op')||0,
+    netProfit:+gv('port_net')||0, assets:+gv('port_asset')||0, liabilities:+gv('port_liab')||0, equity:+gv('port_equity')||0, submittedAt:new Date().toISOString() };
+  p.reports=(p.reports||[]).filter(function(r){ return !(r.year===rec.year&&r.quarter===rec.quarter); });
+  p.reports.push(rec);
+  SUB.commit('portfolio', cid, p);
+  SUB.upsertCompany({cid:cid, stage:'관리'});
+  document.getElementById('port_repMsg').textContent=rec.year+' '+rec.quarter+'Q 등록됨 ✔';
+  port_render();
+}
+function port_requestQuarter(yr){
+  var cid=SUB.getCID(), p=port_rec(cid);
+  var miss=SUB.missingQuarters(p.reports, yr);
+  p.requests=(p.requests||[]); miss.forEach(function(q){ p.requests.push({year:yr,quarter:q,requestedAt:new Date().toISOString()}); });
+  SUB.commit('portfolio', cid, p);
+  var ap=SUB.DB.applicants[cid]||{}, email=ap.email||'';
+  var subj=encodeURIComponent('['+yr+'] 자회사 분기 회계보고 자료 요청');
+  var bodyq=encodeURIComponent('미제출 분기: '+miss.map(function(q){ return q+'분기'; }).join(', ')+'\n분기 재무자료(매출·영업이익·당기순이익·자본총계 등) 제출을 요청드립니다.');
+  if(email) window.location.href='mailto:'+email+'?subject='+subj+'&body='+bodyq;
+  else alert('미제출 자료 요청을 기록했습니다('+miss.join(', ')+'분기).');
+}
+document.addEventListener('change', function(e){ if(e.target&&e.target.id==='port_coSel') port_loadCo(e.target.value); });
+
+// ================= ⑥ 관리 콘솔 =================
+var CON_STAGES=['신청','LOI','출자','심의','심의가결','설립','관리'];
+function con_init(){ con_tab('dash'); }
+function con_tab(t){
+  document.querySelectorAll('#sec-console .subtabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===t); });
+  document.querySelectorAll('#sec-console .con-sec').forEach(function(s){ s.classList.toggle('hidden', s.dataset.s!==t); });
+  if(t==='dash') con_renderDash(); if(t==='co') con_fillCo(); if(t==='seed') con_renderSeed();
+  if(t==='vars') con_renderVars(); if(t==='benefit') con_renderBenefit(); if(t==='acct') con_renderAcct();
+}
+function con_renderDash(){
+  var cos=SUB.DB.companies, cnt={}; CON_STAGES.forEach(function(s){ cnt[s]=0; });
+  cos.forEach(function(c){ var s=c.stage||'신청'; if(cnt[s]==null) cnt[s]=0; cnt[s]++; });
+  document.getElementById('con_kpis').innerHTML=CON_STAGES.map(function(s){ return '<div class="kpi"><b>'+(cnt[s]||0)+'</b><span>'+s+'</span></div>'; }).join('');
+  var aps=Object.values(SUB.DB.applicants).sort(function(a,b){ return (b.submittedAt||'').localeCompare(a.submittedAt||''); }).slice(0,8);
+  document.getElementById('con_recent').innerHTML='<tr><th>접수번호</th><th>기업</th><th>유형</th><th>적격성</th><th>단계</th></tr>'+
+    (aps.map(function(a){ var co=SUB.DB.companies.find(function(c){ return c.cid===a.cid; })||{};
+      return '<tr><td>'+SUB.esc(a.appId||'')+'</td><td>'+SUB.esc(co.name||a.ceo||'')+'</td><td>'+(INVEST.FOUNDER_LABEL[a.founderType]||'')+'</td><td>'+SUB.esc(a.eligibility||'-')+'</td><td>'+SUB.esc(co.stage||'신청')+'</td></tr>'; }).join('')||'<tr><td colspan="5" class="muted">신청 내역 없음</td></tr>');
+}
+function con_fillCo(){
+  var sel=document.getElementById('con_coSel');
+  sel.innerHTML='<option value="">— 선택 —</option>'+SUB.DB.companies.map(function(c){ return '<option value="'+c.cid+'">'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+}
+function con_renderCo(cid){
+  if(!cid){ document.getElementById('con_coView').innerHTML=''; return; }
+  var esc=SUB.esc;
+  var co=SUB.DB.companies.find(function(c){ return c.cid===cid; })||{}, ap=SUB.DB.applicants[cid], loi=SUB.DB.loi[cid], inv=SUB.DB.invest[cid], ic=SUB.DB.ic[cid];
+  var ev=[];
+  if(ap) ev.push(['신청', ap.submittedAt, '대표 '+esc(ap.ceo)+' · '+(INVEST.FOUNDER_LABEL[ap.founderType]||'')+' · 적격성 '+esc(ap.eligibility||'-')+' · 동의 3종·확인체크 '+(ap.checks||[]).filter(Boolean).length+'/4 기록']);
+  if(loi) ev.push(['기술이전 LOI', loi.updatedAt, '기술 '+esc(loi.techName||'')+' · 상태 '+esc(loi.status||'')+' · 산학협력단 동의 '+(loi.tloConsent?'✔':'대기')]);
+  if(inv) ev.push(['출자(텀시트)', inv.savedAt, esc(inv.stockType==='cps'?'우선주(CPS)':'보통주')+' · 투자금 '+(inv.investment||0).toLocaleString()+'원 · 지분 '+((inv.actualPct||0)*100).toFixed(2)+'%']);
+  if(ic&&ic.tally) ev.push(['투자심의', ic.decidedAt, '의결 '+esc(ic.tally.result)+' · 출석 '+ic.tally.present+'/재적 '+ic.tally.registered]);
+  ev.sort(function(a,b){ return (a[1]||'').localeCompare(b[1]||''); });
+  var html='<div style="margin-top:10px"><span class="pill">'+esc(co.name||cid)+'</span> <span class="muted">cid '+cid+' · 단계 <b>'+esc(co.stage||'신청')+'</b>'+(co.carryover?' · 🌱이월':'')+'</span></div>';
+  html+='<label>단계 수동 변경</label><select id="con_stageSel" style="max-width:200px" onchange="con_setStage(\''+cid+'\',this.value)">'+
+    CON_STAGES.concat(['보류']).map(function(s){ return '<option'+((co.stage||'신청')===s?' selected':'')+'>'+s+'</option>'; }).join('')+'</select>';
+  html+=con_actionsPanel(co, ap, cid);
+  if(ap){
+    var locked=ap.locked!==false;
+    html+='<div class="stub" style="margin-top:10px">📝 신청 수정: <b>'+(locked?'잠금':'수정 허용됨(신청자 1회 수정 가능)')+'</b> '+
+      (locked?'<button class="mini" onclick="con_unlock(\''+cid+'\')">수정 허용(unlock)</button>':'<span class="muted">신청자가 조회 화면에서 수정 후 자동 재잠금됩니다.</span>')+
+      ((ap.history&&ap.history.length)?'<div class="muted" style="margin-top:6px">수정 이력 '+ap.history.length+'건'+(ap.editedAt?(' · 최근 '+ap.editedAt.slice(0,10)):'')+'</div>':'')+'</div>';
+  }
+  html+='<div class="tl">'+(ev.length?ev.map(function(e){ return '<div class="ev"><div class="t">'+(e[1]?e[1].slice(0,10):'')+' · '+e[0]+'</div><div class="d">'+e[2]+'</div></div>'; }).join(''):'<div class="muted">기록 없음</div>')+'</div>';
+  document.getElementById('con_coView').innerHTML=html;
+}
+function con_actionsPanel(co, ap, cid){
+  var esc=SUB.esc, h='<div class="panel" style="margin-top:12px">';
+  var stageNow=co.stage||'신청';
+  if(ap&&ap.express){
+    var files=(ap.files||[]).map(function(f){ return '<span class="pill">📎 '+esc(f.label||f.name)+'</span>'; }).join(' ')||'<span class="muted">첨부 없음</span>';
+    h+='<div><b>⚡ Express 후보</b> — 기술이전계약 '+((ap.expressFlags&&ap.expressFlags.techTransferSigned)?'✔':'미확인')+' · 투자동의 '+((ap.expressFlags&&ap.expressFlags.investAgreed)?'✔':'미확인')+'</div>';
+    h+='<div style="margin-top:6px">첨부 서류: '+files+'</div>';
+    if(['신청','LOI'].indexOf(stageNow)>=0) h+='<button class="mini" style="margin-top:8px;background:var(--brand);color:#fff;border:0" onclick="con_approveExpress(\''+cid+'\')">⚡ Express 승인 → 심의로 점프</button>';
+    else h+='<div class="muted" style="margin-top:6px">이미 ‘'+esc(stageNow)+'’ 단계로 진행됨</div>';
+  }
+  h+='<div style="margin-top:10px"><button class="mini" onclick="con_requestMeeting(\''+cid+'\')">📅 사전미팅 요청</button>';
+  if(co.meetingRequested) h+=' <span class="muted">요청됨('+(co.meetingAt?co.meetingAt.slice(0,10):'')+') · <a href="'+SUB.MEETING_URL+'" target="_blank">예약 링크 열기</a></span>';
+  h+='</div>';
+  if(['설립','관리','심의가결'].indexOf(stageNow)>=0){
+    h+='<div style="margin-top:10px"><button class="mini" onclick="con_handoffLAGMP(\''+cid+'\')">🌱 LAGMP 성장관리로 인계</button>';
+    if(co.lagmpHandoff) h+=' <span class="muted">인계됨('+(co.lagmpAt?co.lagmpAt.slice(0,10):'')+')</span>';
+    h+='</div>';
+  }
+  h+='</div>'; return h;
+}
+function con_setStage(cid,s){ SUB.upsertCompany({cid:cid,stage:s}); SUB.save(); con_renderCo(cid); }
+function con_unlock(cid){ var r=SUB.unlockApplicant(cid); if(r.ok){ alert('수정 허용됨. 신청자가 조회 화면에서 1회 수정할 수 있습니다.'); con_renderCo(cid); } else alert('불가: '+(r.error||'')); }
+function con_handoffLAGMP(cid){ var r=SUB.handoffToLAGMP(cid); if(r.ok){ try{ window.open(r.url,'_blank'); }catch(e){} con_renderCo(cid); } else alert('인계 불가: '+(r.error==='not-established'?'설립 완료(또는 심의가결) 후 가능':r.error)); }
+function con_approveExpress(cid){ var r=SUB.approveExpress(cid); if(r.ok){ alert('Express 승인 완료 — 심의 단계로 점프했습니다(LOI·출자 자동 prefill).'); con_renderCo(cid); con_renderDash(); } else alert('승인 불가: '+(r.error||'')); }
+function con_requestMeeting(cid){ var r=SUB.requestMeeting(cid); if(r.ok){ alert('사전미팅 요청 기록됨. 신청자에게 예약 링크를 안내하세요:\n'+r.url); con_renderCo(cid); } }
+function con_renderSeed(){
+  var rows=SUB.DB.companies.filter(function(c){ return ['설립','관리','심의가결'].indexOf(c.stage)<0; });
+  document.getElementById('con_seedTbl').innerHTML='<tr><th>기업</th><th>cid</th><th>신청연도</th><th>단계</th><th>차년도 이월</th></tr>'+
+    (rows.map(function(c){ return '<tr><td>'+SUB.esc(c.name)+'</td><td>'+c.cid+'</td><td>'+(c.year||'')+'</td><td>'+SUB.esc(c.stage||'신청')+'</td><td><input type="checkbox" '+(c.carryover?'checked':'')+' onchange="con_toggleCarry(\''+c.cid+'\',this.checked)"></td></tr>'; }).join('')||'<tr><td colspan="5" class="muted">이월 대상 없음</td></tr>');
+}
+function con_toggleCarry(cid,v){ SUB.upsertCompany({cid:cid,carryover:v}); SUB.save(); }
+function con_saveRound(){
+  var r=Math.max(1, parseInt(gv('con_round'),10)||1);
+  SUB.DB.roundCfg=SUB.DB.roundCfg||{round:1}; SUB.DB.roundCfg.round=r;
+  SUB.commitSingle('roundCfg', SUB.DB.roundCfg);
+  document.getElementById('con_roundMsg').textContent='차수 '+r+' 저장됨 ✔';
+}
+function con_renderVars(){
+  document.getElementById('con_round').value=(SUB.DB.roundCfg&&SUB.DB.roundCfg.round)||1;
+  document.getElementById('con_quorum').value=Math.round((SUB.DB.icConfig.quorumPct||0.5)*100);
+  document.getElementById('con_pass').value=Math.round((SUB.DB.icConfig.passPct||0.5)*100);
+  var mem=SUB.DB.icConfig.members||{}, tb=document.getElementById('con_memTbl');
+  tb.innerHTML='<tr><th>슬롯</th><th>위원 성명(공석=미배정)</th></tr>';
+  for(var i=1;i<=7;i++){ var id='ic'+i; tb.innerHTML+='<tr><td>'+id+'</td><td><input class="con-mem" data-id="'+id+'" value="'+SUB.esc(mem[id]||'')+'"></td></tr>'; }
+}
+function con_saveVars(){
+  SUB.DB.icConfig.quorumPct=(+gv('con_quorum'))/100;
+  SUB.DB.icConfig.passPct=(+gv('con_pass'))/100;
+  document.querySelectorAll('.con-mem').forEach(function(el){ var v=el.value.trim(); if(v) SUB.DB.icConfig.members[el.dataset.id]=v; else delete SUB.DB.icConfig.members[el.dataset.id]; });
+  SUB.commitSingle('icConfig', SUB.DB.icConfig); document.getElementById('con_varsMsg').textContent='저장됨 ✔';
+}
+function con_renderBenefit(){
+  document.getElementById('con_bgrowth').value=(SUB.DB.benefits&&SUB.DB.benefits.growth)||'';
+  document.getElementById('con_bresearch').value=(SUB.DB.benefits&&SUB.DB.benefits.research)||'';
+}
+function con_saveBenefit(){
+  SUB.DB.benefits=SUB.DB.benefits||{};
+  SUB.DB.benefits.growth=gv('con_bgrowth'); SUB.DB.benefits.research=gv('con_bresearch');
+  SUB.commitSingle('benefits', SUB.DB.benefits); document.getElementById('con_benefitMsg').textContent='저장됨 ✔';
+}
+function con_acctStatus(a){
+  if(a.disabled) return '<span style="color:var(--bad)">비활성</span>';
+  if(a.expireAt&&new Date().toISOString().slice(0,10)>a.expireAt) return '<span style="color:var(--bad)">만료</span>';
+  if(a.expireAt) return '<span style="color:var(--warn)">~'+a.expireAt+'</span>';
+  return '<span style="color:var(--ok)">활성</span>';
+}
+function con_renderAssign(){
+  var box=document.getElementById('con_assignBox'); if(!box) return;
+  var ext=Object.keys(SUB.DB.accounts).filter(function(id){ var r=SUB.DB.accounts[id].role; return r==='ic'||r==='consultant'; });
+  var cos=SUB.DB.companies;
+  if(!ext.length){ box.innerHTML='<div class="muted" style="margin-top:6px">발급된 외부 계정이 없습니다.</div>'; return; }
+  if(!cos.length){ box.innerHTML='<div class="muted" style="margin-top:6px">배당할 자회사(기업)가 없습니다.</div>'; return; }
+  box.innerHTML=ext.map(function(id){ var a=SUB.DB.accounts[id]; var sc=(a.scope&&a.scope.cids)||[];
+    var opts=cos.map(function(c){ return '<option value="'+c.cid+'"'+(sc.indexOf(c.cid)>=0?' selected':'')+'>'+SUB.esc(c.name)+' ('+c.cid+')</option>'; }).join('');
+    return '<div style="margin-top:10px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">'+
+      '<div style="min-width:150px"><b>'+id+'</b> <span class="muted">'+(SUB.ROLES[a.role]?SUB.ROLES[a.role].label:a.role)+'</span><br><span class="muted">'+SUB.esc(a.name||'')+'</span></div>'+
+      '<select multiple size="4" class="con-assign" data-id="'+id+'" style="flex:1;min-width:200px;min-height:80px">'+opts+'</select>'+
+      '<button class="mini" onclick="con_saveAssign(\''+id+'\')">배당 저장</button></div>';
+  }).join('');
+}
+function con_saveAssign(id){
+  var sel=document.querySelector('.con-assign[data-id="'+id+'"]'); if(!sel) return;
+  var cids=Array.prototype.filter.call(sel.options,function(o){ return o.selected; }).map(function(o){ return o.value; });
+  var a=SUB.DB.accounts[id]; a.scope=a.scope||{}; a.scope.cids=cids;
+  SUB.commit('accounts', id, a);
+  document.getElementById('con_acctMsg').textContent=id+' 배당 '+cids.length+'건 저장됨 ✔';
+}
+function con_renderAcct(){
+  con_renderAssign();
+  var acc=SUB.DB.accounts, tb=document.getElementById('con_acctTbl');
+  tb.innerHTML='<tr><th>아이디</th><th>역할</th><th>표시명</th><th>상태</th><th>새 비밀번호</th><th></th></tr>';
+  Object.keys(acc).forEach(function(id){ var a=acc[id]; var canToggle=(id!=='admin');
+    tb.innerHTML+='<tr><td>'+id+'</td><td>'+(SUB.ROLES[a.role]?SUB.ROLES[a.role].label:a.role)+'</td><td>'+SUB.esc(a.name||'')+
+      '</td><td>'+con_acctStatus(a)+'</td><td><input type="password" class="con-pw" data-id="'+id+'" placeholder="변경 시에만 입력"></td>'+
+      '<td>'+(canToggle?'<button class="mini" onclick="con_toggleAcct(\''+id+'\')">'+(a.disabled?'활성화':'비활성')+'</button> <button class="mini" onclick="con_delAccount(\''+id+'\')">삭제</button>':'')+'</td></tr>'; });
+}
+function con_addAccount(){
+  var id=gv('con_naId').trim(), role=gv('con_naRole'), pw=gv('con_naPw');
+  if(!id||!pw){ document.getElementById('con_addMsg').textContent='아이디와 임시 비밀번호를 입력하세요'; return; }
+  if(SUB.DB.accounts[id]){ document.getElementById('con_addMsg').textContent='이미 존재하는 아이디입니다'; return; }
+  var rec={ id:id, pw:SUB.hash(pw), role:role, name:gv('con_naName').trim() };
+  var exp=gv('con_naExp'); if(exp) rec.expireAt=exp;
+  SUB.DB.accounts[id]=rec; SUB.commit('accounts', id, rec);
+  ['con_naId','con_naName','con_naPw','con_naExp'].forEach(function(x){ document.getElementById(x).value=''; });
+  document.getElementById('con_addMsg').textContent='발급됨 ✔ ('+id+')'; con_renderAcct();
+}
+function con_toggleAcct(id){ var a=SUB.DB.accounts[id]; if(!a) return; a.disabled=!a.disabled; SUB.commit('accounts',id,a); con_renderAcct(); }
+function con_delAccount(id){ if(id==='admin'){ alert('관리자 계정은 삭제할 수 없습니다'); return; } if(!confirm(id+' 계정을 삭제할까요?')) return; delete SUB.DB.accounts[id]; SUB.commitDel('accounts',id); con_renderAcct(); }
+function con_saveAccts(){
+  var n=0;
+  document.querySelectorAll('.con-pw').forEach(function(el){ var v=el.value; if(v){ var id=el.dataset.id; SUB.DB.accounts[id].pw=SUB.hash(v); SUB.commit('accounts', id, SUB.DB.accounts[id]); n++; } });
+  if(!n) SUB.save();
+  document.getElementById('con_acctMsg').textContent=n?(n+'건 변경됨 ✔'):'변경 없음';
+}
+document.addEventListener('change', function(e){ if(e.target&&e.target.id==='con_coSel') con_renderCo(e.target.value); });
+
+// ================= 초기 진입 =================
+(function init(){
+  updateNav();
+  // URL ?sec= 또는 역할 홈, 기본 home
+  var m=(location.search||'').match(/[?&]sec=([^&]*)/);
+  var sec=m?decodeURIComponent(m[1]):'home';
+  var role=SUB.getRole()||'';
+  var allowed=ROLE_TABS[role]||ROLE_TABS[''];
+  if(allowed.indexOf(sec)<0) sec=allowed[0]||'home';
+  showSec(sec);
+  // ?appId= 자동 채움(조회)
+  var ma=(location.search||'').match(/[?&]appId=([^&]*)/); if(ma){ document.getElementById('st_appId').value=decodeURIComponent(ma[1]); }
+})();
+</script>
+</body>
+</html>
