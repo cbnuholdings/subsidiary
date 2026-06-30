@@ -173,6 +173,14 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:14px 0}
   .steps .s.done{ background:#fbeef3; color:var(--brand-d); }
   .chk{ display:flex; align-items:flex-start; gap:9px; font-size:13px; padding:9px 11px; border:1px solid #e6dadf; border-radius:9px; margin-top:8px; background:#fcf8f9; cursor:pointer; }
   .chk input{ width:auto; margin-top:2px; }
+  .consent-item{ margin-top:8px; }
+  .consent-full{ margin:4px 0 2px 6px; }
+  .consent-full > summary{ cursor:pointer; list-style:none; display:inline-block; font-size:12px; color:var(--brand-d); border:1px solid #e2cdd5; border-radius:16px; padding:3px 11px; background:#fbf5f7; user-select:none; }
+  .consent-full > summary::-webkit-details-marker{ display:none; }
+  .consent-full[open] > summary{ background:var(--brand-d); color:#fff; border-color:var(--brand-d); }
+  .consent-full > summary::before{ content:'▸ '; }
+  .consent-full[open] > summary::before{ content:'▾ '; }
+  .consent-body{ font-size:12px; line-height:1.8; color:#444; background:#faf6f8; border:1px solid #ecdde3; border-radius:9px; padding:11px 13px; margin-top:8px; }
   .benefit{ display:flex; gap:8px; margin-top:10px; } .benefit button{ flex:1; }
   .tab{ background:#f3e8ec; color:var(--brand-d); border:1px solid #e4d0d8; border-radius:8px; padding:8px; font-size:13px; cursor:pointer; }
   .tab.on{ background:var(--brand); color:#fff; border-color:var(--brand); }
@@ -399,10 +407,46 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:14px 0}
   <!-- STEP 1 -->
   <div class="card ap-step hidden" data-step="1">
     <h2>개인정보 수집·이용 동의</h2>
-    <div class="note">아래 3개 항목에 모두 동의하셔야 신청을 진행할 수 있습니다. 동의 일시가 증빙으로 기록됩니다.</div>
-    <label class="chk"><input type="checkbox" id="ap_c1"><span><b>(필수) 개인정보 수집·이용</b> — 신청자 성명·연락처·이메일·소속·사업자정보를 신청 심사·연락 목적으로 수집·이용합니다.</span></label>
-    <label class="chk"><input type="checkbox" id="ap_c2"><span><b>(필수) 제3자 제공 — 충북대학교 산학협력단</b> — 기술이전 협의를 위해 신청정보·대상기술을 산학협력단에 제공합니다.</span></label>
-    <label class="chk"><input type="checkbox" id="ap_c3"><span><b>(필수) 민감정보 처리</b> — 예비창업자 식별을 위한 생년월일은 <b>해시 처리</b>되어 저장되며 원문은 보관하지 않습니다.</span></label>
+    <div class="note">아래 3개 항목에 모두 동의하셔야 신청을 진행할 수 있습니다. 각 항목의 <b>전문 보기</b>를 눌러 상세 내용을 확인하실 수 있습니다. 동의 일시가 증빙으로 기록됩니다.</div>
+
+    <div class="consent-item">
+      <label class="chk"><input type="checkbox" id="ap_c1"><span><b>(필수) 개인정보 수집·이용</b> — 신청자 성명·연락처·이메일·소속·사업자정보를 신청 심사·연락 목적으로 수집·이용합니다.</span></label>
+      <details class="consent-full"><summary>📄 전문 보기</summary><div class="consent-body">
+        <b>1. 개인정보 수집·이용 동의 (필수)</b><br>
+        충북대학교기술지주(주)는 자회사 설립 신청 처리를 위하여 아래와 같이 개인정보를 수집·이용합니다.<br><br>
+        ① <b>수집 항목</b> — 신청자 성명, 연락처(전화·휴대전화), 이메일, 소속·직위, 사업자등록정보(상호·사업자등록번호·대표자명), 예비창업자의 생년월일<br>
+        ② <b>수집·이용 목적</b> — 자회사 설립 신청 접수 및 심사, 신청 자격(적격성) 확인, 신청 진행 상황 안내 및 연락, 통계 작성<br>
+        ③ <b>보유·이용 기간</b> — 수집·이용 목적 달성 시까지. 단, 관계 법령에 별도 보존기간이 정해진 경우 해당 기간까지 보관하며, 동의 철회 시 지체 없이 파기합니다.<br>
+        ④ <b>동의 거부 권리</b> — 귀하는 개인정보 수집·이용에 동의를 거부할 권리가 있습니다. 다만 필수 항목에 동의하지 않으실 경우 신청 접수가 제한됩니다.
+      </div></details>
+    </div>
+
+    <div class="consent-item">
+      <label class="chk"><input type="checkbox" id="ap_c2"><span><b>(필수) 제3자 제공 — 충북대학교 산학협력단</b> — 기술이전 협의를 위해 신청정보·대상기술을 산학협력단에 제공합니다.</span></label>
+      <details class="consent-full"><summary>📄 전문 보기</summary><div class="consent-body">
+        <b>2. 개인정보 제3자 제공 동의 (필수)</b><br>
+        원활한 기술이전 협의 및 계약 추진을 위하여 아래와 같이 개인정보를 제3자에게 제공합니다.<br><br>
+        ① <b>제공받는 자</b> — 충북대학교 산학협력단(기술이전팀)<br>
+        ② <b>제공 목적</b> — 대상기술의 기술이전 협의 및 계약 추진, 기술 사업화 검토<br>
+        ③ <b>제공 항목</b> — 신청자 성명·연락처·소속, 대상기술 정보, 사업화 계획<br>
+        ④ <b>보유·이용 기간</b> — 제공 목적 달성 시까지(기술이전 협의·계약 종료 시)<br>
+        ⑤ <b>동의 거부 권리</b> — 귀하는 제3자 제공에 동의를 거부할 권리가 있습니다. 다만 동의하지 않으실 경우 기술이전 협의가 불가하여 신청 진행이 제한됩니다.
+      </div></details>
+    </div>
+
+    <div class="consent-item">
+      <label class="chk"><input type="checkbox" id="ap_c3"><span><b>(필수) 민감정보 처리</b> — 예비창업자 식별을 위한 생년월일은 <b>해시 처리</b>되어 저장되며 원문은 보관하지 않습니다.</span></label>
+      <details class="consent-full"><summary>📄 전문 보기</summary><div class="consent-body">
+        <b>3. 민감정보(고유식별정보) 처리 동의 (필수)</b><br>
+        예비창업자의 동일인 식별 및 중복신청 방지를 위하여 아래와 같이 민감정보를 처리합니다.<br><br>
+        ① <b>처리 항목</b> — 예비창업자(사업자등록번호가 없는 신청자)의 생년월일<br>
+        ② <b>처리 목적</b> — 예비창업자 식별값(고유 ID) 생성 및 중복·재신청 관리<br>
+        ③ <b>처리 방법</b> — 생년월일은 대표자명과 결합하여 <b>일방향 해시(복원 불가)</b>로 변환·저장되며, <b>원문(생년월일 자체)은 서버에 저장하지 않습니다.</b><br>
+        ④ <b>보유·이용 기간</b> — 식별 목적 달성 시까지(생성된 해시값은 신청 이력 관리 기간 동안 보관)<br>
+        ⑤ <b>동의 거부 권리</b> — 귀하는 민감정보 처리에 동의를 거부할 권리가 있습니다. 다만 예비창업자의 경우 동의하지 않으시면 식별이 불가하여 신청이 제한됩니다(기창업·사업자번호 보유 신청자는 해당 없음).
+      </div></details>
+    </div>
+
     <div class="nav-btns"><button type="button" class="ghost" onclick="apply_go(0)">← 이전</button><button type="button" id="ap_btnConsent" disabled onclick="apply_go(2)">동의하고 계속 →</button></div>
   </div>
 
